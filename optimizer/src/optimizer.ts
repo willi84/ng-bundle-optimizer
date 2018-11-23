@@ -278,6 +278,8 @@ const HAS_END_IF = "end-if";
 const HAS_FOR = "has-for";
 const HAS_WHILE = "has-while";
 const END_FOR = "end-for";
+const IS_PROTOTYPE = "is-prototype";
+const HAS_END_PROTOTYPE = "end-prototype";
 
 
 
@@ -312,7 +314,12 @@ const checkLine = (type, line) => {
             pattern = /^(\s*)(for|while)\s*\(.*\)\s*\{\s*$/;
             // pattern = /^(\s*)for\s*\([^\;]*\;[^\;]*\;[^\;]*\)\s*\{.*$/;
             break;
-
+        case IS_PROTOTYPE:
+                pattern = /^\s*[^\.]*\.prototype\.[^\s]*\s*\=\s*function\([^\)]*\)\s*\{\s*$/
+                break;
+        case HAS_END_PROTOTYPE:
+            pattern = /^\s*\}\;\s*$/;
+            break;
         case END_FOR:
             pattern = /^(\s*)\}$/;
             break;
@@ -408,7 +415,23 @@ const analyze = (line) => {
     if (cntr++ >= 0) {
         //        rewriteElse = cntr < 1533 || cntr > 1480 ? false : true;
         //DELETEABLE line detected
-        if (nextDeletableLine['start']['line'] === cntr && !DOB.active()) {
+        if (nextDeletableLine['start']['line'] === (cntr+1) && !DOB.active() ) {
+            //e.prototype._truncate = function(e) {
+                // 9100 - 9500 => 1x non wokring + löschet element
+                if (checkLine(IS_PROTOTYPE, line) && !DOB.active() && (cntr < 6515 || (cntr > 6530 && cntr < 9350) || cntr > 9405 )) {
+                    LOB.update(line, '#DPF', STATUS_ERROR);
+                    DOB.update(getIndentation(line));
+                            // deleteIfExpression = line;
+                            // LOB.update(line, '#99', STATUS_ERROR);
+                            forceDelete = true;
+
+                } else if(checkLine(IS_PROTOTYPE, line)) {
+                    LOB.update(line, '#PF', STATUS_ERROR);
+
+                } else {
+                    LOB.update(line, '#NDL', STATUS_ERROR);
+                }
+        } else if (nextDeletableLine['start']['line'] === cntr && !DOB.active()) {
             if (useLine(cntr)) {
 
                 // not prev line has =
@@ -541,6 +564,14 @@ const analyze = (line) => {
                         // DOB.first() = correctIndention ? 0 : DOB.first();
                     }
 
+                } else if (checkLine(HAS_END_PROTOTYPE, line)) {
+                    if (getIndentation(line) === DOB.first()) {
+                        deleteIfExpression = '';
+                        DOB.reset();
+                        forceDelete = false;
+                        LOB.update(line, "#EPF", STATUS_POTENTIAL);
+                    }
+                
                 } else if (checkLine(HAS_END_IF, line)) {
                     if (getIndentation(line) === DOB.first()) {
                         deleteIfExpression = '';
