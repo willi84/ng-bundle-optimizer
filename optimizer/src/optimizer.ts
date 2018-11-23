@@ -9,6 +9,8 @@ let noRun = false;
 let showOutput = true;
 let showDeleteStatus = false;
 let showDelete = false;
+let rewriteElse = true;
+let forceDelete = false;
 let metrics = {
     ok: 0,
     deleted: 0,
@@ -56,8 +58,7 @@ const useLine = (line) => {
         // { start: 0, end: 1779},
         // IMPORTANT:  1781
         { start: 0, end: 2010 },
-        { start: 4000, end: 6738 },
-        { start: 6742, end: 9334 }, // 9335-9338
+        { start: 4000, end: 9334 }, // 9335-9338
         { start: 9420, end: 12000 },
     ]
     let isOk = false;
@@ -77,17 +78,7 @@ const getFileSize = (file) => {
     return size[0];
 }
 
-// const processLOC = (current, update) => {
 
-//     current.newLine = (update.newLine !== current.newLine ) ? update.newLine : current.newLine;
-//     current.deleteStatus = (update.deleteStatus !== current.deleteStatus) ? update.deleteStatus : current.deleteStatus;
-//     current.lineStatus = (update.lineStatus !== current.lineStatus) ? update.lineStatus : current.lineStatus; 
-// }
-
-declare interface String {
-    getNewLOC(key: string, cntr: any, prevLine: string, keepFnHead: boolean): String;
-    getNewLOCX(key: string, cntr: any, prevLine: string, keepFnHead: boolean): String;
-}
 let countDeleteMe = 0;
 
 let keepFnHead = false;
@@ -288,13 +279,7 @@ const HAS_FOR = "has-for";
 const HAS_WHILE = "has-while";
 const END_FOR = "end-for";
 
-const hasDeletableIndentation = (dob) => {
-    // !hasBlockIndention(DOB) => []
-    //removeBlockIndentation > 0 [10]
-    // removeBlockIndentation = => [10,12]
-    // deleteblockIndentation [10]
-    // addBlockIndenation [10,12] // nur höher
-}
+
 
 
 const checkLine = (type, line) => {
@@ -421,6 +406,8 @@ const analyze = (line) => {
     }
     // let DOB.update(0)
     if (cntr++ >= 0) {
+        //        rewriteElse = cntr < 1533 || cntr > 1480 ? false : true;
+        //DELETEABLE line detected
         if (nextDeletableLine['start']['line'] === cntr && !DOB.active()) {
             if (useLine(cntr)) {
 
@@ -434,20 +421,23 @@ const analyze = (line) => {
                         } else {
                             //NOT: line starts with . (TODO)
                             // if (line.match(/^\s[^\.]{1}.*$/)) {
-                            if (line.match(/^\s*[a-z]+\s*$/)) {
+
+                            if (line.match(/^.*[^\;]{1}\s*$/)) {
+                                // detect multiline with =.?
+                                LOB.update(line, '#A1', STATUS_POTENTIAL);
                             } else {
-                                if (line.match(/^.*[^\;]{1}\s*$/)) {
-                                } else {
-                                    if (line.match(/^\s*return\s*[^\;]*\;$/)) {
+                                // detect return
+                                if (line.match(/^\s*return\s*[^\;]*\;$/)) {
+                                    LOB.update(line, '#A2', STATUS_POTENTIAL);
+                                }
+                                else {
+                                    // simpleDeletableLine
+                                    if (cntr < 6800 || cntr > 6810) {
+
+                                        LOB.update('', '#00', STATUS_REMOVED);
                                     }
                                     else {
-                                        if (cntr < 6800 || cntr > 6810) {
-
-                                            LOB.update('', '#00', STATUS_REMOVED);
-                                        }
-                                        else {
-                                            LOB.update(line, '#00x', STATUS_POTENTIAL);
-                                        }
+                                        LOB.update(line, '#00x', STATUS_POTENTIAL);
                                     }
                                 }
                             }
@@ -467,6 +457,9 @@ const analyze = (line) => {
                             DOB.update(getIndentation(line));
                             deleteIfExpression = line;
                             LOB.update(line, '#99', STATUS_ERROR);
+                            forceDelete = true;
+                            // let newLine = rewriteElse ? '' : line;
+                            // LOB.update(newLine, '#99', STATUS_REMOVED);
                         } else if (checkLine(HAS_ELSE, line) && !DOB.active()) {
                             LOB.update(line, '#100', STATUS_ERROR);
                         } else {
@@ -511,6 +504,9 @@ const analyze = (line) => {
         else {
             if (DOB.active() && cntr !== 1781) {
 
+                if(forceDelete && getIndentation(line) !== DOB.first()){
+                    LOB.update('', '#FD', STATUS_ERROR);
+                } else {
                 if (checkLine(HAS_ELSE_IF, line)) {
                     //TODO
                     if (nextDeletableLine['start']['line'] === cntr) {
@@ -529,22 +525,37 @@ const analyze = (line) => {
                         LOB.update(line, '#97 END', STATUS_POTENTIAL);
                     } else {
                         let correctIndention = (getIndentation(line) === DOB.first());
-                        // let updateLine = correctIndention ? deleteIfExpression.replace("if (", "if (!(" ).replace(") {", ")) {")  : '';
-                        let updateLine = correctIndention ? line : '';
-                        // const ifStatemnt = deleteIfExpression.match(/^(\s*)if(/)
                         deleteIfExpression = correctIndention ? '' : deleteIfExpression;
-
                         correctIndention ? DOB.reset() : DOB.update(DOB.first());
+                        LOB.update(line, `#98 END ${DOB.first()}`, STATUS_POTENTIAL);
+                        //if cntr === 5003
+                        // let newLine = line;
+                        // if (rewriteElse) {
+                        //     newLine = correctIndention && deleteIfExpression !== '' ? deleteIfExpression.replace("if (", "if (!(").replace(") {", ")) {") : '';
+                        // }
+                        // let updateLine = correctIndention ? deleteIfExpression.replace("if (", "if (!(" ).replace(") {", ")) {")  : '';
+                        // let updateLine = correctIndention ? line : '';
+                        // const ifStatemnt = deleteIfExpression.match(/^(\s*)if(/)
+
                         // DOB.update(correctIndention ? 0 : DOB.first());
                         // DOB.first() = correctIndention ? 0 : DOB.first();
-                        LOB.update(line, `#98 END ${DOB.first()}`, STATUS_POTENTIAL);
                     }
 
                 } else if (checkLine(HAS_END_IF, line)) {
                     if (getIndentation(line) === DOB.first()) {
                         deleteIfExpression = '';
                         DOB.reset();
+                        forceDelete = false;
                         LOB.update(line, "#99 ENDX", STATUS_POTENTIAL);
+                        // console.log(DOB.getAll() + "---"+ rewriteElse)
+                        // let newLine = rewriteElse || forceDelete ? '' : line;
+                        // if(forceDelete){
+                        //     LOB.update(newLine, "#99 ENDY", STATUS_REMOVED);
+                        //     forceDelete = forceDelete === true ? false : forceDelete;
+                        // } else {
+                        //     LOB.update(newLine, "#99 ENDX", STATUS_REMOVED);
+
+                        // }
                     }
                     else {
                         if (checkLine(END_FOR, line) && (getIndentation(line) == DOB.last())) {
@@ -557,6 +568,18 @@ const analyze = (line) => {
                                 DOB.delete(DOB.contains(getIndentation(line)));
                                 LOB.update('', "#10a", STATUS_REMOVED);
                             } else {
+
+                                // // looks for closing }
+                                // if (cntr === 4755 || cntr === 7589) {
+                                //     LOB.update('', "#10c", STATUS_REMOVED);  // TODO: .workaournd
+                                // } else {
+                                //     if (checkLine(END_FOR, line) && DOB.contains(getIndentation(line))) {
+                                //         DOB.delete(DOB.contains(getIndentation(line)));
+                                //         LOB.update('', "#10f", STATUS_REMOVED);
+                                //     } else {
+                                //         LOB.update(line, "#10b", STATUS_POTENTIAL); //?
+                                //     }
+                                // }
                                 // looks for closing }
                                 if (cntr === 4755 || cntr === 7589) {
                                     LOB.update('', "#10c", STATUS_REMOVED);  // TODO: .workaournd
@@ -608,7 +631,7 @@ const analyze = (line) => {
                         }
                     }
                 }
-
+            }
                 // create an Array of deletable stuff
                 const deletableEntry = sRemoveLines[indexDeletableLine];
                 if (deletableEntry) {
@@ -638,6 +661,19 @@ const analyze = (line) => {
                 }
             } else {
                 // NOP
+                // LOB.update(line, '#xx', STATUS_OK);
+                // if(!DOB.active() ){
+
+                //     if (checkLine(HAS_FOR, line) && nextDeletableLine['start']['line'] === (cntr +1)) {
+                //         LOB.update(line, "#yy", STATUS_POTENTIAL);
+                //         // if (getIndentation(line) > DOB.first()) {
+                //             DOB.update(getIndentation(line));
+                //             console.log(DOB.getAll());
+                //             forceDelete = false;
+                //             // rewriteElse = true; //TODO:  überflüssig machen
+                //         // }
+                //     }
+                // }
             }
 
         }
@@ -658,7 +694,7 @@ const analyze = (line) => {
                     // LOB.newLine = '//'+line;
                     LOB.newLine = '//' + LOB.deleteStatus + '(' + DOB.getAll() + ') ' + line;
                 } else {
-                    LOB.newLine = LOB.newLine; // + '//' + LOB.deleteStatus + '-- ' + nextDeletableLine['start']['line'] + ' || ' + DOB.first();
+                    LOB.newLine = LOB.newLine + '//' + LOB.deleteStatus + '-- ' + nextDeletableLine['start']['line'] + ' || ' + DOB.first();
                 }
             }
         } else if (showDelete) {
