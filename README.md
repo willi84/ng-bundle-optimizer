@@ -6,9 +6,9 @@ Reducing bundle size with the help of (unit) tests
 # current metrics
 of main bundle (called new-foo.min.js)
 
-| Date        | unzipped size   | reduced to  | percentage of | gzip    |
-| ----------- | --------------- | ----------- | ------------- | ------- |
-| 24.11.2018  | 312 KB          | 248 KB      | 0.795%        | 44.7 kb |
+| Date        | unzipped size   | reduced to  | percentage of | gzip (raw)   | gzip.min |
+| ----------- | --------------- | ----------- | ------------- | ------------ | -------- |
+| 24.11.2018  | 312 KB          | 248 KB      | 0.795%        | 44.7 kb      | 34.8 kb  |
 
 
 
