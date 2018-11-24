@@ -85,25 +85,26 @@ let keepFnHead = false;
 let deleteBlock = false;
 const testFileBase = 'foo';
 const testFileName = testFileBase + '.js';
-const pathX = './assets/';
+const pathAssets = './assets/';
 let replacement = '\n';
 
-const testFileStr = pathX + testFileName;
+const testFileStr = pathAssets + testFileName;
 const fs = require('fs');
 const coverageData = JSON.parse(fs.readFileSync('./assets/coverage/coverage-final.json', 'utf8'));
-const NEW_FILE = pathX + 'new-' + testFileName;
-const BUNDLE_FILE = pathX + 'dist/main.js';
-const NEW_FILE2 = pathX + 'new2-' + testFileName;
-const DIST_FILE = pathX + 'dist/new-' + testFileBase + '.min.js';
-const testFileStrNew = pathX + NEW_FILE;
-
+const NEW_FILE = pathAssets + 'new-' + testFileName;
+const BUNDLE_FILE = pathAssets + 'dist/main.js';
+const NEW_FILE2 = pathAssets + 'new2-' + testFileName;
+const testFileStrNew = pathAssets + NEW_FILE;
+const pathToDist = './../demo/new-foo.min.js'; // './assets/dist/new-foo.min.js';
+const DIST_FILE = pathToDist;
+// const DIST_FILE = pathAssets + 'dist/new-' + testFileBase + '.min.js';
 const updateIndexFile = () => {
     const fs2 = require('fs');
     const indexData = JSON.parse(fs2.readFileSync('./assets/dist/index.html', 'utf8'));
 }
 
 
-var testFile = fs.readFileSync(pathX + testFileName, 'utf8');
+var testFile = fs.readFileSync(pathAssets + testFileName, 'utf8');
 const getTargetData = (obj, testFileName) => {
     let key = '';
     let targetData = false;
@@ -761,11 +762,11 @@ rl.on('close', () => {
         const time2 = new Date().getTime();
         console.log(NEW_FILE2 + ' was copied to' + DIST_FILE);
         const sizeStart = getFileSize('./assets/foo.js').match(/(\d*)/)[0];
-        const sizeEnd = getFileSize('./assets/dist/new-foo.min.js').match(/(\d*)/)[0];
+        const sizeEnd = getFileSize(pathToDist).match(/(\d*)/)[0];
         const sizeDiff = (100 * sizeEnd) / sizeStart;
 
 
-        notifier.notify(' ❤️✔️ DONE ⌛' + ((time2 - time) / 1000) + ' 💾 ' + getFileSize('./assets/foo.js') + ' ⬇️ ' + getFileSize('./assets/dist/new-foo.min.js') + ' (' + sizeDiff + '%)' + '\n metrics: ✔️' + metrics.ok + '❌ ' + metrics.deleted + '⚠️ ' + metrics.potential);
+        notifier.notify(' ❤️✔️ DONE ⌛' + ((time2 - time) / 1000) + ' 💾 ' + getFileSize('./assets/foo.js') + ' ⬇️ ' + getFileSize(pathToDist) + ' (' + sizeDiff + '%)' + '\n metrics: ✔️' + metrics.ok + '❌ ' + metrics.deleted + '⚠️ ' + metrics.potential);
         console.log('reduced to: ' + sizeDiff)
 
 
