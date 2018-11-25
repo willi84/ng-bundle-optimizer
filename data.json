@@ -1,0 +1,10 @@
+{
+    "items": [{
+        "date": "2018-11-24 23:55:00",
+        "raw": "312",
+        "reduced": "248",
+        "minified": "125",
+        "gzip": "34.8",
+        "comment": "initial"
+    }]
+}

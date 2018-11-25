@@ -22,24 +22,24 @@ const path = require('path');
 const time = new Date().getTime();
 
 const updateLineStatus = (LOB) => {
-
+    
     let color = WHITE;
     switch (LOB.lineStatus) {
         case STATUS_ERROR:
-            color = RED;
-            metrics.error++;
-            break;
+        color = RED;
+        metrics.error++;
+        break;
         case STATUS_REMOVED:
-            color = YELLOW;
-            // metrics.deleted++;
-            break;
+        color = YELLOW;
+        // metrics.deleted++;
+        break;
         case STATUS_POTENTIAL:
-            color = BLUE;
-            metrics.potential++;
-            break;
+        color = BLUE;
+        metrics.potential++;
+        break;
         default:
-            color = WHITE;
-            metrics.ok++;
+        color = WHITE;
+        metrics.ok++;
     }
     if (showOutput) {
         readline.cursorTo(process.stdout, 0);
@@ -49,7 +49,7 @@ const updateLineStatus = (LOB) => {
             '| deleted: ' + colorize(YELLOW, metrics.deleted.toString()) +
             '| potential: ' + colorize(BLUE, metrics.potential.toString()) +
             '| error: ' + colorize(RED, metrics.error.toString())
-        );
+            );
     }
 }
 
@@ -80,13 +80,13 @@ const getFileSize = (file) => {
 const uglifyFile = (file, newFile) => {
     const { exec } = require('child_process');
     exec('uglifyjs ' + file + ' -o ' + newFile, (error, stdout, stderr) => {
-    if (error) {
-        console.error(`exec error: ${error}`);
-        return;
+        if (error) {
+            console.error(`exec error: ${error}`);
+            return;
     }
     console.log(`file uglified ${stdout}`);
-    });
-    
+});
+
 }
 
 
@@ -217,7 +217,7 @@ const getRemovableLines = (obj, objCov, type) => {
             if (objCov[recordID] === 0) {
                 removeLinesArray.push(loc)
                 countRecords++;
-
+                
             }
         })
     }
@@ -249,7 +249,7 @@ let sRemoveLines = getRemovableLines(sObj, sObjCov, 's');
 let sRemoveLinesOrder = [];
 
 // order lines: sRemoveLines.forEach(item => {
-
+    
 // reset file
 if (fs.existsSync(NEW_FILE)) {
     fs.unlinkSync(NEW_FILE);
@@ -305,51 +305,51 @@ const checkLine = (type, line) => {
     let pattern = /^.*$/;
     switch (type) {
         case MULTILINE_IF_OPEN:
-            pattern = /^(\s*)(if|for)\s\([^\)]*$/;
-            break;
+        pattern = /^(\s*)(if|for)\s\([^\)]*$/;
+        break;
         case MULTILINE_IF_CLOSE:
             pattern = /^(\s*)\)\s*\{\s*$/;
-            break;
+                break;
         case HAS_IF:
-            pattern = /^(\s*)if\s*\(.*\)\s*\{\s*$/;
+        pattern = /^(\s*)if\s*\(.*\)\s*\{\s*$/;
             // pattern = /^(\s*)if\s*\([^\)]*\)\s*\{.*$/;
             break;
-        case HAS_ELSE:
+            case HAS_ELSE:
             pattern = /^(\s*)\}\s*else\s*\{$/;
-            break;
+                break;
         case HAS_ELSE_IF:
-            pattern = /^(\s*)\}\s*else\s*if\s*\{\s*$/;
+        pattern = /^(\s*)\}\s*else\s*if\s*\{\s*$/;
             break;
         case HAS_END_IF:
-            pattern = /^(\s*)\}$/;
-            break;
+        pattern = /^(\s*)\}$/;
+        break;
         case HAS_FOR:
-            pattern = /^(\s*)(for|while)\s*\(.*\)\s*\{\s*$/;
+        pattern = /^(\s*)(for|while)\s*\(.*\)\s*\{\s*$/;
             // pattern = /^(\s*)for\s*\([^\;]*\;[^\;]*\;[^\;]*\)\s*\{.*$/;
             break;
-        case IS_PROTOTYPE:
-                pattern = /^\s*[^\.]*\.prototype\.[^\s]*\s*\=\s*function\([^\)]*\)\s*\{\s*$/
+            case IS_PROTOTYPE:
+            pattern = /^\s*[^\.]*\.prototype\.[^\s]*\s*\=\s*function\([^\)]*\)\s*\{\s*$/
                 break;
-        case HAS_END_PROTOTYPE:
-            pattern = /^\s*\}\;\s*$/;
-            break;
-        case END_FOR:
-            pattern = /^(\s*)\}$/;
-            break;
-    }
-
-    check.matchDetail = line.match(pattern);
-    check.match = (check.matchDetail && check.matchDetail.length > 0);
-    return check.match;
-}
-const getIndentation = (line) => {
-    let result = line.match(/^(\s*)/);
+                case HAS_END_PROTOTYPE:
+                pattern = /^\s*\}\;\s*$/;
+                break;
+                case END_FOR:
+                pattern = /^(\s*)\}$/;
+                break;
+            }
+            
+            check.matchDetail = line.match(pattern);
+            check.match = (check.matchDetail && check.matchDetail.length > 0);
+            return check.match;
+        }
+        const getIndentation = (line) => {
+            let result = line.match(/^(\s*)/);
     return result[1].length;
 }
 
 
 class DeleteObject {
-
+    
     indention: Array<Number>;
     constructor() {
         this.indention = [];
@@ -381,58 +381,62 @@ class DeleteObject {
     contains(value: number) {
         let index = this.indention.indexOf(value);
         // if(index >= 0){
-        //     return true;
-        // }
-        return index;
+            //     return true;
+            // }
+            return index;
+        }
+        getAll() {
+            return this.indention;
+        }
+        delete(index: number) {
+            delete this.indention[index];
+        }
     }
-    getAll() {
-        return this.indention;
-    }
-    delete(index: number) {
-        delete this.indention[index];
-    }
-}
-class LineObject {
-    newLine: String = '';
-    deleteStatus: String = '';
-    lineStatus: Number = STATUS_OK;
-    constructor(
+    class LineObject {
+        newLine: String = '';
+        deleteStatus: String = '';
+        lineStatus: Number = STATUS_OK;
+        constructor(
         public line: String
         // public newLine: String, public deleteStatus: String, public lineStatus: Number
-    ) {
-        this.line = line;
-        this.newLine = line;
+        ) {
+            this.line = line;
+            this.newLine = line;
+        }
+        check() {
+            
+        }
+        update(newLine?: String, deleteStatus?: String, lineStatus?: Number) {
+            this.newLine = this.newLine !== newLine ? newLine : this.newLine;
+            this.deleteStatus = this.deleteStatus !== deleteStatus ? deleteStatus : this.deleteStatus;
+            this.lineStatus = this.lineStatus !== lineStatus ? lineStatus : this.lineStatus;
+        }
     }
-    check() {
-
-    }
-    update(newLine?: String, deleteStatus?: String, lineStatus?: Number) {
-        this.newLine = this.newLine !== newLine ? newLine : this.newLine;
-        this.deleteStatus = this.deleteStatus !== deleteStatus ? deleteStatus : this.deleteStatus;
-        this.lineStatus = this.lineStatus !== lineStatus ? lineStatus : this.lineStatus;
-    }
-}
-let DOB = new DeleteObject();
-// let DOB = new DeleteObject(0);
-
-const analyze = (line) => {
-    let LOB = new LineObject(line);
-    // LOB.lineStatus = STATUS_OK;
-    // let start = sRemoveLines[next];
-
-    // todo: einzeiler löschen, wenn start/ende oder fnDelete not running
-    if (cntr === 0) {
-        nextDeletableLine = sRemoveLines[nextDeletableLine];
-    }
-    // let DOB.update(0)
-    if (cntr++ >= 0) {
-        //        rewriteElse = cntr < 1533 || cntr > 1480 ? false : true;
-        //DELETEABLE line detected
-        if (nextDeletableLine['start']['line'] === (cntr+1) && !DOB.active() ) {
+    let DOB = new DeleteObject();
+    // let DOB = new DeleteObject(0);
+    let deletePrototypeHead = true;
+    const analyze = (line) => {
+        let LOB = new LineObject(line);
+        // LOB.lineStatus = STATUS_OK;
+        // let start = sRemoveLines[next];
+        
+        // todo: einzeiler löschen, wenn start/ende oder fnDelete not running
+        if (cntr === 0) {
+            nextDeletableLine = sRemoveLines[nextDeletableLine];
+        }
+        // let DOB.update(0)
+        if (cntr++ >= 0) {
+            // let deletePrototypeHead = true; //cntr < 6010 || cntr > 9994;
+            //        rewriteElse = cntr < 1533 || cntr > 1480 ? false : true;
+            //DELETEABLE line detected
+            if (nextDeletableLine['start']['line'] === (cntr+1) && !DOB.active() ) {
             //e.prototype._truncate = function(e) {
                 // 9100 - 9500 => 1x non wokring + löschet element
                 if (checkLine(IS_PROTOTYPE, line) && !DOB.active() && (cntr < 6515 || (cntr > 6530 && cntr < 9350) || cntr > 9405 )) {
-                    LOB.update(line, '#DPF', STATUS_ERROR);
+                    if(line.match(/(_loadComponent|applyToHost)/)){
+                        deletePrototypeHead = false;
+                    }
+                    LOB.update(deletePrototypeHead ?  '' : line, '#DPF', STATUS_ERROR);
                     DOB.update(getIndentation(line));
                             // deleteIfExpression = line;
                             // LOB.update(line, '#99', STATUS_ERROR);
@@ -582,7 +586,7 @@ const analyze = (line) => {
                         deleteIfExpression = '';
                         DOB.reset();
                         forceDelete = false;
-                        LOB.update(line, "#EPF", STATUS_POTENTIAL);
+                        LOB.update(deletePrototypeHead ?  '' : line, "#EPF", STATUS_POTENTIAL);
                     }
                 
                 } else if (checkLine(HAS_END_IF, line)) {
