@@ -282,74 +282,24 @@ let lineStatus = 0;
 let deleteIfExpression = '';
 let startMultiline = false;
 
-const MULTILINE_IF_OPEN = "open-multiline-if";
-const MULTILINE_IF_CLOSE = "close-multiline-if";
-const HAS_IF = "if";
-const HAS_ELSE = "else";
-const HAS_ELSE_IF = "else-if"
-const HAS_END_IF = "end-if";
-const HAS_FOR = "has-for";
-const HAS_WHILE = "has-while";
-const END_FOR = "end-for";
-const IS_PROTOTYPE = "is-prototype";
-const HAS_END_PROTOTYPE = "end-prototype";
+const IF = /^(\s*)if\s*\(.*\)\s*\{\s*$/;
+const MULTILINE_IF_OPEN = /^(\s*)(if|for)\s\([^\)]*$/;
+const MULTILINE_IF_CLOSE = /^(\s*)\)\s*\{\s*$/;
+const ELSE = /^(\s*)\}\s*else\s*\{$/;
+const ELSE_IF = /^(\s*)\}\s*else\s*if\s*\{\s*$/;
+const END_IF = /^(\s*)\}$/;
+const FOR = /^(\s*)(for|while)\s*\(.*\)\s*\{\s*$/;
+const PROTOTYPE = /^\s*[^\.]*\.prototype\.[^\s]*\s*\=\s*function\([^\)]*\)\s*\{\s*$/
+const END_PROTOTYPE = /^\s*\}\;\s*$/;
+const END_FOR = /^(\s*)\}$/;
 
 
-
-
-const checkLine = (type, line) => {
-    let check = {
-        match: false,
-        matchDetail: []
-    }
-    let pattern = /^.*$/;
-    switch (type) {
-        case MULTILINE_IF_OPEN:
-        pattern = /^(\s*)(if|for)\s\([^\)]*$/;
-        break;
-        case MULTILINE_IF_CLOSE:
-            pattern = /^(\s*)\)\s*\{\s*$/;
-                break;
-        case HAS_IF:
-        pattern = /^(\s*)if\s*\(.*\)\s*\{\s*$/;
-            // pattern = /^(\s*)if\s*\([^\)]*\)\s*\{.*$/;
-            break;
-            case HAS_ELSE:
-            pattern = /^(\s*)\}\s*else\s*\{$/;
-                break;
-        case HAS_ELSE_IF:
-        pattern = /^(\s*)\}\s*else\s*if\s*\{\s*$/;
-            break;
-        case HAS_END_IF:
-        pattern = /^(\s*)\}$/;
-        break;
-        case HAS_FOR:
-        pattern = /^(\s*)(for|while)\s*\(.*\)\s*\{\s*$/;
-            // pattern = /^(\s*)for\s*\([^\;]*\;[^\;]*\;[^\;]*\)\s*\{.*$/;
-            break;
-            case IS_PROTOTYPE:
-            pattern = /^\s*[^\.]*\.prototype\.[^\s]*\s*\=\s*function\([^\)]*\)\s*\{\s*$/
-                break;
-                case HAS_END_PROTOTYPE:
-                pattern = /^\s*\}\;\s*$/;
-                break;
-                case END_FOR:
-                pattern = /^(\s*)\}$/;
-                break;
-            }
-            
-            check.matchDetail = line.match(pattern);
-            check.match = (check.matchDetail && check.matchDetail.length > 0);
-            return check.match;
-        }
-        const getIndentation = (line) => {
-            let result = line.match(/^(\s*)/);
+const getIndentation = (line) => {
+    let result = line.match(/^(\s*)/);
     return result[1].length;
 }
 
-
 class DeleteObject {
-    
     indention: Array<Number>;
     constructor() {
         this.indention = [];
@@ -403,8 +353,15 @@ class DeleteObject {
             this.line = line;
             this.newLine = line;
         }
-        check() {
-            
+        has(type: RegExp) {
+            let check = {
+                match: false,
+                matchDetail: []
+            }
+            let pattern = type;
+            check.matchDetail = this.line.match(pattern);
+            check.match = (check.matchDetail && check.matchDetail.length > 0);
+            return check.match;
         }
         update(newLine?: String, deleteStatus?: String, lineStatus?: Number) {
             this.newLine = this.newLine !== newLine ? newLine : this.newLine;
@@ -426,13 +383,11 @@ class DeleteObject {
         }
         // let DOB.update(0)
         if (cntr++ >= 0) {
-            // let deletePrototypeHead = true; //cntr < 6010 || cntr > 9994;
-            //        rewriteElse = cntr < 1533 || cntr > 1480 ? false : true;
             //DELETEABLE line detected
             if (nextDeletableLine['start']['line'] === (cntr+1) && !DOB.active() ) {
             //e.prototype._truncate = function(e) {
                 // 9100 - 9500 => 1x non wokring + löschet element
-                if (checkLine(IS_PROTOTYPE, line) && !DOB.active() && (cntr < 6515 || (cntr > 6530 && cntr < 9350) || cntr > 9405 )) {
+                if (LOB.has(PROTOTYPE) && !DOB.active() && (cntr < 6515 || (cntr > 6530 && cntr < 9350) || cntr > 9405 )) {
                     if(line.match(/(_loadComponent|applyToHost)/)){
                         deletePrototypeHead = false;
                     }
@@ -442,7 +397,7 @@ class DeleteObject {
                             // LOB.update(line, '#99', STATUS_ERROR);
                             forceDelete = true;
 
-                } else if(checkLine(IS_PROTOTYPE, line)) {
+                } else if(LOB.has(PROTOTYPE)) {
                     LOB.update(line, '#PF', STATUS_ERROR);
 
                 } else {
@@ -487,12 +442,12 @@ class DeleteObject {
                     } else {
 
                         // TODO? 1st if(){   => 2nd if( 
-                        if (checkLine(HAS_IF, line) && !DOB.active()) {
+                        if (LOB.has(IF) && !DOB.active()) {
                             DOB.update(getIndentation(line));
                             deleteIfExpression = line;
                             LOB.update(line, '#99', STATUS_ERROR);
                             forceDelete = true;
-                        } else if (checkLine(HAS_ELSE, line) && !DOB.active()) {
+                        } else if (LOB.has(ELSE) && !DOB.active()) {
                             LOB.update(line, '#100', STATUS_ERROR);
                         } else {
                             LOB.update(line, '#2', STATUS_ERROR);
@@ -539,7 +494,7 @@ class DeleteObject {
                 if(forceDelete && getIndentation(line) !== DOB.first()){
                     LOB.update('', '#FD', STATUS_ERROR);
                 } else {
-                if (checkLine(HAS_ELSE_IF, line)) {
+                if (LOB.has(ELSE_IF)) {
                     //TODO
                     if (nextDeletableLine['start']['line'] === cntr) {
                         deleteIfExpression = '';
@@ -550,7 +505,7 @@ class DeleteObject {
                         DOB.reset();
                         LOB.update(line, '#96 END', STATUS_POTENTIAL);
                     }
-                } else if (checkLine(HAS_ELSE, line)) {
+                } else if (LOB.has(ELSE)) {
                     if (nextDeletableLine['start']['line'] === cntr) {
                         deleteIfExpression = '';
                         DOB.reset();
@@ -562,14 +517,14 @@ class DeleteObject {
                         LOB.update(line, `#98 END ${DOB.first()}`, STATUS_POTENTIAL);
                     }
 
-                } else if (checkLine(HAS_END_PROTOTYPE, line)) {
+                } else if (LOB.has(END_PROTOTYPE)) {
                     if (getIndentation(line) === DOB.first()) {
                         deleteIfExpression = '';
                         DOB.reset();
                         forceDelete = false;
                         LOB.update(deletePrototypeHead ?  '' : line, "#EPF", STATUS_POTENTIAL);
                     }
-                } else if (checkLine(HAS_END_IF, line)) {
+                } else if (LOB.has(END_IF)) {
                     if (getIndentation(line) === DOB.first()) {
                         deleteIfExpression = '';
                         DOB.reset();
@@ -577,13 +532,13 @@ class DeleteObject {
                         LOB.update(line, "#99 ENDX", STATUS_POTENTIAL);
                     }
                     else {
-                        if (checkLine(END_FOR, line) && (getIndentation(line) == DOB.last())) {
+                        if (LOB.has(END_FOR) && (getIndentation(line) == DOB.last())) {
                             LOB.update('', "#10.1", STATUS_POTENTIAL);
                             if (getIndentation(line) > DOB.first()) {
                                 DOB.pop();
                             }
                         } else {
-                            if (checkLine(END_FOR, line) && DOB.contains(getIndentation(line)) > 0) {
+                            if (LOB.has(END_FOR) && DOB.contains(getIndentation(line)) > 0) {
                                 DOB.delete(DOB.contains(getIndentation(line)));
                                 LOB.update('', "#10a", STATUS_REMOVED);
                             } else {
@@ -598,25 +553,25 @@ class DeleteObject {
                         }
                     }
                 } else {
-                    if (checkLine(HAS_IF, line)) {
+                    if (LOB.has(IF)) {
                         LOB.update(line, "#101", STATUS_POTENTIAL);
 
-                    } else if (checkLine(HAS_ELSE, line)) {
+                    } else if (LOB.has(ELSE)) {
                         LOB.update(line, "#102", STATUS_POTENTIAL);
 
                     } else {
                         if (!startMultiline) {
-                            if (checkLine(MULTILINE_IF_OPEN, line)) {
+                            if (LOB.has(MULTILINE_IF_OPEN)) {
                                 startMultiline = true;
                                 deleteIfExpression = line;
                                 LOB.update(line, "#12a", STATUS_POTENTIAL);
                             } else {
-                                if (checkLine(HAS_END_IF, line) && (getIndentation(line) === DOB.first())) {
+                                if (LOB.has(END_IF) && (getIndentation(line) === DOB.first())) {
                                     deleteIfExpression = '';
                                     DOB.reset();
                                     LOB.update('', "#12b END", STATUS_REMOVED);
                                 } else {
-                                    if (checkLine(HAS_FOR, line) && DOB.active()) {
+                                    if (LOB.has(FOR) && DOB.active()) {
                                         LOB.update('', "#12b1", STATUS_POTENTIAL);
                                         if (getIndentation(line) > DOB.first()) {
                                             DOB.update(getIndentation(line))
@@ -627,7 +582,7 @@ class DeleteObject {
                                 }
                             }
                         } else {
-                            if (checkLine(MULTILINE_IF_CLOSE, line)) {
+                            if (LOB.has(MULTILINE_IF_CLOSE)) {
                                 startMultiline = false;
                                 if (!DOB.active) {
                                     DOB.update(getIndentation(line))
