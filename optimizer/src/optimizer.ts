@@ -77,6 +77,17 @@ const getFileSize = (file) => {
     const size = ls.stdout.toString().match(/^([^\s])*/);
     return size[0];
 }
+const uglifyFile = (file, newFile) => {
+    const { exec } = require('child_process');
+    exec('uglifyjs ' + file + ' -o ' + newFile, (error, stdout, stderr) => {
+    if (error) {
+        console.error(`exec error: ${error}`);
+        return;
+    }
+    console.log(`file uglified ${stdout}`);
+    });
+    
+}
 
 
 let countDeleteMe = 0;
@@ -95,7 +106,8 @@ const NEW_FILE = pathAssets + 'new-' + testFileName;
 const BUNDLE_FILE = pathAssets + 'dist/main.js';
 const NEW_FILE2 = pathAssets + 'new2-' + testFileName;
 const testFileStrNew = pathAssets + NEW_FILE;
-const pathToDist = './../demo/new-foo.min.js'; // './assets/dist/new-foo.min.js';
+const pathToDist = './../demo/dev/new-foo.js'; // './assets/dist/new-foo.min.js';
+const MIN_FILE = './../demo/prod/new-foo.min.js';
 const DIST_FILE = pathToDist;
 // const DIST_FILE = pathAssets + 'dist/new-' + testFileBase + '.min.js';
 const updateIndexFile = () => {
@@ -754,7 +766,7 @@ if (!noRun) {
 prevLine = '';
 rl.on('close', () => {
 
-    console.log('compress');
+    // console.log('compress');
     var compressor = require('node-minify');
 
     fs.copyFile(NEW_FILE, DIST_FILE, (err) => {
@@ -765,6 +777,7 @@ rl.on('close', () => {
         const sizeEnd = getFileSize(pathToDist).match(/(\d*)/)[0];
         const sizeDiff = (100 * sizeEnd) / sizeStart;
 
+        uglifyFile(DIST_FILE, MIN_FILE);
 
         notifier.notify(' ❤️✔️ DONE ⌛' + ((time2 - time) / 1000) + ' 💾 ' + getFileSize('./assets/foo.js') + ' ⬇️ ' + getFileSize(pathToDist) + ' (' + sizeDiff + '%)' + '\n metrics: ✔️' + metrics.ok + '❌ ' + metrics.deleted + '⚠️ ' + metrics.potential);
         console.log('reduced to: ' + sizeDiff)

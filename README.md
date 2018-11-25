@@ -1,7 +1,8 @@
 # ng-bundle-optimizer
 Reducing bundle size with the help of (unit) tests
 
-[Demo](https://willi84.github.io/ng-bundle-optimizer/demo/)
+[Demo (minified)](https://willi84.github.io/ng-bundle-optimizer/demo/prod)
+[Demo (raw for dev)](https://willi84.github.io/ng-bundle-optimizer/demo/dev)
 
 # current metrics
 of main bundle (called new-foo.min.js)
