@@ -7,8 +7,8 @@ const MIN = 0;
 const MAX = 2010;
 let noRun = false;
 let showOutput = true;
-let showDeleteStatus = false;
-let showDelete = false;
+let showDeleteStatus = true;
+let showDelete = true;
 let rewriteElse = true;
 let forceDelete = false;
 let metrics = {
@@ -481,25 +481,17 @@ class DeleteObject {
                                     }
                                 }
                             }
-                            // writeNewLine(fs, NEW_FILE, line + '\n', false);
 
                         }
 
                     } else {
 
-                        // 1st if(){   => 2nd if( 
-                        // const ifCheck = line.match(/^(\s*)if\s*\([^\)]*\)\s*\{.*$/);
-                        //     const elseCheck = line.match(/^(\s*)\}\s*else\s*\{$/);
-
-                        //TODO let ifCheck2 = line.match(/^(\s*)if\s*\(*\s*/)
-                        // DOB.active()
+                        // TODO? 1st if(){   => 2nd if( 
                         if (checkLine(HAS_IF, line) && !DOB.active()) {
                             DOB.update(getIndentation(line));
                             deleteIfExpression = line;
                             LOB.update(line, '#99', STATUS_ERROR);
                             forceDelete = true;
-                            // let newLine = rewriteElse ? '' : line;
-                            // LOB.update(newLine, '#99', STATUS_REMOVED);
                         } else if (checkLine(HAS_ELSE, line) && !DOB.active()) {
                             LOB.update(line, '#100', STATUS_ERROR);
                         } else {
@@ -568,17 +560,6 @@ class DeleteObject {
                         deleteIfExpression = correctIndention ? '' : deleteIfExpression;
                         correctIndention ? DOB.reset() : DOB.update(DOB.first());
                         LOB.update(line, `#98 END ${DOB.first()}`, STATUS_POTENTIAL);
-                        //if cntr === 5003
-                        // let newLine = line;
-                        // if (rewriteElse) {
-                        //     newLine = correctIndention && deleteIfExpression !== '' ? deleteIfExpression.replace("if (", "if (!(").replace(") {", ")) {") : '';
-                        // }
-                        // let updateLine = correctIndention ? deleteIfExpression.replace("if (", "if (!(" ).replace(") {", ")) {")  : '';
-                        // let updateLine = correctIndention ? line : '';
-                        // const ifStatemnt = deleteIfExpression.match(/^(\s*)if(/)
-
-                        // DOB.update(correctIndention ? 0 : DOB.first());
-                        // DOB.first() = correctIndention ? 0 : DOB.first();
                     }
 
                 } else if (checkLine(HAS_END_PROTOTYPE, line)) {
@@ -588,22 +569,12 @@ class DeleteObject {
                         forceDelete = false;
                         LOB.update(deletePrototypeHead ?  '' : line, "#EPF", STATUS_POTENTIAL);
                     }
-                
                 } else if (checkLine(HAS_END_IF, line)) {
                     if (getIndentation(line) === DOB.first()) {
                         deleteIfExpression = '';
                         DOB.reset();
                         forceDelete = false;
                         LOB.update(line, "#99 ENDX", STATUS_POTENTIAL);
-                        // console.log(DOB.getAll() + "---"+ rewriteElse)
-                        // let newLine = rewriteElse || forceDelete ? '' : line;
-                        // if(forceDelete){
-                        //     LOB.update(newLine, "#99 ENDY", STATUS_REMOVED);
-                        //     forceDelete = forceDelete === true ? false : forceDelete;
-                        // } else {
-                        //     LOB.update(newLine, "#99 ENDX", STATUS_REMOVED);
-
-                        // }
                     }
                     else {
                         if (checkLine(END_FOR, line) && (getIndentation(line) == DOB.last())) {
@@ -617,17 +588,6 @@ class DeleteObject {
                                 LOB.update('', "#10a", STATUS_REMOVED);
                             } else {
 
-                                // // looks for closing }
-                                // if (cntr === 4755 || cntr === 7589) {
-                                //     LOB.update('', "#10c", STATUS_REMOVED);  // TODO: .workaournd
-                                // } else {
-                                //     if (checkLine(END_FOR, line) && DOB.contains(getIndentation(line))) {
-                                //         DOB.delete(DOB.contains(getIndentation(line)));
-                                //         LOB.update('', "#10f", STATUS_REMOVED);
-                                //     } else {
-                                //         LOB.update(line, "#10b", STATUS_POTENTIAL); //?
-                                //     }
-                                // }
                                 // looks for closing }
                                 if (cntr === 4755 || cntr === 7589) {
                                     LOB.update('', "#10c", STATUS_REMOVED);  // TODO: .workaournd
@@ -709,19 +669,6 @@ class DeleteObject {
                 }
             } else {
                 // NOP
-                // LOB.update(line, '#xx', STATUS_OK);
-                // if(!DOB.active() ){
-
-                //     if (checkLine(HAS_FOR, line) && nextDeletableLine['start']['line'] === (cntr +1)) {
-                //         LOB.update(line, "#yy", STATUS_POTENTIAL);
-                //         // if (getIndentation(line) > DOB.first()) {
-                //             DOB.update(getIndentation(line));
-                //             console.log(DOB.getAll());
-                //             forceDelete = false;
-                //             // rewriteElse = true; //TODO:  überflüssig machen
-                //         // }
-                //     }
-                // }
             }
 
         }
@@ -770,7 +717,6 @@ if (!noRun) {
 prevLine = '';
 rl.on('close', () => {
 
-    // console.log('compress');
     var compressor = require('node-minify');
 
     fs.copyFile(NEW_FILE, DIST_FILE, (err) => {
@@ -810,4 +756,3 @@ fs3.readFile(startFile, 'utf8', function (err,data) {
 
     });
 });
-// console.log('copy file');
