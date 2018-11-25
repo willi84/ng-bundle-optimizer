@@ -1,15 +1,15 @@
 # ng-bundle-optimizer
 Reducing bundle size with the help of (unit) tests
 
+
 [Demo (minified)](https://willi84.github.io/ng-bundle-optimizer/demo/prod)
 [Demo (raw for dev)](https://willi84.github.io/ng-bundle-optimizer/demo/dev)
 
 # current metrics
-of main bundle (called new-foo.min.js)
+main bundle: new-foo.min.js
 
-| Date        | unzipped size   | reduced to  | percentage of | gzip (raw)   | gzip.min |
-| ----------- | --------------- | ----------- | ------------- | ------------ | -------- |
-| 24.11.2018  | 312 KB          | 248 KB      | 0.795%        | 44.7 kb      | 34.8 kb  |
+<img src="badge.svg">
+
 
 
 

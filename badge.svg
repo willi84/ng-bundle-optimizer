@@ -1,0 +1,123 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" width="250" height="125" viewBox="0 0 250 125" preserveAspectRatio="none" role="img" aria-labelledby="title  desc">
+  <title id="title">wercker status</title>
+  <desc id="desc">there are no builds</desc>
+
+<!-- bg 1st icon -->
+  <rect rx="2" width="100" height="25" fill="#943126"/>
+
+  <!-- bg 2nd icon -->
+  <rect y="25" width="100" height="25" fill="#EC7063"/>
+
+  <!-- bg 3rd icon -->
+  <rect y="50" width="100" height="25" fill="#F5B041"/>
+
+    <!-- bg 4th icon -->
+  <rect y="75" width="100" height="25" fill="#28B463  "/>
+      <!-- bg 5th icon -->
+  <rect y="100" width="100" height="25" fill="#196F3D"/>
+
+<!-- bg other icons -->
+  <!-- <rect rx="2" y="19" width="23" height="48" fill="#cdcdcd"/> -->
+  <!-- <rect x="21" width="124" height="66" fill="#f3f3f3"/> -->
+
+  <!-- <rect y="19" width="21" height="2" fill="#00f"/> -->
+  
+  <!-- <rect y="43" width="21" height="2" fill="#000"/> -->
+  <!-- <rect x="21" y="19" width="122" height="2" fill="#f3f3f3"/> -->
+
+  <!-- <rect x="19" width="4" height="21" fill="#b5b6b8"/> -->
+
+  <!-- seperator -->
+  <!-- <rect x="98" y="0" width="4" height="120" fill="yellow"/> -->
+
+  <!-- <rect x="22" width="1" height="67" fill="#acadae"/> -->
+
+  <!-- vert line-->
+  <rect x="249" width="1" height="125" fill="#838385"/>
+<rect x="0" width="1" height="125" fill="#838385"/>
+
+<!-- hor line -->
+    <rect x="0" width="250" height="1" fill="#838385"/>
+     <rect x="0" y="124" width="250" height="1" fill="#838385"/>
+     <rect x="99" y="24" width="150" height="1" fill="#838385"/>
+     <rect x="99" y="49" width="150" height="1" fill="#838385"/>
+     <rect x="99" y="74" width="150" height="1" fill="#838385"/>
+     <rect x="99" y="99" width="150" height="1" fill="#838385"/>
+
+  <!--
+    wercker
+  -->
+  <g fill="#fff" text-anchor="middle" font-family="Verdana,Geneva,sans-serif" font-size="14.5">
+    <!-- line 1 -->
+    <text x="60" y="17" fill="#fff" letter-spacing="1px">raw file</text>
+    <text x="60" y="42" fill="#fff" letter-spacing="1px">reduced</text>
+    <text x="60" y="67" fill="#fff" letter-spacing="1px">minified</text>
+    <text x="60" y="92" fill="#fff" letter-spacing="1px">gzip</text>
+    <text x="60" y="117" fill="#fff" letter-spacing="1px">goal</text>
+  </g>
+  <g fill="#fff" text-anchor="left" font-family="Verdana,Geneva,sans-serif" font-size="10">
+    <text x="170" y="42" fill="#777" letter-spacing="1px"> (79.49)%</text>
+    </g>
+  <g fill="#fff" text-anchor="left" font-family="Verdana,Geneva,sans-serif" font-size="14.5">
+    <!-- line 1 -->
+    <text x="110" y="42" fill="#777" letter-spacing="1px">248kB</text>
+    <text x="110" y="17" fill="#777" letter-spacing="1px">312kB</text>
+    <text x="110" y="67" fill="#777" letter-spacing="1px">125kB</text>
+    <text x="110" y="92" fill="#777" letter-spacing="1px">34.8kB</text>
+    <text x="110" y="117" fill="#777" letter-spacing="1px"> &lt; 2.7kB</text>
+  </g>
+
+  <!--
+     status no builds
+  -->
+  <!-- <g fill="#fff" font-family="Verdana,Geneva,sans-serif" font-size="12" font-style="italic">
+    <text x="28" y="40" fill="#a19c8e" >status</text>
+  </g>
+  <g fill="#fff" font-family="Verdana,Geneva,sans-serif" font-size="13" >
+    <text x="28" y="52" fill="#7b7565" >NO BUILDS</text>
+  </g>
+   -->
+
+  <!--
+    questionmark
+  -->
+  <!-- <g fill="#fff" text-anchor="middle" font-family="Trebuchet MS,sans-serif" font-size="17">
+    <text x="11" y="16" fill="#2c2f33">raw</text>
+  </g> -->
+
+  <!--
+    clock icon
+  -->
+  <!-- <g transform="translate(1,23)" stXyle="fill:#adadae;">
+    <path d="M10,3.531c-3.787,0-6.867,3.08-6.867,6.867c0,3.786,3.08,6.867,6.867,6.867c3.788,0,6.867-3.081,6.867-6.867
+      C16.867,6.611,13.788,3.531,10,3.531z M10,15.908c-3.038,0-5.51-2.472-5.51-5.51S6.962,4.887,10,4.887
+      c3.039,0,5.511,2.472,5.511,5.511S13.039,15.908,10,15.908z"/>
+    <polygon points="10.524,10.9 10.514,6.025 8.659,6.03 8.659,11.969 11.938,13.828 13.156,12.453   "/>
+  </g> -->
+
+  <!--
+    build icon
+  -->
+   <g transform="translate(1,0)" style="fill:#fff;">
+    <path d="M0 0h24v24H0z" fill="none"/>
+    <path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/>
+</g>
+ <g transform="translate(1,25)" style="fill:#fff;">
+    <path d="M0 0h24v24H0z" fill="none"/>
+    <path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/>
+</g>
+  <g transform="translate(1,50)" style="fill:#fff;">
+    <path d="M0 0h24v24H0z" fill="none"/>
+    <path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/>
+</g>
+  <g transform="translate(1,75)" style="fill:#fff;">
+    <path d="M0 0h24v24H0z" fill="none"/>
+    <path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/>
+</g>
+<g transform="translate(1,100)" style="fill:#fff;">
+    <path d="M0 0h24v24H0z" fill="none"/>
+    <path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/>
+</g>
+
+</svg>

@@ -779,8 +779,29 @@ rl.on('close', () => {
 
         uglifyFile(DIST_FILE, MIN_FILE);
 
+        const sizeGzip = '34.8';
+        const sizeMin = '125'
+
         notifier.notify(' ❤️✔️ DONE ⌛' + ((time2 - time) / 1000) + ' 💾 ' + getFileSize('./assets/foo.js') + ' ⬇️ ' + getFileSize(pathToDist) + ' (' + sizeDiff + '%)' + '\n metrics: ✔️' + metrics.ok + '❌ ' + metrics.deleted + '⚠️ ' + metrics.potential);
         console.log('reduced to: ' + sizeDiff)
+        var fs3 = require('fs')
+        let startFile = '../badge_raw.svg';
+        let endFile = '../badge.svg';
+fs3.readFile(startFile, 'utf8', function (err,data) {
+  if (err) {
+    return console.log(err);
+  }
+  data = data.replace(/\{\{file_raw\}\}/g, sizeStart);
+  data = data.replace(/\{\{file_red\}\}/g, sizeEnd);
+  data = data.replace(/\{\{file_min\}\}/g, sizeMin);
+  data = data.replace(/\{\{file_gzip\}\}/g, sizeGzip);
+  data = data.replace(/\{\{reduced_by\}\}/g, Math.round(sizeDiff * 100) / 100);
+  var result = data;
+
+  fs3.writeFile(endFile, result, 'utf8', function (err) {
+     if (err) return console.log(err);
+  });
+});
 
 
     });
