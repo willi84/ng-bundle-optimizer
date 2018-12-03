@@ -22,24 +22,24 @@ const path = require('path');
 const time = new Date().getTime();
 
 const updateLineStatus = (LOB) => {
-    
+
     let color = WHITE;
     switch (LOB.lineStatus) {
         case STATUS_ERROR:
-        color = RED;
-        metrics.error++;
-        break;
+            color = RED;
+            metrics.error++;
+            break;
         case STATUS_REMOVED:
-        color = YELLOW;
-        // metrics.deleted++;
-        break;
+            color = YELLOW;
+            // metrics.deleted++;
+            break;
         case STATUS_POTENTIAL:
-        color = BLUE;
-        metrics.potential++;
-        break;
+            color = BLUE;
+            metrics.potential++;
+            break;
         default:
-        color = WHITE;
-        metrics.ok++;
+            color = WHITE;
+            metrics.ok++;
     }
     if (showOutput) {
         readline.cursorTo(process.stdout, 0);
@@ -49,7 +49,7 @@ const updateLineStatus = (LOB) => {
             '| deleted: ' + colorize(YELLOW, metrics.deleted.toString()) +
             '| potential: ' + colorize(BLUE, metrics.potential.toString()) +
             '| error: ' + colorize(RED, metrics.error.toString())
-            );
+        );
     }
 }
 
@@ -83,9 +83,9 @@ const uglifyFile = (file, newFile) => {
         if (error) {
             console.error(`exec error: ${error}`);
             return;
-    }
-    console.log(`file uglified ${stdout}`);
-});
+        }
+        console.log(`file uglified ${stdout}`);
+    });
 
 }
 
@@ -217,7 +217,7 @@ const getRemovableLines = (obj, objCov, type) => {
             if (objCov[recordID] === 0) {
                 removeLinesArray.push(loc)
                 countRecords++;
-                
+
             }
         })
     }
@@ -249,7 +249,7 @@ let sRemoveLines = getRemovableLines(sObj, sObjCov, 's');
 let sRemoveLinesOrder = [];
 
 // order lines: sRemoveLines.forEach(item => {
-    
+
 // reset file
 if (fs.existsSync(NEW_FILE)) {
     fs.unlinkSync(NEW_FILE);
@@ -291,7 +291,8 @@ const FOR = /^(\s*)(for|while)\s*\(.*\)\s*\{\s*$/;
 const PROTOTYPE = /^\s*[^\.]*\.prototype\.[^\s]*\s*\=\s*function\([^\)]*\)\s*\{\s*$/
 const END_PROTOTYPE = /^\s*\}\;\s*$/;
 const END_FOR = /^(\s*)\}$/;
-const FUNCTION = /^\s*function\s[^\()]*\([^\)]*\)\s*\{$/
+const FUNCTION = /^\s*function\s[^\()]*\([^\)]*\)\s*\{$/;
+const END_IIFE = /^\s*\}\)\(\)\;\s*$/;
 
 class DeleteObject {
     indention: Array<Number>;
@@ -325,106 +326,127 @@ class DeleteObject {
     contains(value: number) {
         let index = this.indention.indexOf(value);
         // if(index >= 0){
-            //     return true;
-            // }
-            return index;
-        }
-        getAll() {
-            return this.indention;
-        }
-        delete(index: number) {
-            delete this.indention[index];
-        }
+        //     return true;
+        // }
+        return index;
     }
-    class LineObject {
-        newLine: String = '';
-        deleteStatus: String = '';
-        lineStatus: Number = STATUS_OK;
-        indentation: number;
-        constructor(
+    getAll() {
+        return this.indention;
+    }
+    delete(index: number) {
+        delete this.indention[index];
+    }
+}
+class LineObject {
+    newLine: String = '';
+    deleteStatus: String = '';
+    lineStatus: Number = STATUS_OK;
+    indentation: number;
+    constructor(
         public line: String
         // public newLine: String, public deleteStatus: String, public lineStatus: Number
-        ) {
-            this.line = line;
-            this.newLine = line;
-            this.indentation = this.getIndentation();
-        }
-        getIndentation(){
-            let result = this.line.match(/^(\s*)/);
-            return result[1].length;
-        }
-        has(type: RegExp) {
-            let check = {
-                match: false,
-                matchDetail: []
-            }
-            let pattern = type;
-            check.matchDetail = this.line.match(pattern);
-            check.match = (check.matchDetail && check.matchDetail.length > 0);
-            return check.match;
-        }
-        update(newLine?: String, deleteStatus?: String, lineStatus?: Number) {
-            this.newLine = this.newLine !== newLine ? newLine : this.newLine;
-            this.deleteStatus = this.deleteStatus !== deleteStatus ? deleteStatus : this.deleteStatus;
-            this.lineStatus = this.lineStatus !== lineStatus ? lineStatus : this.lineStatus;
-        }
+    ) {
+        this.line = line;
+        this.newLine = line;
+        this.indentation = this.getIndentation();
     }
-    let DOB = new DeleteObject();
-    // let DOB = new DeleteObject(0);
-    let deletePrototypeHead = true;
-    let forceDeleteElse = false;
-    const analyze = (line) => {
-        let LOB = new LineObject(line);
-        // LOB.lineStatus = STATUS_OK;
-        // let start = sRemoveLines[next];
-        
-        // todo: einzeiler löschen, wenn start/ende oder fnDelete not running
-        if (cntr === 0) {
-            nextDeletableLine = sRemoveLines[nextDeletableLine];
+    getIndentation() {
+        let result = this.line.match(/^(\s*)/);
+        return result[1].length;
+    }
+    has(type: RegExp) {
+        let check = {
+            match: false,
+            matchDetail: []
         }
-        // let DOB.update(0)
-        if (cntr++ >= 0) {
-            //DELETEABLE line detected
-            if (nextDeletableLine['start']['line'] === (cntr+1) && !DOB.active() && useLine(cntr) ) {
+        let pattern = type;
+        check.matchDetail = this.line.match(pattern);
+        check.match = (check.matchDetail && check.matchDetail.length > 0);
+        return check.match;
+    }
+    update(newLine?: String, deleteStatus?: String, lineStatus?: Number) {
+        this.newLine = this.newLine !== newLine ? newLine : this.newLine;
+        this.deleteStatus = this.deleteStatus !== deleteStatus ? deleteStatus : this.deleteStatus;
+        this.lineStatus = this.lineStatus !== lineStatus ? lineStatus : this.lineStatus;
+    }
+}
+let DOB = new DeleteObject();
+// let DOB = new DeleteObject(0);
+let deletePrototypeHead = true;
+let forceDeleteElse = false;
+let iifeDelete = false;
+let deleteFunction = false;
+const analyze = (line) => {
+    let LOB = new LineObject(line);
+    // LOB.lineStatus = STATUS_OK;
+    // let start = sRemoveLines[next];
+
+    // todo: einzeiler löschen, wenn start/ende oder fnDelete not running
+    if (cntr === 0) {
+        nextDeletableLine = sRemoveLines[nextDeletableLine];
+    }
+    // let DOB.update(0)
+    if (cntr++ >= 0) {
+        if (cntr === 3064) {
+            LOB.update(line, '#33', STATUS_REMOVED);
+            DOB.update(LOB.indentation);
+            forceDelete = true;
+        } else if (cntr === 9860 || cntr === 9989) { //|| cntr === 9972){
+            LOB.update(line, '#44', STATUS_REMOVED);
+            DOB.update(LOB.indentation);
+            forceDelete = true;
+            iifeDelete = true;
+        } else if (LOB.has(END_IIFE)) {
+            // })();
+            // forceDelete = false;
+            // DOB.reset();
+            LOB.update(line, '#45', STATUS_REMOVED);
+        } else { }
+        //DELETEABLE line detected
+        if (nextDeletableLine['start']['line'] === (cntr + 1) && !DOB.active() && useLine(cntr)) {
             //e.prototype._truncate = function(e) {
-                // 9100 - 9500 => 1x non wokring + löschet element
-                if (LOB.has(PROTOTYPE) && !DOB.active() && (cntr < 6515 || (cntr > 6530 && cntr < 9350) || cntr > 9405 )) {
-                    if(line.match(/(_loadComponent|applyToHost)/)){
-                        deletePrototypeHead = false;
-                    }
-                    LOB.update(deletePrototypeHead ?  '' : line, '#DPF', STATUS_ERROR);
-                    DOB.update(LOB.indentation);
-                            // deleteIfExpression = line;
-                            // LOB.update(line, '#99', STATUS_ERROR);
-                            forceDelete = true;
-
-                } else if(LOB.has(PROTOTYPE)) {
-                    LOB.update(line, '#PF', STATUS_ERROR);
-
-                } else {
-                    if(LOB.has(ELSE)){
-                        LOB.update('}', '#NDL_ELSE', STATUS_REMOVED);
-                        DOB.update(LOB.indentation);
-                        forceDelete = true;
-                        forceDeleteElse = true;
-                    } else if(LOB.has(FUNCTION) && (cntr < 7880 || cntr > 7883)){
-                        forceDelete = true;
-                        DOB.update(LOB.indentation);
-                        LOB.update(line, '#NDL_FN', STATUS_ERROR);
-                    } else if(LOB.has(FOR)){
-                        forceDelete = true;
-                        forceDeleteElse = true;
-                        DOB.update(LOB.indentation);
-                        LOB.update('', '#NDL_FOR', STATUS_REMOVED);
-                    // } else if(line.match(/^\s*(get|next)\:\s*function\(\)\s*\{.*$/)){
-                    //     // forceDelete = true;
-                    //     // forceDeleteElse = true;
-                    //     DOB.update(LOB.indentation);
-                    //     LOB.update('', '#NDL_get', STATUS_REMOVED);
-                    } else {
-                        LOB.update(line, '#NDL_XX', STATUS_ERROR);
-                    }
+            // 9100 - 9500 => 1x non wokring + löschet element
+            if (LOB.has(PROTOTYPE) && !DOB.active() && (cntr < 6515 || (cntr > 6530 && cntr < 9350) || cntr > 9405)) {
+                if (line.match(/(_loadComponent|applyToHost)/)) {
+                    deletePrototypeHead = false;
                 }
+                LOB.update(deletePrototypeHead ? '' : line, '#DPF', STATUS_ERROR);
+                DOB.update(LOB.indentation);
+                // deleteIfExpression = line;
+                // LOB.update(line, '#99', STATUS_ERROR);
+                forceDelete = true;
+
+            } else if (LOB.has(PROTOTYPE)) {
+                LOB.update(line, '#PF', STATUS_ERROR);
+
+            } else if (LOB.has(ELSE)) {
+                LOB.update('}', '#NDL_ELSE', STATUS_REMOVED);
+                DOB.update(LOB.indentation);
+                forceDelete = true;
+                forceDeleteElse = true;
+            } else if (LOB.has(FUNCTION) && (cntr < 7880 || cntr > 7883)) {
+                forceDelete = true;
+                DOB.update(LOB.indentation);
+                deleteFunction = false; // currently not deletable
+                LOB.update(deleteFunction ? '' : line, '#65 NDL_FN', STATUS_ERROR);
+                // deleteFunction = true;
+            } else if (LOB.has(FOR)) {
+                forceDelete = true;
+                forceDeleteElse = true;
+                DOB.update(LOB.indentation);
+                LOB.update('', '#NDL_FOR', STATUS_REMOVED);
+                // } else if(line.match(/^\s*(get|next)\:\s*function\(\)\s*\{.*$/)){
+                //     // forceDelete = true;
+                //     // forceDeleteElse = true;
+                //     DOB.update(LOB.indentation);
+                //     LOB.update('', '#NDL_get', STATUS_REMOVED);
+
+                // .*\..*\s\=\sfunction(.*)\s*\{//#NDL_XX
+            } else if (line.match(/^.*\..*\s\=\sfunction(.*)\s*\{$/)) {
+                LOB.update(line, '#NDL_FUNC', STATUS_ERROR);
+            } else {
+                LOB.update(line, '#NDL_XX', STATUS_ERROR);
+            }
         } else if (nextDeletableLine['start']['line'] === cntr && !DOB.active()) {
             if (useLine(cntr)) {
 
@@ -511,118 +533,131 @@ class DeleteObject {
         }
         else {
             if (DOB.active() && cntr !== 1781) {
-
-                if(forceDelete && LOB.indentation !== DOB.first()){
+                if (iifeDelete && LOB.has(END_IIFE) && LOB.indentation == DOB.first()) {
+                    iifeDelete = false;
+                    forceDelete = false;
+                    LOB.update('', '#46', STATUS_REMOVED);
+                    DOB.reset();
+                } else if (forceDelete && LOB.indentation !== DOB.first()) {
                     LOB.update('', '#FD', STATUS_ERROR);
                 } else {
-                if (LOB.has(ELSE_IF)) {
-                    //TODO
-                    if (nextDeletableLine['start']['line'] === cntr) {
-                        deleteIfExpression = '';
-                        LOB.update(line, '#95 END', STATUS_POTENTIAL);
-                    } else {
-                        let updateLine = deleteIfExpression.replace(/\}\s*else\s*/, "");
-                        deleteIfExpression = '';
-                        DOB.reset();
-                        LOB.update(line, '#96 END', STATUS_POTENTIAL);
-                    }
-                } else if (LOB.has(ELSE)) {
-                    if (nextDeletableLine['start']['line'] === cntr) {
-                        deleteIfExpression = '';
-                        DOB.reset();
-                        LOB.update(line, '#97 END', STATUS_POTENTIAL);
-                    } else {
-                        let correctIndention = (LOB.indentation === DOB.first());
-                        deleteIfExpression = correctIndention ? '' : deleteIfExpression;
-                        correctIndention ? DOB.reset() : DOB.update(DOB.first());
-                        LOB.update(line, `#98 END ${DOB.first()}`, STATUS_POTENTIAL);
-                    }
-
-                } else if (LOB.has(END_PROTOTYPE)) {
-                    if (LOB.indentation === DOB.first()) {
-                        deleteIfExpression = '';
-                        DOB.reset();
-                        forceDelete = false;
-                        LOB.update(deletePrototypeHead ?  '' : line, "#EPF", STATUS_POTENTIAL);
-                    }
-                } else if (LOB.has(END_IF)) {
-                    if (LOB.indentation === DOB.first()) {
-                        deleteIfExpression = '';
-                        DOB.reset();
-                        forceDelete = false;
-                        if(forceDeleteElse){
-
-                            LOB.update('', "#99 ENDX_REM", STATUS_REMOVED);
-                            forceDeleteElse = false;
+                    if (LOB.has(ELSE_IF)) {
+                        //TODO
+                        if (nextDeletableLine['start']['line'] === cntr) {
+                            deleteIfExpression = '';
+                            LOB.update(line, '#95 END', STATUS_POTENTIAL);
                         } else {
-
-                            LOB.update(line, "#99 ENDX", STATUS_POTENTIAL);
+                            let updateLine = deleteIfExpression.replace(/\}\s*else\s*/, "");
+                            deleteIfExpression = '';
+                            DOB.reset();
+                            LOB.update(line, '#96 END', STATUS_POTENTIAL);
                         }
-                    }
-                    else {
-                        if (LOB.has(END_FOR) && (LOB.indentation == DOB.last())) {
-                            LOB.update('', "#10.1", STATUS_POTENTIAL);
-                            if (LOB.indentation > DOB.first()) {
-                                DOB.pop();
-                            }
-                        } else {
-                            if (LOB.has(END_FOR) && DOB.contains(LOB.indentation) > 0) {
-                                DOB.delete(DOB.contains(LOB.indentation));
-                                LOB.update('', "#10a", STATUS_REMOVED);
-                            } else {
-
-                                // looks for closing }
-                                if (cntr === 4755 || cntr === 7589) {
-                                    LOB.update('', "#10c", STATUS_REMOVED);  // TODO: .workaournd
-                                } else {
-                                    LOB.update(line, "#10b", STATUS_POTENTIAL); //?
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    if (LOB.has(IF)) {
-                        LOB.update(line, "#101", STATUS_POTENTIAL);
-
                     } else if (LOB.has(ELSE)) {
-                        LOB.update(line, "#102", STATUS_POTENTIAL);
+                        if (nextDeletableLine['start']['line'] === cntr) {
+                            deleteIfExpression = '';
+                            DOB.reset();
+                            LOB.update(line, '#97 END', STATUS_POTENTIAL);
+                        } else {
+                            let correctIndention = (LOB.indentation === DOB.first());
+                            deleteIfExpression = correctIndention ? '' : deleteIfExpression;
+                            correctIndention ? DOB.reset() : DOB.update(DOB.first());
+                            LOB.update(line, `#98 END ${DOB.first()}`, STATUS_POTENTIAL);
+                        }
 
-                    } else {
-                        if (!startMultiline) {
-                            if (LOB.has(MULTILINE_IF_OPEN)) {
-                                startMultiline = true;
-                                deleteIfExpression = line;
-                                LOB.update(line, "#12a", STATUS_POTENTIAL);
+                    } else if (LOB.has(END_PROTOTYPE)) {
+                        if (LOB.indentation === DOB.first()) {
+                            deleteIfExpression = '';
+                            DOB.reset();
+                            forceDelete = false;
+                            LOB.update(deletePrototypeHead ? '' : line, "#EPF", STATUS_POTENTIAL);
+                        }
+                    } else if (LOB.has(END_IF)) {
+                        if (LOB.indentation === DOB.first()) {
+                            deleteIfExpression = '';
+                            DOB.reset();
+                            forceDelete = false;
+                            if (forceDeleteElse) {
+
+                                LOB.update('', "#99 ENDX_REM", STATUS_REMOVED);
+                                forceDeleteElse = false;
                             } else {
-                                if (LOB.has(END_IF) && (LOB.indentation === DOB.first())) {
-                                    deleteIfExpression = '';
-                                    DOB.reset();
-                                    LOB.update('', "#12b END", STATUS_REMOVED);
+                                if (deleteFunction) {
+                                    LOB.update('', "#66 NDL_FN_END", STATUS_POTENTIAL);
+                                    deleteFunction = false;
                                 } else {
-                                    if (LOB.has(FOR) && DOB.active()) {
-                                        LOB.update('', "#12b1", STATUS_POTENTIAL);
-                                        if (LOB.indentation > DOB.first()) {
-                                            DOB.update(LOB.indentation)
-                                        }
+                                    if(cntr === 3477){
+                                        LOB.update('', "#33 ENDX", STATUS_POTENTIAL);
+
                                     } else {
-                                        LOB.update('', "#12b", STATUS_REMOVED);
+                                        LOB.update(line, "#99 ENDX", STATUS_POTENTIAL);
                                     }
                                 }
                             }
-                        } else {
-                            if (LOB.has(MULTILINE_IF_CLOSE)) {
-                                startMultiline = false;
-                                if (!DOB.active) {
-                                    DOB.update(LOB.indentation)
+                        }
+                        else {
+                            if (LOB.has(END_FOR) && (LOB.indentation == DOB.last())) {
+                                LOB.update('', "#10.1", STATUS_POTENTIAL);
+                                if (LOB.indentation > DOB.first()) {
+                                    DOB.pop();
                                 }
-                                LOB.update(line, "#12c", STATUS_POTENTIAL);
                             } else {
-                                LOB.update(line, "#12d", STATUS_POTENTIAL);
+                                if (LOB.has(END_FOR) && DOB.contains(LOB.indentation) > 0) {
+                                    DOB.delete(DOB.contains(LOB.indentation));
+                                    LOB.update('', "#10a", STATUS_REMOVED);
+                                } else {
+
+                                    // looks for closing }
+                                    if (cntr === 4755 || cntr === 7589) {
+                                        LOB.update('', "#10c", STATUS_REMOVED);  // TODO: .workaournd
+                                    } else {
+                                        LOB.update(line, "#10b", STATUS_POTENTIAL); //?
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        if (LOB.has(IF)) {
+                            LOB.update(line, "#101", STATUS_POTENTIAL);
+
+                        } else if (LOB.has(ELSE)) {
+                            LOB.update(line, "#102", STATUS_POTENTIAL);
+
+                        } else {
+                            if (!startMultiline) {
+                                if (LOB.has(MULTILINE_IF_OPEN)) {
+                                    startMultiline = true;
+                                    deleteIfExpression = line;
+                                    LOB.update(line, "#12a", STATUS_POTENTIAL);
+                                } else {
+                                    if (LOB.has(END_IF) && (LOB.indentation === DOB.first())) {
+                                        deleteIfExpression = '';
+                                        DOB.reset();
+                                        LOB.update('', "#12b END", STATUS_REMOVED);
+                                    } else {
+                                        if (LOB.has(FOR) && DOB.active()) {
+                                            LOB.update('', "#12b1", STATUS_POTENTIAL);
+                                            if (LOB.indentation > DOB.first()) {
+                                                DOB.update(LOB.indentation)
+                                            }
+                                        } else {
+                                            LOB.update('', "#12b", STATUS_REMOVED);
+                                        }
+                                    }
+                                }
+                            } else {
+                                if (LOB.has(MULTILINE_IF_CLOSE)) {
+                                    startMultiline = false;
+                                    if (!DOB.active) {
+                                        DOB.update(LOB.indentation)
+                                    }
+                                    LOB.update(line, "#12c", STATUS_POTENTIAL);
+                                } else {
+                                    LOB.update(line, "#12d", STATUS_POTENTIAL);
+                                }
                             }
                         }
                     }
                 }
-            }
                 // create an Array of deletable stuff
                 const deletableEntry = sRemoveLines[indexDeletableLine];
                 if (deletableEntry) {
@@ -720,21 +755,21 @@ rl.on('close', () => {
         var fs3 = require('fs')
         let startFile = '../badge_raw.svg';
         let endFile = '../badge.svg';
-fs3.readFile(startFile, 'utf8', function (err,data) {
-  if (err) {
-    return console.log(err);
-  }
-  data = data.replace(/\{\{file_raw\}\}/g, sizeStart);
-  data = data.replace(/\{\{file_red\}\}/g, sizeEnd);
-  data = data.replace(/\{\{file_min\}\}/g, sizeMin);
-  data = data.replace(/\{\{file_gzip\}\}/g, sizeGzip);
-  data = data.replace(/\{\{reduced_by\}\}/g, Math.round(sizeDiff * 100) / 100);
-  var result = data;
+        fs3.readFile(startFile, 'utf8', function (err, data) {
+            if (err) {
+                return console.log(err);
+            }
+            data = data.replace(/\{\{file_raw\}\}/g, sizeStart);
+            data = data.replace(/\{\{file_red\}\}/g, sizeEnd);
+            data = data.replace(/\{\{file_min\}\}/g, sizeMin);
+            data = data.replace(/\{\{file_gzip\}\}/g, sizeGzip);
+            data = data.replace(/\{\{reduced_by\}\}/g, Math.round(sizeDiff * 100) / 100);
+            var result = data;
 
-  fs3.writeFile(endFile, result, 'utf8', function (err) {
-     if (err) return console.log(err);
-  });
-});
+            fs3.writeFile(endFile, result, 'utf8', function (err) {
+                if (err) return console.log(err);
+            });
+        });
 
 
     });
