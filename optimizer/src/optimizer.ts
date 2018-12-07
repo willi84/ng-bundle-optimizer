@@ -387,18 +387,26 @@ class ActionObject {
         this.lob = lineObject;
         this.dob = deleteObject;
     }
-    isActiveBlock(){
+    isStartActiveBlock(){
         return this.lob.indentation === this.dob.first();
+    }
+    isInsideActiveBlock(){
+        return this.lob.indentation > this.dob.first();
+    }
+    isActiveBlock(){
+        return this.lob.indentation === this.dob.last();
     }
     keepLine(statusText, statusCode?){
         let status = statusCode || STATUS.OK;
         this.lob.update(this.lob.line, statusText, status );
     }
+    deleteLine(statusText, statusCode?){
+        let status = statusCode || STATUS.REMOVED;
+        this.lob.update('', statusText, status);
+    }
 }
-    
-// AO.isActiveBlock()
+
 let DOB = new DeleteObject();
-// let DOB = new DeleteObject(0);
 let iifeBlocks = [];
 let deleteIifeBlocks = [114,159,181,251,281,311,328,344,600,691,814,830,860,912,1034,1061,1206,4204,4215,4249,4264,4286,4298,4488,4527,4573,4586,4609,4616,4621,4643,4663,4685,4780,4877,4901,4975,5025,5154,5318,5327,5386,5434,5518,5537,5548,5561,5970,6012,6052,6062,6283,6326,6375,6423,6478,6523,6683,6776,6806,6825,6926,7003,7026,7042,7209,7235,7384,7512,7670,7681,7713,7722,7818,8245,8257,8355,8359,8394,8919,8994,9120,9185,9199,9235,9250,9271,9320,9355,9467,9489,9586,9714,9730,9786,9860,9989,10088,10244,10257,10268,10279,10290,10301,10332]
 // cntr === 311 || cntr === 281 || cntr === 344 || cntr === 999999 || cntr === 9860 || cntr === 9989) { //|| cntr === 9972){
@@ -473,7 +481,7 @@ const analyze = (line) => {
                 DOB.forceDelete = true;
                 DOB.forceDeleteElse = true;
                 DOB.update(LOB.indentation);
-                LOB.update('', '#NDL_FOR', STATUS.REMOVED);
+                AO.deleteLine('#NDL_FOR');
                
             } else if (line.match(/^.*\..*\s\=\sfunction(.*)\s*\{$/)) {
                 AO.keepLine('#NDL_FUNC', STATUS.ERROR);
@@ -505,7 +513,7 @@ const analyze = (line) => {
                                 else {
                                     // simpleDeletableLine
                                     if (cntr < 6800 || cntr > 6810) {
-                                        LOB.update('', '#00', STATUS.REMOVED);
+                                        AO.deleteLine('#00');
                                     }
                                     else {
                                         AO.keepLine('#00x', STATUS.POTENTIAL);
@@ -564,51 +572,51 @@ const analyze = (line) => {
         }
         else {
             if (DOB.active() && cntr !== 1781) {
-                if (DOB.iifeDelete && LOB.has(END_IIFE) && AO.isActiveBlock()) {
+                if (DOB.iifeDelete && LOB.has(END_IIFE) && AO.isStartActiveBlock()) {
                     DOB.iifeDelete = false;
                     DOB.forceDelete = false;
-                    LOB.update('', '#46', STATUS.REMOVED);
+                    AO.deleteLine('#46');
                     DOB.reset();
-                } else if (DOB.forceDelete && LOB.indentation !== DOB.first()) {
-                    LOB.update('', '#FD', STATUS.ERROR);
+                } else if (DOB.forceDelete && !AO.isStartActiveBlock()) {
+                    AO.deleteLine('#FD', STATUS.ERROR);
                 } else {
                     if (LOB.has(ELSE_IF)) {
                         // TODO
                     } else if (LOB.has(ELSE)) {
                         if (DOB.getNextLine()  === cntr) {
                             DOB.deleteIfExpression = '';
-                            DOB.reset();
                             AO.keepLine('#97 END', STATUS.POTENTIAL);
+                            DOB.reset();
                         } else {
-                            let correctIndention = (AO.isActiveBlock());
+                            let correctIndention = (AO.isStartActiveBlock());
                             DOB.deleteIfExpression = correctIndention ? '' : DOB.deleteIfExpression;
                             correctIndention ? DOB.reset() : DOB.update(DOB.first());
                             AO.keepLine(`#98 END ${DOB.first()}`, STATUS.POTENTIAL);
                         }
 
                     } else if (LOB.has(END_PROTOTYPE)) {
-                        if (AO.isActiveBlock()) {
+                        if (AO.isStartActiveBlock()) {
                             DOB.deleteIfExpression = '';
+                            LOB.update(DOB.deletePrototypeHead ? '' : line, "#EPF", STATUS.POTENTIAL);
                             DOB.reset();
                             DOB.forceDelete = false;
-                            LOB.update(DOB.deletePrototypeHead ? '' : line, "#EPF", STATUS.POTENTIAL);
                         }
                     } else if (LOB.has(END_IF)) {
-                        if (AO.isActiveBlock()) {
+                        if (AO.isStartActiveBlock()) {
                             DOB.deleteIfExpression = '';
                             DOB.reset();
                             DOB.forceDelete = false;
                             if (DOB.forceDeleteElse) {
 
-                                LOB.update('', "#99 ENDX_REM", STATUS.REMOVED);
+                                AO.deleteLine("#99 ENDX_REM");
                                 DOB.forceDeleteElse = false;
                             } else {
                                 if (DOB.deleteFunction) {
-                                    LOB.update('', "#66 NDL_FN_END", STATUS.POTENTIAL);
+                                    AO.deleteLine("#66 NDL_FN_END", STATUS.POTENTIAL);
                                     DOB.deleteFunction = false;
                                 } else {
                                     if(cntr === 3477){
-                                        LOB.update('', "#33 ENDX", STATUS.POTENTIAL);
+                                        AO.deleteLine("#33 ENDX", STATUS.POTENTIAL);
 
                                     } else {
                                         AO.keepLine("#99 ENDX", STATUS.POTENTIAL);
@@ -617,20 +625,20 @@ const analyze = (line) => {
                             }
                         }
                         else {
-                            if (LOB.has(END_FOR) && (LOB.indentation == DOB.last())) {
-                                LOB.update('', "#10.1", STATUS.POTENTIAL);
-                                if (LOB.indentation > DOB.first()) {
+                            if (LOB.has(END_FOR) && (AO.isActiveBlock())) {
+                                AO.deleteLine("#10.1", STATUS.POTENTIAL);
+                                if (AO.isInsideActiveBlock()) {
                                     DOB.pop();
                                 }
                             } else {
                                 if (LOB.has(END_FOR) && DOB.contains(LOB.indentation) > 0) {
                                     DOB.delete(DOB.contains(LOB.indentation));
-                                    LOB.update('', "#10a", STATUS.REMOVED);
+                                    AO.deleteLine("#10a");
                                 } else {
 
                                     // looks for closing }
                                     if (cntr === 4755 || cntr === 7589) {
-                                        LOB.update('', "#10c", STATUS.REMOVED);  // TODO: .workaournd
+                                        AO.deleteLine("#10c");  // TODO: .workaournd
                                     } else {
                                         AO.keepLine("#10b", STATUS.POTENTIAL); //?
                                     }
@@ -651,18 +659,18 @@ const analyze = (line) => {
                                     DOB.deleteIfExpression = line;
                                     AO.keepLine("#12a", STATUS.POTENTIAL);
                                 } else {
-                                    if (LOB.has(END_IF) && AO.isActiveBlock()) {
+                                    if (LOB.has(END_IF) && AO.isStartActiveBlock()) {
                                         DOB.deleteIfExpression = '';
                                         DOB.reset();
-                                        LOB.update('', "#12b END", STATUS.REMOVED);
+                                        AO.deleteLine("#12b END");
                                     } else {
                                         if (LOB.has(FOR) && DOB.active()) {
-                                            LOB.update('', "#12b1", STATUS.POTENTIAL);
-                                            if (LOB.indentation > DOB.first()) {
+                                            AO.deleteLine("#12b1", STATUS.POTENTIAL);
+                                            if (AO.isInsideActiveBlock()) {
                                                 DOB.update(LOB.indentation)
                                             }
                                         } else {
-                                            LOB.update('', "#12b", STATUS.REMOVED);
+                                            AO.deleteLine("#12b");
                                         }
                                     }
                                 }
