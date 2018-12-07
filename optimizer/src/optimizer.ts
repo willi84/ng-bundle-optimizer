@@ -7,8 +7,8 @@ const MIN = 0;
 const MAX = 2010;
 let noRun = false;
 let showOutput = true;
-let showDeleteStatus = false;
-let showDelete = false;
+let showDeleteStatus = true;
+let showDelete = true;
 let rewriteElse = true;
 let forceDelete = false;
 let metrics = {
@@ -376,6 +376,8 @@ let deletePrototypeHead = true;
 let forceDeleteElse = false;
 let iifeDelete = false;
 let deleteFunction = false;
+// cntr === 311 || cntr === 281 || cntr === 344 || cntr === 999999 || cntr === 9860 || cntr === 9989) { //|| cntr === 9972){
+let manualDelete = [281, 311, 344, 9860, 9989] //9972, 311 
 const analyze = (line) => {
     let LOB = new LineObject(line);
     // LOB.lineStatus = STATUS_OK;
@@ -385,13 +387,14 @@ const analyze = (line) => {
     if (cntr === 0) {
         nextDeletableLine = sRemoveLines[nextDeletableLine];
     }
+    // TODO: 310
     // let DOB.update(0)
     if (cntr++ >= 0) {
         if (cntr === 3064) {
             LOB.update(line, '#33', STATUS_REMOVED);
             DOB.update(LOB.indentation);
             forceDelete = true;
-        } else if (cntr === 9860 || cntr === 9989) { //|| cntr === 9972){
+        } else if ( manualDelete.indexOf(cntr) >= 0) { //|| cntr === 9972){
             LOB.update(line, '#44', STATUS_REMOVED);
             DOB.update(LOB.indentation);
             forceDelete = true;
