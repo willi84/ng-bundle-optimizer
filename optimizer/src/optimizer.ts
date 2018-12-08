@@ -414,8 +414,60 @@ class ActionObject {
 
 let DOB = new DeleteObject();
 let iifeBlocks = [];
-let deleteIifeBlocks = [114, 159, 181]
-let deleteIifeBlocks2 = [114,159,181,251,281,311,328,344,600,691,814,830,860,912,1034,1061,1206,4204,4215,4249,4264,4286,4298,4488,4527,4573,4586,4609,4616,4621,4643,4663,4685,4780,4877,4901,4975,5025,5154,5318,5327,5386,5434,5518,5537,5548,5561,5970,6012,6052,6062,6283,6326,6375,6423,6478,6523,6683,6776,6806,6825,6926,7003,7026,7042,7209,7235,7384,7512,7670,7681,7713,7722,7818,8245,8257,8355,8359,8394,8919,8994,9120,9185,9199,9235,9250,9271,9320,9355,9467,9489,9586,9714,9730,9786,9860,9989,10088,10244,10257,10268,10279,10290,10301,10332]
+let deleteIifeBlocks = [114, 159,
+     // , 181*/
+    251,281, 311, 328, 344, 
+    //600, 691
+    814, 830, 
+    //860
+    912, 1034, 
+    //1061
+    1206, 4204, 4215, 
+    //4249, 4264, 4286, 4298
+    4488, 
+    //4527
+    4573, 4586, 4609, 4616, 
+    // 4621, 4643, 4663, 4685, 5780
+    4877, 4901, 
+    //4975, 5025, 5154
+    5318, 5327, 5386, 5434, 5518, 5537, 5548, 5561, 
+    //5970
+    6012, 6052, 6062, 6283, 6326, 6375, 
+    //6423, 6478
+    // 6523, 6683
+    6776,
+    //  6806
+    6825, 
+    // 6926
+    // 7003, // hides view
+    7026, 7042, 7209, 7235, 
+    //7384, 7512
+    7670, 7681, 7713, 
+    // 7722
+    7818, 8245, 8257, 
+    // 8355, 8359
+    8394, 8919, 8994, 
+    // 9120
+    9185, 9199, 9235, 
+    // 9250, 9271, 9320
+    // 9355
+    9467, 9489, 9586, 9714, 9730, 9786, 9860, 9989
+    ,10088,10244,10257,
+    10268,10279,10290,10301,10332
+
+    ]
+let deleteIifeBlocks2 = [
+    114,159,181,251,281,311,328,344,600,691,814,830,860,
+    912,1034,1061,1206,4204,4215,4249,4264,4286,4298,4488,
+    4527,4573,4586,4609,4616,4621,4643,4663,4685,4780,4877,
+    4901,4975,5025,5154,5318,5327,5386,5434,5518,5537,5548,
+    5561,5970,6012,6052,6062,6283,6326,6375,6423,6478,6523,
+    6683,6776,6806,6825,6926,7003,7026,7042,7209,7235,7384,
+    7512,7670,7681,7713,7722,7818,8245,8257,8355,8359,8394,
+    8919,8994,9120,9185,9199,9235,9250,9271,9320,9355,9467,
+    
+    9489,9586,9714,9730,9786,9860,9989,10088,10244,10257,
+    10268,10279,10290,10301,10332]
 // cntr === 311 || cntr === 281 || cntr === 344 || cntr === 999999 || cntr === 9860 || cntr === 9989) { //|| cntr === 9972){
 let manualDelete = [114, 281, 311, 344, 9860, 9989] //9972, 310
 let finalCode = '';
@@ -452,7 +504,15 @@ const analyze = (line) => {
             DOB.forceDelete = true;
             DOB.iifeDelete = true;
         } else if (LOB.has(END_IIFE)) {
-            AO.keepLine('#45', STATUS.REMOVED);
+            if(DOB.iifeDelete2 ){
+
+                AO.changeLine('#45', STATUS.REMOVED, 'return function(){};' +  line);
+                DOB.iifeDelete2 = false;
+                DOB.reset();
+            } else {
+                AO.keepLine('#43', STATUS.REMOVED);
+
+            }
             // })();
             // DOB.forceDelete = false;
             // DOB.reset();
@@ -473,7 +533,7 @@ const analyze = (line) => {
         //DELETEABLE line detected
         if (DOB.getNextLine() === (cntr + 1) && !DOB.active() && useLine(cntr) ) {
             if(LOB.has(START_IIFE)){
-                console.log(cntr);
+                // console.log(cntr);
             }
             //e.prototype._truncate = function(e) {
             // 9100 - 9500 => 1x non wokring + löschet element
@@ -547,7 +607,7 @@ const analyze = (line) => {
                     } else {
 
                          if(LOB.has(START_IIFE) && !DOB.active()){
-             console.log('\n' + cntr + '\n' );
+            //  console.log('\n' + cntr + '\n' );
         //     AO.keepLine('#22', STATUS.REMOVED);
         //     DOB.update(LOB.indentation);
         //     DOB.forceDelete = true;
@@ -603,7 +663,10 @@ const analyze = (line) => {
         }
         else {
             if (DOB.active() && cntr !== 1781) {
-                if (DOB.iifeDelete && LOB.has(END_IIFE) && AO.isStartActiveBlock()) {
+                if(DOB.iifeDelete2 && !LOB.has(END_IIFE) && AO.isInsideActiveBlock){
+                    AO.deleteLine('#81');
+                   
+                } else if (DOB.iifeDelete && LOB.has(END_IIFE) && AO.isStartActiveBlock()) {
                     DOB.iifeDelete = false;
                     DOB.forceDelete = false;
                     AO.deleteLine('#46');
@@ -731,13 +794,13 @@ const analyze = (line) => {
                 }
             } else {
                 // Delete IIFE
-                if( !DOB.active() && deleteIifeBlocks.indexOf(cntr) >= 999){
+                if( !DOB.active() && deleteIifeBlocks.indexOf(cntr) >= 0){
                 // if(LOB.has(START_IIFE) && !DOB.active()){
-                    console.log(cntr);
+                    // console.log(cntr);
                     AO.keepLine('#88', STATUS.POTENTIAL);
                     DOB.update(LOB.indentation)
                     DOB.iifeDelete2 = true;
-                    DOB.forceDelete = true;
+                    // DOB.forceDelete = true;
                 } else {
                     // NOP
                     // AO.keepLine('#87', STATUS.POTENTIAL);
