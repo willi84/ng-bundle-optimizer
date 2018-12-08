@@ -287,6 +287,7 @@ class DeleteObject {
     deletePrototypeHead: Boolean = true;
     forceDeleteElse: Boolean = false;
     iifeDelete: Boolean = false;
+    iifeDelete2: Boolean = false;
     deleteFunction: Boolean = false;
     forceDelete: Boolean = false;
     startMultiline: Boolean = false;
@@ -404,11 +405,17 @@ class ActionObject {
         let status = statusCode || STATUS.REMOVED;
         this.lob.update('', statusText, status);
     }
+    changeLine(statusText, statusCode?, line?){
+        let status = statusCode || STATUS.REMOVED;
+        let newLine = line || this.lob.line;
+        this.lob.update(newLine, statusText, status);
+    }
 }
 
 let DOB = new DeleteObject();
 let iifeBlocks = [];
-let deleteIifeBlocks = [114,159,181,251,281,311,328,344,600,691,814,830,860,912,1034,1061,1206,4204,4215,4249,4264,4286,4298,4488,4527,4573,4586,4609,4616,4621,4643,4663,4685,4780,4877,4901,4975,5025,5154,5318,5327,5386,5434,5518,5537,5548,5561,5970,6012,6052,6062,6283,6326,6375,6423,6478,6523,6683,6776,6806,6825,6926,7003,7026,7042,7209,7235,7384,7512,7670,7681,7713,7722,7818,8245,8257,8355,8359,8394,8919,8994,9120,9185,9199,9235,9250,9271,9320,9355,9467,9489,9586,9714,9730,9786,9860,9989,10088,10244,10257,10268,10279,10290,10301,10332]
+let deleteIifeBlocks = [114, 159, 181]
+let deleteIifeBlocks2 = [114,159,181,251,281,311,328,344,600,691,814,830,860,912,1034,1061,1206,4204,4215,4249,4264,4286,4298,4488,4527,4573,4586,4609,4616,4621,4643,4663,4685,4780,4877,4901,4975,5025,5154,5318,5327,5386,5434,5518,5537,5548,5561,5970,6012,6052,6062,6283,6326,6375,6423,6478,6523,6683,6776,6806,6825,6926,7003,7026,7042,7209,7235,7384,7512,7670,7681,7713,7722,7818,8245,8257,8355,8359,8394,8919,8994,9120,9185,9199,9235,9250,9271,9320,9355,9467,9489,9586,9714,9730,9786,9860,9989,10088,10244,10257,10268,10279,10290,10301,10332]
 // cntr === 311 || cntr === 281 || cntr === 344 || cntr === 999999 || cntr === 9860 || cntr === 9989) { //|| cntr === 9972){
 let manualDelete = [114, 281, 311, 344, 9860, 9989] //9972, 310
 let finalCode = '';
@@ -445,13 +452,29 @@ const analyze = (line) => {
             DOB.forceDelete = true;
             DOB.iifeDelete = true;
         } else if (LOB.has(END_IIFE)) {
+            AO.keepLine('#45', STATUS.REMOVED);
             // })();
             // DOB.forceDelete = false;
             // DOB.reset();
-            AO.keepLine('#45', STATUS.REMOVED);
+
+            // DOB.reset();
+            // if(DOB.iifeDelete){
+            //     DOB.iifeDelete = false;
+                
+            //     AO.deleteLine('#43', STATUS.REMOVED);
+                
+            // } else if(DOB.iifeDelete2){
+                
+            //     DOB.iifeDelete2 = false;
+            //     DOB.reset();
+            //     AO.changeLine('#45', STATUS.REMOVED,   line);
+            // }
         } else { }
         //DELETEABLE line detected
         if (DOB.getNextLine() === (cntr + 1) && !DOB.active() && useLine(cntr) ) {
+            if(LOB.has(START_IIFE)){
+                console.log(cntr);
+            }
             //e.prototype._truncate = function(e) {
             // 9100 - 9500 => 1x non wokring + löschet element
             if (LOB.has(PROTOTYPE) && !DOB.active() && (cntr < 6515 || (cntr > 6530 && cntr < 9350) || cntr > 9405)) {
@@ -523,15 +546,23 @@ const analyze = (line) => {
                         }
                     } else {
 
+                         if(LOB.has(START_IIFE) && !DOB.active()){
+             console.log('\n' + cntr + '\n' );
+        //     AO.keepLine('#22', STATUS.REMOVED);
+        //     DOB.update(LOB.indentation);
+        //     DOB.forceDelete = true;
+        //     DOB.iifeDelete = true;
+           
+        //     iifeBlocks.push(cntr);
+                    } else 
+        // } else 
                         // TODO? 1st if(){   => 2nd if( 
                         if (LOB.has(IF) && !DOB.active()) {
                             DOB.update(LOB.indentation);
                             DOB.deleteIfExpression = line;
                             AO.keepLine('#99', STATUS.ERROR);
                             DOB.forceDelete = true;
-                        } else if (LOB.has(ELSE) && !DOB.active()) {
-                            AO.keepLine('#100', STATUS.ERROR);
-                        } else {
+                        } else  {
                             AO.keepLine('#2', STATUS.ERROR);
 
                         }
@@ -611,10 +642,7 @@ const analyze = (line) => {
                                 AO.deleteLine("#99 ENDX_REM");
                                 DOB.forceDeleteElse = false;
                             } else {
-                                if (DOB.deleteFunction) {
-                                    AO.deleteLine("#66 NDL_FN_END", STATUS.POTENTIAL);
-                                    DOB.deleteFunction = false;
-                                } else {
+                                if (!DOB.deleteFunction)  {
                                     if(cntr === 3477){
                                         AO.deleteLine("#33 ENDX", STATUS.POTENTIAL);
 
@@ -659,20 +687,7 @@ const analyze = (line) => {
                                     DOB.deleteIfExpression = line;
                                     AO.keepLine("#12a", STATUS.POTENTIAL);
                                 } else {
-                                    if (LOB.has(END_IF) && AO.isStartActiveBlock()) {
-                                        DOB.deleteIfExpression = '';
-                                        DOB.reset();
-                                        AO.deleteLine("#12b END");
-                                    } else {
-                                        if (LOB.has(FOR) && DOB.active()) {
-                                            AO.deleteLine("#12b1", STATUS.POTENTIAL);
-                                            if (AO.isInsideActiveBlock()) {
-                                                DOB.update(LOB.indentation)
-                                            }
-                                        } else {
-                                            AO.deleteLine("#12b");
-                                        }
-                                    }
+                                    AO.deleteLine("#12bb");
                                 }
                             } else {
                                 if (LOB.has(MULTILINE_IF_CLOSE)) {
@@ -715,7 +730,18 @@ const analyze = (line) => {
                     }
                 }
             } else {
-                // NOP
+                // Delete IIFE
+                if( !DOB.active() && deleteIifeBlocks.indexOf(cntr) >= 999){
+                // if(LOB.has(START_IIFE) && !DOB.active()){
+                    console.log(cntr);
+                    AO.keepLine('#88', STATUS.POTENTIAL);
+                    DOB.update(LOB.indentation)
+                    DOB.iifeDelete2 = true;
+                    DOB.forceDelete = true;
+                } else {
+                    // NOP
+                    // AO.keepLine('#87', STATUS.POTENTIAL);
+                }
             }
 
         }
@@ -749,9 +775,6 @@ const analyze = (line) => {
         // LOB.newLine =  (LOB.deleteStatus !== '' && show.deleteStatus === true) ? LOB.newLine + '//' + line + '//' + LOB.deleteStatus : LOB.newLine 
         updateLineStatus(LOB);
         finalCode += LOB.newLine + '\n';
-// finalCode +=  '/** #' + cntr + '**/' + LOB.newLine + '\n';
-        // writeNewLine(fs, NEW_FILE, LOB.newLine + '\n', false);
-
     } else {
     }
     prevLine = line;
