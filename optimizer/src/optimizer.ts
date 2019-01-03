@@ -58,8 +58,17 @@ const useLine = (line) => {
     const useable = [
         // { start: 0, end: 1779},
         // IMPORTANT:  1781
-        { start: 0, end: 2010 },
-
+        { start: 0, end: 2012 },
+        { start: 2014, end: 2018 },
+        { start: 2023, end: 2025 }, // TODO
+        { start: 2030, end: 2348 },
+        { start: 2356, end: 2405 }, // TODO: 2012
+        { start: 2413, end: 2431 }, // TODO: Cr
+        { start: 2440, end: 2746 },
+        { start: 2755, end: 2928 },
+        { start: 2930, end: 2970 },
+        { start: 2973, end: 3003 },
+        { start: 3005, end: 3032 }, // TODO: Wr
         { start: 3724, end: 9334 }, // 9335-9338
         { start: 9420, end: 12000 },
     ]
@@ -298,7 +307,6 @@ class DeleteObject {
     changeBlock: Boolean = false;
     deleteBlock: Boolean = false;
     forceDelete: Boolean = false;
-    startMultiline: Boolean = false;
     unusedFunctions: any =  [];
     deleteIfExpression: String = '';
     detectClosingElse: Boolean = false;
@@ -445,6 +453,23 @@ const handleTrigger = (ao, trigger) =>  {
     }
 
 }
+ // Pt/Dt/Rt/Lt
+const deleteUnusedFunctions = (line, lob, ao) => {
+    let lm = line.match(/.*(dn\([^\)]*\)|Pt;|Dt;|Rt;|Lt\([^\)]*\)).*/);
+    if (lm && lob.has(FUNCTION) === null) {
+        ao.deleteLine("#SD");
+        return true
+    } else {
+        let mf = line.match(/.*function\s(dn|Pt|Dt|Rt|Lt)\([^\)]*\).*/);
+        if (mf) {
+            ao.deleteLine("#DB", {'deleteBlock': true});
+            return true
+        } else {
+            return false;
+        }
+    }
+}
+
 
 let DOB = new DeleteObject();
 let iifeBlocks = [];
@@ -512,19 +537,12 @@ const analyze = (line) => {
     }
     // TODO: 310
     if (cntr++ >= 0) {
-        // line = line + '//XXX';
-        
         // TODO ! DOB.deletingFn && cntr === fnRemoveLines[fnIndex]['start']['line']
-        if ( cntr === 3064) {
-            AO.keepLine('#33', STATUS.ERROR ,  {'forceDelete': true});
-        } else if (LOB.has(END_IIFE)) {
-                AO.keepLine('#43');
-        } else { }
         //DELETEABLE line detected
         if ( DOB.getNextLine() === (cntr + 1) && !DOB.active() && useLine(cntr) ) {
             //TODO: was ist unter 2000
             //TODO: delteable fn array aufbauen
-            if (LOB.has(PROTOTYPE) || LOB.has(FUNCTION_OBJECT) || (LOB.has(FN_BLOCK) && (cntr < 100 || cntr >1800)) ) {
+            if (LOB.has(PROTOTYPE) || LOB.has(FUNCTION_OBJECT) || LOB.has(FN_BLOCK)) {
             // 9100 - 9500 => 1x non wokring + löschet element
                 // TODO missing loadComponent causes console error
                 if (line.match(/(_loadComponent|applyToHost)/)) {
@@ -533,45 +551,37 @@ const analyze = (line) => {
                     AO.deleteLine("#DB START", { 'deleteBlock': true});
                 }
             } else if (LOB.has(ELSE)) {
+                // AO.keepLine( '#NDL_ELSE', STATUS.REMOVED, { 'keepFnBlock': true});
                 AO.changeLine( '#NDL_ELSE', STATUS.REMOVED, `} //${line}`, {'forceDelete': true, 'forceDeleteElse':true });
             } else if (LOB.has(FUNCTION)) {
-                AO.keepLine( '#KF START', STATUS.OK, { 'keepFnBlock': true});
+                AO.keepLine( '#KB START', STATUS.OK, { 'keepFnBlock': true});
             } else if (LOB.has(FOR)) {
-                AO.deleteLine('#NDL_FOR', {'forceDelete': true, 'forceDeleteElse': true});
+                AO.deleteLine('#NDL_FOR', {'deleteBlock': true});
             } else {
                 AO.keepLine('#NDL_XX', STATUS.ERROR);
+                // AO.deleteLine("#DB START", { 'deleteBlock': true});
             }
         } else if (DOB.getNextLine()  === cntr && !DOB.active()) {
+            if(deleteUnusedFunctions(line, LOB, AO)){
+            } else
             if (useLine(cntr)) {
-
                 // not prev line has =
                 if (prevLine.match(/.*[^\=]{1}$/)) {
                     //NOT: line ends with ?|:|{|(|[
-                    if (line.match(/.*[^\?|\:|\{|\(|\[]{1}$/)) {
-                        //NOT: line starts with var
-                        if (line.match(/^\s*var\s[^\s]*\s*\=\s*.*$/)) {
-                            AO.keepLine('#1', STATUS.ERROR);
-                        } else if (line.match(/^\s*return\s*[^\;]*\;$/)) {
-                            // TODO  line starts with . (TODO)
-                            // TODO if (line.match(/^\s[^\.]{1}.*$/)) {
-                            // TODO if (line.match(/^.*[^\;]{1}\s*$/)) {
-                            // detect return
-                            AO.keepLine('#A2', STATUS.POTENTIAL);
-                        } else {
-                            AO.keepLine('#00x', STATUS.POTENTIAL);
-                        }
-                    // }
-                    } else if (LOB.has(IF) && !DOB.active()) {
+                     if (LOB.has(IF) && !DOB.active()) {
                         // TODO? 1st if(){   => 2nd if( 
                             // TODO: 1774 macht Probleme
-                            // AO.deleteLine('#99i',  { 'forceDelete':  true, 'deleteIfExpression': line, 'detectClosingElse': true});
-                            AO.keepLine('#99i', STATUS.ERROR, { 'forceDelete':  true, 'deleteIfExpression': line});
+                            if(cntr !== 1774){
+                                AO.keepLine( '#KB START2', STATUS.OK, { 'keepFnBlock': true});
+                            } else {
+                                AO.keepLine('#MD START', STATUS.ERROR, { 'forceDelete':  true, 'deleteIfExpression': line});
+                            }
                     } else  {
                         AO.keepLine('#2', STATUS.ERROR);
                     }
-                    //detect if => count whitespace + make flag, delete until closing
-
                 }
+            } else {
+                AO.keepLine('#NOP');
             }
 
             // create an Array of deletable stuff
@@ -585,47 +595,41 @@ const analyze = (line) => {
 
         }
         else {
+            if(deleteUnusedFunctions(line, LOB, AO)){
+            } else
+            if ( cntr === 3064) { //TODO:  automize
+                AO.deleteLine("#DB START", { 'deleteBlock': true});
+            } else 
             if ( DOB.active() && cntr !== 1781) {
                 if(DOB.changeBlock === true){
                     if(!AO.isStartActiveBlock()){
-
                         AO.deleteLine('#CB');
                     } else {
                         AO.deleteLine('#CB END', {'changeBlock': false });
                     }
                 } else if(DOB.deleteBlock === true){
                     if(!AO.isStartActiveBlock()){
-
                         AO.deleteLine('#DB');
                     } else {
                         AO.deleteLine('#DB END', {'deleteBlock': false });
                     }
                 } else if(DOB.keepFnBlock === true){
                     if(!AO.isStartActiveBlock()){
-
-                        AO.deleteLine('#KF');
+                        AO.deleteLine('#KB');
                     } else {
-                        AO.keepLine('#KF END', STATUS.OK,{'keepFnBlock': false });
+                        AO.keepLine('#KB END', STATUS.OK,{'keepFnBlock': false });
                     }
                 } else if (DOB.forceDelete && !AO.isStartActiveBlock()) {
                     AO.deleteLine('#FD');
                 } else if (LOB.has(ELSE)) {
-                    // AO.deleteLine(`#89 END ${DOB.first()}`,  {'deleteIfExpression': '', 'detectClosingElse': true});
-                    AO.keepLine(`#89 END ${DOB.first()}`, STATUS.POTENTIAL, {'deleteIfExpression': '', 'detectClosingElse': true});
-                    // DOB.forceDelete = false;
+                    AO.keepLine(`#MD ELSE ${DOB.first()}`, STATUS.POTENTIAL, {'deleteIfExpression': '', 'detectClosingElse': true});
                     DOB.reset();
                 } else if (LOB.has(END_IF)) {
                     if (DOB.forceDeleteElse) {
                         AO.deleteLine("#99 ENDX_REM", {'forceDeleteElse' : false});
-                    } else if(cntr === 3477){
-                        AO.deleteLine("#33 ENDX", { 'forceDelete': false});
-                    } else if(DOB.detectClosingElse){
-                            AO.keepLine("#999i ENDX", STATUS.POTENTIAL, { 'forceDelete': false});
-                        } else {
-                            AO.keepLine("#999 ENDX", STATUS.POTENTIAL, { 'forceDelete': false});
-                    } 
-                } else if (!DOB.startMultiline) {
-                    AO.deleteLine("#12bb");
+                    }
+                } else  {
+                    AO.deleteLine("#DB START", { 'deleteBlock': true});
                 }
                 // create an Array of deletable stuff
                 const deletableEntry = sRemoveLines[indexDeletableLine];
@@ -646,7 +650,10 @@ const analyze = (line) => {
                     deletableFn.push(fnExp[1]);
                     let newLine = 'var ' + fnExp[1] + '=' + '(function() {return function t(t) {}; })(); ';
                     AO.changeLine(   '#CB START', STATUS.POTENTIAL,newLine, {'changeBlock': true});
-                } 
+                }
+                else {
+                    AO.keepLine('#FOO')
+                }
             }
 
         }
