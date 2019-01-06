@@ -53,24 +53,34 @@ const updateLineStatus = (LOB) => {
         );
     }
 }
-
+// undeletable keep lines
+const undeletable = [
+    2013, // otherwise not shown: append to dom
+    3004, // create instance
+    1781, // render Element
+    9365, 9372,
+    1948, 2024,
+    2408, // TODO:  _r hard to delete
+    2926, 2961, 3022, 3027, 4091,4181,
+    1947, 2010, 2011, 2933, 2974, 2975, 2989, 3029,
+    6474,
+    2971, 2972, 2973,
+    2960, 
+    2557, 2559,// fn call && Ft(e, 512, r)
+    2159, 2218, 2555,
+    ];
 const useLine = (line) => {
     const useable = [
         // { start: 0, end: 1779},
         // IMPORTANT:  1781
-        { start: 0, end: 2012 },
-        { start: 2014, end: 2018 },
-        { start: 2023, end: 2025 }, // TODO
-        { start: 2030, end: 2348 },
-        { start: 2356, end: 2405 }, // TODO: 2012
-        { start: 2413, end: 2431 }, // TODO: Cr
+        { start: 0, end: 2018 }, //Sn
+        { start: 2023, end: 2348 }, // TODO
+        { start: 2355, end: 2431 }, // TODO: Cr
         { start: 2440, end: 2746 },
         { start: 2755, end: 2928 },
-        { start: 2930, end: 2970 },
-        { start: 2973, end: 3003 },
-        { start: 3005, end: 3032 }, // TODO: Wr
-        { start: 3724, end: 9334 }, // 9335-9338
-        { start: 9420, end: 12000 },
+        { start: 2930, end: 2972 },
+        { start: 2973, end: 9373 },// 9335-9338
+        { start: 9400, end: 12000 },
     ]
     let isOk = false;
     useable.forEach((value, index) => {
@@ -242,7 +252,6 @@ const writeNewLine = (fs, file, newLine, mode?) => {
     fs.writeFileSync(file, newLine, ADD_MODE);
 }
 
-// let fRemoveLines = getRemovableLines(fnObj, fnObjCov, 'f');
 // let bRemoveLines = getRemovableLines(bObj, bObjCov, 'b');
 let sRemoveLines = getRemovableLines(sObj, sObjCov, 's');
 let fnRemoveLines = getRemovableLines(fnObj, fnObjCov, 'f');
@@ -276,7 +285,6 @@ enum STATUS {
 }
 
 let prevLine = '';
-let indexDeletableLine = 0;
 // let lineStatus = 0;
 
 const IF = /^(\s*)if\s*\(.*\)\s*\{\s*$/;
@@ -299,6 +307,7 @@ const START = 1;
 const STOP = 2;
 
 class DeleteObject {
+    indexDeletableLine = 0;
     indention: Array<Number>;
     next: any;
     forceDeleteElse: Boolean = false;
@@ -306,7 +315,8 @@ class DeleteObject {
     deleteFunction: Boolean = false;
     changeBlock: Boolean = false;
     deleteBlock: Boolean = false;
-    forceDelete: Boolean = false;
+    deletableFn = [];
+    blockStart: String = '';
     unusedFunctions: any =  [];
     deleteIfExpression: String = '';
     detectClosingElse: Boolean = false;
@@ -314,29 +324,37 @@ class DeleteObject {
         this.indention = [];
         this.next = 0;
     }
-    update(indention: Number) {
+    update(indention: Number): void {
         if (this.indention.indexOf(indention) === -1) {
             this.indention.push(indention);
         }
     }
-    reset() {
+    reset(): void {
         this.indention = [];
     }
-    active() {
+    active(): boolean {
         return this.indention.length > 0;
     }
-    first() {
+    first(): Number {
         return this.indention[0];
     }
-    last() {
+    last(): Number {
         if (this.indention.length > 0) {
             return this.indention[this.indention.length - 1];
         } else {
             return -1;
         }
     }
-    updateNext(next){
+    updateNext(next): void{
         this.next = next;
+    }
+    hasIife(line, deleteIifeBlocks){
+        let fnExp = line.match(START_IIFE);
+        // TODO delete unused functions 
+        if(fnExp !== null){
+            this.deletableFn.push(fnExp[1])
+        }
+        return deleteIifeBlocks.indexOf(cntr) >= 0
     }
     getNext(){
         return this.next;
@@ -367,7 +385,8 @@ class LineObject {
     lineStatus: Number = STATUS.OK;
     indentation: number;
     constructor(
-        public line: String
+        public line: String,
+        public cntr: number
         // public newLine: String, public deleteStatus: String, public lineStatus: Number
     ) {
         this.line = line;
@@ -378,13 +397,14 @@ class LineObject {
         let result = this.line.match(/^(\s*)/);
         return result[1].length;
     }
-    has(type: RegExp) {
+    has(type: RegExp, line?: String) {
+        let checkLine = line && line !== '' ? line : this.line
         let check = {
             match: false,
             matchDetail: []
         }
         let pattern = type;
-        check.matchDetail = this.line.match(pattern);
+        check.matchDetail = checkLine.match(pattern);
         check.match = (check.matchDetail && check.matchDetail.length > 0);
         return check.match;
     }
@@ -421,15 +441,38 @@ class ActionObject {
         handleTrigger(this, trigger);
     }
     deleteLine(statusText, trigger?){
-        let status =  STATUS.REMOVED;
-        handleTrigger(this, trigger);
-        this.lob.update('', statusText, status);
+        // let status =  STATUS.REMOVED;
+        //     handleTrigger(this, trigger);
+        //     this.lob.update('', statusText, status);
+        if(undeletable.indexOf(this.lob.cntr) === -1){
+            let status =  STATUS.REMOVED;
+            handleTrigger(this, trigger);
+            this.lob.update('', statusText, status);
+        } else {
+            this.keepLine('#NOT DELETABLE');
+        }
     }
     changeLine(statusText, statusCode?: STATUS, line?, trigger?){
         let status = statusCode || STATUS.REMOVED;
         handleTrigger(this, trigger);
         let newLine = line !== undefined ?  line  : this.lob.line;
         this.lob.update(newLine, statusText, status);
+    }
+    changeBlock(trigger: string, text: String, keep: Boolean){
+        let key = trigger;
+        if(this.dob[key] === true){
+
+                if(!this.isStartActiveBlock()){
+                    this.deleteLine(`#${text}`);
+                } else {
+                    if(keep === true){
+                        this.keepLine(`#${text} END`, STATUS.OK,{trigger: false });
+                    } else {
+                        this.deleteLine(`#${text} END`, {trigger: false });
+                    }
+                }
+            }
+        
     }
 }
 const handleTrigger = (ao, trigger) =>  {
@@ -455,12 +498,12 @@ const handleTrigger = (ao, trigger) =>  {
 }
  // Pt/Dt/Rt/Lt
 const deleteUnusedFunctions = (line, lob, ao) => {
-    let lm = line.match(/.*(dn\([^\)]*\)|Pt;|Dt;|Rt;|Lt\([^\)]*\)).*/);
+    let lm = line.match(/.*(Sn|Wr|Qr|dn\([^\)]*\)|Pt;|Dt;|Rt;|Lt\([^\)]*\)).*/);
     if (lm && lob.has(FUNCTION) === null) {
         ao.deleteLine("#SD");
         return true
     } else {
-        let mf = line.match(/.*function\s(dn|Pt|Dt|Rt|Lt)\([^\)]*\).*/);
+        let mf = line.match(/.*function\s(Sn|Wr|Qr|dn|Pt|Dt|Rt|Lt)\([^\)]*\).*/);
         if (mf) {
             ao.deleteLine("#DB", {'deleteBlock': true});
             return true
@@ -497,7 +540,7 @@ let deleteIifeBlocks = [114, 159,
     5318, 5327, 5386, 5434, 5518, 5537, 5548, 5561, 
     //5970
     6012, 6052, 6062, 6283, 6326, 6375, 
-    //6423, 6478
+    //6423, 6478,
     // 6523, 6683
     6776,
     //  6806
@@ -528,7 +571,7 @@ console.log(fnRemoveLines[0]);
 let fnIndex = 1;
 let currentDeletableFn = {};
 const analyze = (line) => {
-    let LOB = new LineObject(line);
+    let LOB = new LineObject(line, cntr+1);
     let AO = new ActionObject(LOB, DOB);
 
     // todo: einzeiler löschen, wenn start/ende oder fnDelete not running
@@ -536,11 +579,10 @@ const analyze = (line) => {
         DOB.updateNext(sRemoveLines[DOB.next]);
     }
     // TODO: 310
-    if (cntr++ >= 0) {
+    if (cntr++ >= 0) { // TODO in 540 bei LOB machen
         // TODO ! DOB.deletingFn && cntr === fnRemoveLines[fnIndex]['start']['line']
         //DELETEABLE line detected
         if ( DOB.getNextLine() === (cntr + 1) && !DOB.active() && useLine(cntr) ) {
-            //TODO: was ist unter 2000
             //TODO: delteable fn array aufbauen
             if (LOB.has(PROTOTYPE) || LOB.has(FUNCTION_OBJECT) || LOB.has(FN_BLOCK)) {
             // 9100 - 9500 => 1x non wokring + löschet element
@@ -551,57 +593,70 @@ const analyze = (line) => {
                     AO.deleteLine("#DB START", { 'deleteBlock': true});
                 }
             } else if (LOB.has(ELSE)) {
-                // AO.keepLine( '#NDL_ELSE', STATUS.REMOVED, { 'keepFnBlock': true});
-                AO.changeLine( '#NDL_ELSE', STATUS.REMOVED, `} //${line}`, {'forceDelete': true, 'forceDeleteElse':true });
-            } else if (LOB.has(FUNCTION)) {
-                AO.keepLine( '#KB START', STATUS.OK, { 'keepFnBlock': true});
-            } else if (LOB.has(FOR)) {
-                AO.deleteLine('#NDL_FOR', {'deleteBlock': true});
+                AO.changeLine( '#NDL_ELSE', STATUS.REMOVED, `} //${line}`, {'changeBlock': true});
+            } else if (LOB.has(FOR) || LOB.has(IF)) {
+                AO.deleteLine('#NDL_IF', {'deleteBlock': true, 'blockStart': line});
             } else {
-                AO.keepLine('#NDL_XX', STATUS.ERROR);
-                // AO.deleteLine("#DB START", { 'deleteBlock': true});
+                // TODO Potential
+                if(LOB.has(/^\s*[^\}\)]+.*$/)){
+                    AO.keepLine('#NDL_POT', STATUS.ERROR);
+                } else {
+                    AO.keepLine('#NDL_XX', STATUS.ERROR);
+                }
             }
         } else if (DOB.getNextLine()  === cntr && !DOB.active()) {
             if(deleteUnusedFunctions(line, LOB, AO)){
-            } else
-            if (useLine(cntr)) {
+            } else if (useLine(cntr)) {
                 // not prev line has =
                 if (prevLine.match(/.*[^\=]{1}$/)) {
                     //NOT: line ends with ?|:|{|(|[
-                     if (LOB.has(IF) && !DOB.active()) {
-                        // TODO? 1st if(){   => 2nd if( 
-                            // TODO: 1774 macht Probleme
-                            if(cntr !== 1774){
+                     if (LOB.has(IF)) {
                                 AO.keepLine( '#KB START2', STATUS.OK, { 'keepFnBlock': true});
+                    } else if (line.match(/(switch|case|function)/)) {
+                                AO.deleteLine("#DB START", { 'deleteBlock': true});
                             } else {
-                                AO.keepLine('#MD START', STATUS.ERROR, { 'forceDelete':  true, 'deleteIfExpression': line});
-                            }
-                    } else  {
-                        AO.keepLine('#2', STATUS.ERROR);
+                                if(line.match(/\)\;/)){
+                                    // TODO: if davor oder deletable function
+                                    AO.deleteLine('#5')
+                                } else if(line.match(/.*\{\s*$/)) { 
+                                    if(LOB.has(FOR) && (cntr < 1325 || cntr > 1340)){
+                                        AO.deleteLine("#FOR START", { 'deleteBlock': true});
+                                    } else {
+
+                                        AO.keepLine('#4')
+                                    }
+                                } else if(line.match(/.*\(\s*$/)){
+                                    //    AO.deleteLine("#DB START", { 'deleteBlock': true});
+                                    AO.deleteLine("#DB START", { 'deleteBlock': true});
+                                } else {
+                                    AO.deleteLine('#2');
+                                }
                     }
+                } else {
+                    console.log('line: '+ prevLine);
                 }
             } else {
                 AO.keepLine('#NOP');
             }
 
             // create an Array of deletable stuff
-            const deletableEntry = sRemoveLines[indexDeletableLine];
+            const deletableEntry = sRemoveLines[DOB.indexDeletableLine];
             if (deletableEntry) {
-                indexDeletableLine++;
-                if (sRemoveLines[indexDeletableLine]) {
-                    DOB.updateNext(sRemoveLines[indexDeletableLine]);
+                DOB.indexDeletableLine++;
+                if (sRemoveLines[DOB.indexDeletableLine]) {
+                    DOB.updateNext(sRemoveLines[DOB.indexDeletableLine]);
                 }
             }
 
         }
         else {
+           
             if(deleteUnusedFunctions(line, LOB, AO)){
-            } else
-            if ( cntr === 3064) { //TODO:  automize
+            } else if ( cntr === 3064) { //TODO:  automize with deletable functions
                 AO.deleteLine("#DB START", { 'deleteBlock': true});
-            } else 
-            if ( DOB.active() && cntr !== 1781) {
+            } else  if ( DOB.active()) {
                 if(DOB.changeBlock === true){
+                    // AO.changeBlock('changeBlock', '#CB', false);
                     if(!AO.isStartActiveBlock()){
                         AO.deleteLine('#CB');
                     } else {
@@ -611,49 +666,40 @@ const analyze = (line) => {
                     if(!AO.isStartActiveBlock()){
                         AO.deleteLine('#DB');
                     } else {
-                        AO.deleteLine('#DB END', {'deleteBlock': false });
+                        if(DOB.blockStart !== ''){
+
+                            if(LOB.has(IF, DOB.blockStart)){
+                                AO.deleteLine('#DBZ', {'deleteBlock': LOB.has(ELSE) === true,  'blockStart': '' })
+                                
+                            } else {
+
+                                AO.deleteLine('#DBX END', {'deleteBlock': false, 'blockStart': '' });
+                            }
+                        } else {
+                            AO.deleteLine('#DB END', {'deleteBlock': false, 'blockStart': '' });
+
+                        }
                     }
                 } else if(DOB.keepFnBlock === true){
-                    if(!AO.isStartActiveBlock()){
-                        AO.deleteLine('#KB');
-                    } else {
-                        AO.keepLine('#KB END', STATUS.OK,{'keepFnBlock': false });
-                    }
-                } else if (DOB.forceDelete && !AO.isStartActiveBlock()) {
-                    AO.deleteLine('#FD');
-                } else if (LOB.has(ELSE)) {
-                    AO.keepLine(`#MD ELSE ${DOB.first()}`, STATUS.POTENTIAL, {'deleteIfExpression': '', 'detectClosingElse': true});
-                    DOB.reset();
-                } else if (LOB.has(END_IF)) {
-                    if (DOB.forceDeleteElse) {
-                        AO.deleteLine("#99 ENDX_REM", {'forceDeleteElse' : false});
-                    }
+                    // TODO hier
+                    AO.changeBlock('keepFnBlock', 'KB', true);
                 } else  {
                     AO.deleteLine("#DB START", { 'deleteBlock': true});
                 }
                 // create an Array of deletable stuff
-                const deletableEntry = sRemoveLines[indexDeletableLine];
+                const deletableEntry = sRemoveLines[DOB.indexDeletableLine];
                 if (deletableEntry) {
 
                     // deactivated
-                    indexDeletableLine++;
-                    if (sRemoveLines[indexDeletableLine]) {
-                        DOB.updateNext(sRemoveLines[indexDeletableLine]);
+                    DOB.indexDeletableLine++;
+                    if (sRemoveLines[DOB.indexDeletableLine]) {
+                        DOB.updateNext(sRemoveLines[DOB.indexDeletableLine]);
                     }
                 }
-            } else {
+            } else if(  DOB.hasIife(line, deleteIifeBlocks)){
                 // Delete IIFE
-                if(  !DOB.active() && deleteIifeBlocks.indexOf(cntr) >= 0 ){
-                // if(LOB.has(START_IIFE) && !DOB.active()){
-                    let fnExp = line.match(START_IIFE);
-                    // TODO delete unused functions 
-                    deletableFn.push(fnExp[1]);
-                    let newLine = 'var ' + fnExp[1] + '=' + '(function() {return function t(t) {}; })(); ';
-                    AO.changeLine(   '#CB START', STATUS.POTENTIAL,newLine, {'changeBlock': true});
-                }
-                else {
-                    AO.keepLine('#FOO')
-                }
+                let newLine = line.replace(" (function() {", "function(n){};");
+                AO.changeLine( '#CB START', STATUS.REMOVED,newLine, {'changeBlock': true});
             }
 
         }
@@ -695,7 +741,11 @@ rl.on('close', () => {
         const sizeGzip = '34.8';
         const sizeMin = getFileSize(MIN_FILE).match(/(\d*)/)[0];
         const finalStatus = ' ❤️✔️ DONE ⌛' + ((time2 - time) / 1000) + ' 💾 ' + getFileSize('./assets/foo.js') + ' ⬇️ ' + getFileSize(pathToDist) + ' (' + sizeDiff + '%)' + '\n metrics: ✔️' + metrics.ok + '❌ ' + metrics.deleted + '⚠️ ' + metrics.potential;
-        notifier.notify(finalStatus);
+        console.log(path.join(__dirname, 'logo_small.png'))
+        notifier.notify({
+            title:  'ngBundle optimizer',
+            icon: path.join(__dirname, 'logo_small.png'),
+            message: finalStatus});
         console.log('\nstatistics\n: ' + finalStatus)
         let startFile = '../badge_raw.svg';
         let endFile = '../badge.svg';
