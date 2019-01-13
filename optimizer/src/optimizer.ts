@@ -1,4 +1,11 @@
+import {
+    MAX_DELETE, undeletablefn, undeletable1,
+    todo, deleteIifeBlocks 
+} 
+from  './config';
 
+// let MAX_DELETE = config.MAX_DELETE;
+// let undeletablefn = config.undeletablefn;
 // export const hello = () => 'Hello world!';
 const readline = require('readline');
 const notifier = require('node-notifier');
@@ -12,7 +19,7 @@ let noRun = false;
 let show = {
     output: false,
     delete: false,
-    deleteStatus: false
+    deleteStatus: true
 }
 let metrics = {
     ok: 0,
@@ -53,43 +60,8 @@ const updateLineStatus = (LOB) => {
         );
     }
 }
-// undeletable keep lines
-const undeletable1 = [
-    2013, // otherwise not shown: append to dom
-    3004, // create instance
-    1781, // render Element
-    9365, 9372,
-    1948, 2024,
-    2408, // TODO:  _r hard to delete
-    2926, 2961, 3022, 3027, 4091,4181,
-    1947, 2010, 2011, 2933, 2974, 2975, 2989, 3029,
-    6474,
-    2971, 2972, 2973,
-    2960, 
-    2557, 2559,// fn call && Ft(e, 512, r)
-    2159, 2218, 
-    2923,2925,
-    1611, 1614, 1946,
-    [2418, 2422],
-    [2929, 2933],
-    2709, 2720, 2727, 2736, 2738, 2741, 2744,
-    2761, 2764, 2765,  [2769,2772], 2775, 2776, 2796, 2817, 2819, 
-    // TODO: 2844 wird nicht erkannt
-    [2830, 2846],  2848, 2852, 2861, 2862,
-    3596, 3598, 3601, 3605,3667,
-    4658,
-    [4667-4684], //TODO wegen ? 
-    9375
-    ];
-let MAX_DELETE= 11000;// 4690 //#hier
-let undeletablefn = [950,  1772,
-    2746, // create nodes
-    4668, 4678, 4682, 4714, 4709, 4719, 4724, 4730,  4735, 4741, 4746, 4751, 4756, 4762, 4767, // TODO wegen ternary
-    7865, // end of function wrong detected
-    7881,  // TODO: wichtige funktion
-    8041,
-    9403,
-    ];
+
+
 let undeletable = [];
 undeletable1.forEach((v,i) => {
     if(typeof v !== 'number'){
@@ -113,8 +85,7 @@ const useLine = (line) => {
         { start: 2355, end: 2431 }, // TODO: Cr
         { start: 2440, end: 2746 },
         { start: 2755, end: 2928 },
-        { start: 2930, end: 2972 },
-        { start: 2973, end: 9373 },// 9335-9338
+        { start: 2930, end: 9373 },// 9335-9338
         { start: 9400, end: 12000 },
     ]
     let isOk = false;
@@ -160,6 +131,7 @@ const NEW_FILE2 = pathAssets + 'new2-' + testFileName;
 const testFileStrNew = pathAssets + NEW_FILE;
 const pathToDist = './../demo/dev/new-foo.js'; // './assets/dist/new-foo.min.js';
 const MIN_FILE = './../demo/prod/new-foo.min.js';
+const MIN_FILE_BASE = './../demo/new-foo-base.min.js';
 const DIST_FILE = pathToDist;
 // const DIST_FILE = pathAssets + 'dist/new-' + testFileBase + '.min.js';
 const updateIndexFile = () => {
@@ -183,7 +155,7 @@ const getTargetData = (obj, testFileName) => {
 }
 
 function colorize(color, output) {
-    return ['\033[', color, 'm', output, '\033[0m'].join('');
+    return `\u001b[${color}m${output}\u001b[0m`
 }
 //const GREEN = '\x1b[32m%s\x1b[0m';
 
@@ -357,6 +329,7 @@ const END_PROTOTYPE = /^\s*\}\;\s*$/;
 const END_FOR = /^(\s*)\}$/;
 const FUNCTION = /^\s*function\s[^\()]*\([^\)]*\)\s*\{$/;
 const FUNCTION_OBJECT = /^.*\..*\s\=\sfunction(.*)\s*\{$/;
+const GET_FUNCTION_OBJECT = /^.*\.(.*)\s\=\sfunction(.*)\s*\{$/;
 const END_IIFE = /^\s*\}\)\(\)\;\s*$/;
 const START_IIFE = /^\s*var\s*([^\s]*)\s*\=\s*\(function\(\)\s*\{$/;
 const FN_BLOCK = /^\s*function\s([^\s])*\([^\)]*\)\s*\{\s*$/;
@@ -591,56 +564,7 @@ const deleteUnusedFunctions = (line, lob, ao) => {
 let DOB = new DeleteObject();
 let iifeBlocks = [];
 let deletableFn = [];
-let deleteIifeBlocks = [114, 159,
-    //  181,
-    251,281, 311, 328, 344, 
-    // 600, 
-    //691
-    814, 
-    830, 
-    //860,
-    912, 1034, 
-    // 1061,
-    1206, 4204, 4215, 
-    //4249, 
-    // 4264, 
-    //4286, 4298,
-    4488, 
-    //4527
-    4573, 4586, 4609, 4616, 
-    // 4621, 4643, 4663, 4685, 5780
-    4877, 4901, 
-    //4975, 5025, 5154
-    5318, 5327, 5386, 5434, 5518, 5537, 5548, 5561, 
-    //5970
-    6012, 6052, 6062, 6283, 6326, 6375, 
-    //6423, 6478,
-    // 6523, 6683
-    6776,
-    //  6806
-    6825, 
-    // 6926,
-    // 7003, // hides view
-    7026, 7042, 7209, 7235, 
-    //7384, 7512
-    7670, 7681, 7713, 
-    // 7722,
-    7818, 8245, 8257, 
-    // 8355, 8359
-    8394, 8919, 8994, 
-    // 9120
-    9185, 9199, 9235, 
-    // 9250, 9271, 9320
-    // 9355
-    9467, 9489, 9586, 9714, 9730, 9786, 9860, 9989
-    ,10088,10244,10257,
-    10268,10279,10290,10301,10332
 
-    ]
-
-let todo = [
-    2753
-]
 // cntr === 311 || cntr === 281 || cntr === 344 || cntr === 999999 || cntr === 9860 || cntr === 9989) { //|| cntr === 9972){
 let finalCode = '';
 //TODO: 328
@@ -670,16 +594,40 @@ const analyze = (line) => {
         if(fnRemoveLines[fnIndex] && 
             !DOB.keepFnBlock && !DOB.active() &&
             undeletablefn.indexOf(cntr) === -1 && 
-            fnRemoveLines[fnIndex].start.line === cntr){
+            fnRemoveLines[fnIndex].start.line === cntr
+            ){
             let loc = fnRemoveLines[fnIndex];
             if(loc && loc.start){
                 // console.log(loc);
                 // console.log('LOB.newLine');
                 // LOB.newLine +=  `//#RF ${loc.start}`
                 // fnIndex++;
-                // AO.changeBlock('keepFnBlock', 'KB', true);
                 // if([950, 1007].indexOf(cntr) === -1){
-                    AO.keepLine("#KFB START", STATUS.POTENTIAL, { 'keepFnBlock': true});
+                    if(cntr > MAX_DELETE){
+                        if(LOB.has(PROTOTYPE)){
+
+                            AO.keepLine("#KFB1 START", STATUS.POTENTIAL, { 'keepFnBlock': true});
+                        } else if(LOB.has(FUNCTION_OBJECT)){
+                            let m = line.match(GET_FUNCTION_OBJECT);
+                            console.log(m[1] + ' => ' +  m[0]);
+                            if(m[1].indexOf(']') >= 0){
+
+                                AO.deleteLine("#DB2 START", { 'deleteBlock': true});
+                                } else {
+                                        AO.keepLine("#KFB2 START", STATUS.POTENTIAL, { 'keepFnBlock': true});
+                                    }
+                                } else if(LOB.has(FN_BLOCK)){
+                                    
+                                    // AO.deleteLine("#DB0 START", { 'deleteBlock': true});
+                                    AO.keepLine("#KFB3 START", STATUS.POTENTIAL, { 'keepFnBlock': true});
+                                } else {
+                                    
+                            AO.keepLine("#KFB0 START", STATUS.POTENTIAL, { 'keepFnBlock': true});
+                        }
+                    } else {
+                        AO.deleteLine("#DB1 START", { 'deleteBlock': true});
+
+                    }
                 // }
             }
         }  else 
@@ -840,7 +788,7 @@ rl.on('close', () => {
     fs.copyFile(NEW_FILE, DIST_FILE, (err) => {
         if (err) throw err;
         const time2 = new Date().getTime();
-        console.log(NEW_FILE2 + ' was copied to' + DIST_FILE);
+        console.log(colorize(BLUE, NEW_FILE2 + ' was copied to' + DIST_FILE));
         const sizeStart = getFileSize('./assets/foo.js').match(/(\d*)/)[0];
         const sizeEnd = getFileSize(pathToDist).match(/(\d*)/)[0];
         const sizeDiff = (100 * sizeEnd) / sizeStart;
@@ -849,8 +797,9 @@ rl.on('close', () => {
 
         const sizeGzip = '34.8';
         const sizeMin = getFileSize(MIN_FILE).match(/(\d*)/)[0];
-        const finalStatus = ' ❤️✔️ DONE ⌛' + ((time2 - time) / 1000) + ' 💾 ' + getFileSize('./assets/foo.js') + ' ⬇️ ' + getFileSize(pathToDist) + ' (' + sizeDiff + '%)' + '\n metrics: ✔️' + metrics.ok + '❌ ' + metrics.deleted + '⚠️ ' + metrics.potential;
-        console.log(path.join(__dirname, 'logo_small.png'))
+        const sizeMinBase = getFileSize(MIN_FILE_BASE).match(/(\d*)/)[0];
+        const sizeDiffBase = (sizeMin - sizeMinBase);
+        const finalStatus = ' ❤️✔️ DONE ⌛' + ((time2 - time) / 1000) + ' 💾 ' + getFileSize('./assets/foo.js') + (sizeDiffBase < 0 ? ' ⬇️ ' : ' ⬆️ ')  + ' ' + sizeDiffBase + '%)' + '\n metrics: ✔️' + metrics.ok + '❌ ' + metrics.deleted + '⚠️ ' + metrics.potential;
         notifier.notify({
             title:  'ngBundle optimizer',
             icon: path.join(__dirname, 'logo_small.png'),
@@ -874,4 +823,4 @@ rl.on('close', () => {
             });
         });
     });
-});
+}); 
