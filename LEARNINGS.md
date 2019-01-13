@@ -1,0 +1,19 @@
+- delete error logging: 5057, 10421
+- reduce objects
+- mocked test function
+- TS using
+- trying out
+- indentions instead of clauses
+- nodejs: 1xtime write 1min > 3sec
+- TS compilation time
+- node runtime errors
+- just 1 time touched functions
+- debug code
+- emoji reducing
+- writing unit test
+- funciton objects
+- how unit tests working
+- how webpack and iifee bootstrap angular
+- notifier
+- coverage object
+- 7881 Inhalte

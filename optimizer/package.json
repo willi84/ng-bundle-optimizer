@@ -7,7 +7,7 @@
     "build": "tsc",
     "dev2": "tsc --watch && node dist/index.js",
     "compileX": "tsc && node dist/optimizer/optimizer.js",
-    "compile": "tsc --diagnostics && node dist/optimizer.js",
+    "compile": "tsc --diagnostics -p ./ && node dist/optimizer.js",
     "compile2": "tsc && node dist/index.js",
     "dev": "nodemon -e ts  --exec \"npm run compile\"",
     "test": "tsc && mocha dist/**/*.spec.js",
