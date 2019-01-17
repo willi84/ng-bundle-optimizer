@@ -1,28 +1,76 @@
 
 
     
-export let MAX_DELETE= 100;// 4690 //#hier
+export let MAX_DELETE= 9357;// 4690 //#hier
 export let undeletablefn = [950,  1772,
-    2746, // create nodes
-    4668, 4678, 4682, 4714, 4709, 4719, 4724, 4730,  4735, 4741, 4746, 4751, 4756, 4762, 4767, // TODO wegen ternary
+    // 2746, // create nodes
+    4668,
+     4678, 4682, 4714, 4709, 4719, 4724, 4730,  4735, 4741, 4746, 4751, 4756, 4762, 4767, // TODO wegen ternary
     7865, // end of function wrong detected
-    7881,  // TODO: wichtige funktion
+    7881,  // TODO: important: contains content
     8041,
-    9403,
+    9403, 
+    4662, 5317, 
+    9361, // INFO: create element,
+     2746,
+    //  7881,
+    
+];
+export const checkFn = [
+    
+    // hard to delete or single line fn or fn dependency
+    2257, 2275, 2122, 1648, 3694, 4030, 8129,
+    
+    // manuell vs. automatic ???
+    801, 
+]
+export const undeletable2 = [1311]
+// TODO: 1062: what it is?
+// detect where empty fn is used
+export const keepFnName = [
+    109, 806, 1179, 1368,
+     2431,2575, 2916,  // todo: warum fn wird deleted
+    2348,  // TODO: delete view ... why?
+    3552, 3624, 4976,
+    5387, // TODO: warum info meldung?
+    5971, 6524, 6684, 6807,  // instance of object => look at iife replacement
+    8038,
+    4096, 4099,  // TODO: next is undeletable
+    // next
+    980, 983, 992, 1027, 
+    4277,
+    4834, 5021, 5188, 5324, 5385, 6392, 
+    8135, 8159, 8256, 8350, 9548, 
+    // 601,
+    10397, // TODO: fn needs to be keeped
+
+    // optimized
+    
 ];
 // undeletable keep lines
 export const undeletable1 = [
+    [2165,2169], [2180, 2184], [2186,2190], [2201, 2205],[2207,2211], 2214,2218,  2220, // optimized Ln(e, t)
+
+    3029, 3027, [2978,2983],
+[2973, 2976], [2969,2971],3026, 3028, [2959, 2969],
+   
+
+1311, 1729, 
+// 1753, //  TODO: possible somewhere else to delete properties
     2013, // otherwise not shown: append to dom
-    3004, // create instance
-    1781, // render Element
-    9365, 9372,
-    1948, 2024,
+3004, // create instance
+1781, // render Element
+9365, 9372,
+1948, 2024,
     2408, // TODO:  _r hard to delete
-    2926, 2961, 3022, 3027, 4091,4181,
+    2926, 2961, 3022, 3027, 
+    4091, // delete view
+    
+    4181,
     1947, 2010, 2011, 2933, 2974, 2975, 2989, 3029,
     6474,
     2971, 2972, 2973,
-    2960, 
+    [2960,2964], 2976,[2978-2983],[2988,2990],
     2557, 2559,// fn call && Ft(e, 512, r)
     2159, 2218, 
     2923,2925,
@@ -36,7 +84,41 @@ export const undeletable1 = [
     3596, 3598, 3601, 3605,3667,
     4658,
     [4667-4684], //TODO wegen ? 
-    9375
+    9375,
+    9348, //DefaultRenderer,
+    9365, // createElement
+    1773, 1774, 1781, [1785,1787],
+    2989,
+    [602,610], [628, 631],
+    2299, 2312, 2319, 2326, 2336, 2337,  //TODO: händisch ausprobiert
+    2938, 2939, 2940, 2942, 2945, 2947, 2948, 2952, // händisch ausprobiert
+    
+    // done
+    [2135, 2145], [2147, 2155], 2159, 2161, 2162,
+    2120,
+    1756,[1758, 1762], [1764, 1765], [1769, 1770],
+    1483,
+    1439,  [1445,1450], 1456, [1463, 1464], 1466, 1468, [1477,1479],
+    [1790, 1794], [1796, 1797],
+    1884,
+    1902, [1906, 1909],[1945,1949], [1964, 1967], 1974, 1982, 1986, 1988, 1989, 1992, 1997, 2002, //todo
+    2024, [2019, 2022], [2015, 2017], 2013, [2006, 2011], // TODO some stuff from other side deleted
+    3706, 3710, 3713, 3715,
+    [4300, 4302],4306, [4308, 4316], [4323,4332],[4346, 4350],[4354, 4363], 
+    4369, [4376,4380],[4405, 4408],
+    4529, 4533, 4534, 4536,
+    [4624,4629], [4645, 4648], 4654, 4653, 
+    4690,
+    4789, 4797, 4804, [4807, 4823], [4833, 4834], [4840,4842 ],
+    5027,
+    5161, 5162, 5168, 5188,5218, 5219,
+    [6425, 6427], 6431, 
+    [6929, 6931], [6934, 6937], 6944,
+    [7386, 7389],
+    9325,
+    [2747,2752],
+    // [10397,10400],
+
     ];
 export let deleteIifeBlocks = [114, 159,
         //  181,
@@ -85,6 +167,25 @@ export let deleteIifeBlocks = [114, 159,
     
         ]
     
-    export let todo = [
-        2753
-    ]
+export let todoDeletable = [
+    2753,  
+    [6394, 6411], // object delete
+    5244,[5235, 5250],
+    //5234, //partielles delete
+    [9310, 9319],
+    2929, // componentRendererType delete everywhere
+    [2991,3025],
+    [2192, 2199],
+]
+export let todoAutomize = [
+    9327, 
+    // 4807, 4815 /// not automized deletable?
+    4823, 9361, 1772, 601,
+    
+    // optimized
+    2164,
+    //  2958, // TODO
+    2131, 2118, 1755, 1481, 1423, 
+    1433, 692, 1789, 4299, 4528, 4644, 5026,
+    6424, 2746, 
+]

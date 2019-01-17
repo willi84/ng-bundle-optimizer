@@ -57,13 +57,13 @@
     <text x="60" y="117" fill="#fff" letter-spacing="1px">goal</text>
   </g>
   <g fill="#fff" text-anchor="left" font-family="Verdana,Geneva,sans-serif" font-size="10">
-    <text x="170" y="42" fill="#777" letter-spacing="1px"> (46.15)%</text>
+    <text x="170" y="42" fill="#777" letter-spacing="1px"> (32.05)%</text>
     </g>
   <g fill="#fff" text-anchor="left" font-family="Verdana,Geneva,sans-serif" font-size="14.5">
     <!-- line 1 -->
-    <text x="110" y="42" fill="#777" letter-spacing="1px">144kB</text>
+    <text x="110" y="42" fill="#777" letter-spacing="1px">100kB</text>
     <text x="110" y="17" fill="#777" letter-spacing="1px">312kB</text>
-    <text x="110" y="67" fill="#777" letter-spacing="1px">56kB</text>
+    <text x="110" y="67" fill="#777" letter-spacing="1px">32kB</text>
     <text x="110" y="92" fill="#777" letter-spacing="1px">34.8kB</text>
     <text x="110" y="117" fill="#777" letter-spacing="1px"> &lt; 2.7kB</text>
   </g>

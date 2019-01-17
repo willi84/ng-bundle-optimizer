@@ -12,6 +12,8 @@
     "dev": "nodemon -e ts  --exec \"npm run compile\"",
     "test": "tsc && mocha dist/**/*.spec.js",
     "lint": "eslint src --ext ts",
+    "base": "cp ../demo/prod/new-foo.min.js ../demo/new-foo-base.min.js",
+    "prod": "npm run compile & npm run base",
     "tsc": "tsc"
   },
   "keywords": [],
