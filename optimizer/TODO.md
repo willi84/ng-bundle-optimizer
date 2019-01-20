@@ -2,6 +2,7 @@
 - delete potential
 - search other iife
 - manual delete
+- vscode unused code detection
 - 2746 warum nicht in undeletablFn
 - detect unused function
 - manual inside of functions delete
