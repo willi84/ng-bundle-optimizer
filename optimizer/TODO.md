@@ -9,3 +9,6 @@
 -2011/2012 detailed reducing
 var u = gn(e, t, n);// #QA1 i:3789 orig: 
             // if (u) {// #QB 
+
+
+            var s = n('t7NR'); // TOOD: how to detect

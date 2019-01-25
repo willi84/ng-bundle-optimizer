@@ -850,7 +850,11 @@ const analyze = (line) => {
                                 if (todoAutomize.indexOf(cntr) !== -1) {
                                     AO.keepLine("#KBQ", STATUS.POTENTIAL, { 'keepFnBlock': true });
                                 } else {
-                                    AO.keepLine("#QB"); //, STATUS.POTENTIAL, { 'keepFnBlock': true});
+                                    if(deletableFunctions.indexOf(cntr) !== -1){
+                                        AO.deleteBlock("#KFB03");
+                                    } else {
+                                        AO.keepLine("#QB");
+                                    }
                                 }
                             }
                         }
