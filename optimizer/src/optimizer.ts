@@ -2,7 +2,7 @@ import {
     MAX_DELETE, undeletablefn, undeletable1,
     todoDeletable, deleteIifeBlocks, keepFnName,
     todoAutomize, checkFn, emptyIIFe, deletableFunctions,
-    deleteLOC1
+    deleteLOC1, specialReplacements
 }
     from './config';
 
@@ -63,6 +63,15 @@ const updateLineStatus = (LOB) => {
         );
     }
 }
+
+let specialReplacementLines = [];
+let specialReplacementValues = [];
+specialReplacements.forEach((entry) => {
+    console.log(entry);
+    specialReplacementValues.push(entry.value);
+    specialReplacementLines.push(entry.line);
+})
+console.log(specialReplacementLines);
 
 
 let undeletable = [];
@@ -509,6 +518,11 @@ class ActionObject {
 
             this.deleteLine(`${statusText} START`, { 'deleteBlock': true });
         } else {
+            if(cntr === 964){
+                console.log(keepFnName.indexOf(this.lob.cntr));
+                console.log(undeletable.indexOf(this.lob.cntr + 1))
+                console.log(statusText)
+            }
             this.keepLine('#DB ERROR');
         }
     }
@@ -639,14 +653,15 @@ const analyze = (line) => {
                             } else {
                                 // 22
                                 // TODO: delteable lines ??
-                                AO.keepLine("#KFB3 START", STATUS.POTENTIAL, { 'keepFnBlock': true });
+                                AO.keepLine("#KFB3 START", STATUS.OK, { 'keepFnBlock': true });
 
                             }
 
                         } else {
                             if (
-                                keepFnName.indexOf(cntr) === -1 &&
-                                undeletable.indexOf(cntr + 1) === -1
+                                keepFnName.indexOf(cntr) === -1 
+                                // &&
+                                // undeletable.indexOf(cntr + 1) === -1
                             ) {
                                 if (LOB.has(FUNCTION_ONE_LINE)) {
                                     AO.deleteLine("#DL SINGLE FUNC");
@@ -656,7 +671,17 @@ const analyze = (line) => {
                                 }
                             } 
                             else {
-                                    AO.keepLine("#KFB01 START", STATUS.POTENTIAL, { 'keepFnBlock': true });
+                                // TODO hier
+                            if(deletableFunctions.indexOf(cntr) !== -1){
+                                if (LOB.has(FUNCTION_ONE_LINE)) {
+                                    AO.deleteLine("#DL SINGLE FUNC");
+                                } else{
+
+                                    AO.deleteBlock("#DB11");
+                                }
+                            } else {
+                                AO.keepLine("#KFB01 START", STATUS.OK, { 'keepFnBlock': true });
+                            }
                                 // TODO: 19
                             }
                         }
@@ -781,7 +806,7 @@ const analyze = (line) => {
                                 undeletable.indexOf(cntr + 1) === -1
                             ) {
                                 if (todoAutomize.indexOf(cntr) !== -1) {
-                                    AO.keepLine("#KBQ", STATUS.POTENTIAL, { 'keepFnBlock': true });
+                                    AO.keepLine("#KBQ", STATUS.OK, { 'keepFnBlock': true });
                                 } else {
                                     if (LOB.has(FUNCTION) &&
                                         undeletablefn.indexOf(cntr) !== -1) {
@@ -799,15 +824,22 @@ const analyze = (line) => {
                                                     AO.deleteBlock("#Q8");
                                                 } else {
 
-                                                    AO.keepLine("#QA3", STATUS.POTENTIAL, { 'keepFnBlock': true });
+                                                    AO.keepLine("#QA3", STATUS.OK, { 'keepFnBlock': true });
                                                 }
                                             } else {
-
-                                                AO.keepLine("#QA5", STATUS.POTENTIAL, { 'keepFnBlock': true });
-                                                // AO.keepLine("#QA4");
+                                                if(deletableFunctions.indexOf(cntr) !== -1){
+                                                    AO.deleteBlock("#Q10");
+                                                } else {
+                                                AO.keepLine("#QA5", STATUS.OK, { 'keepFnBlock': true });
+                                                }
                                             }
                                         } else if (LOB.has(FUNCTION_ONE_LINE)) {
-                                            AO.keepLine("#QA4");
+                                            if([6374,8256, 8304,10087].indexOf(cntr) !== -1){
+                                                AO.deleteLine('#Q9')
+                                            } else {
+
+                                                AO.keepLine("#QA4");
+                                            }
                                         } else if (DOB.hasIife(line, [691,181000,424009])) {
                                             // AO.keepLine("#QA7");
                                             // Delete IIFE
@@ -823,22 +855,49 @@ const analyze = (line) => {
                                                     if(deletableFunctions.indexOf(cntr) !== -1){
                                                         AO.deleteBlock("#DELFUN");
                                                     } else {
-
+                                                        if(deleteLOC.indexOf(cntr) !== -1){
+                                                            AO.deleteLine("#RM3");
+                                                        } else {
                                                         // Delete IIFE
                                                         let newLine = line.replace(" (function() {", "function(n){};");
                                                         AO.keepLine("#QA6");
+                                                        }
                                                     }
                                                   // AO.changeLine( '#CB START', STATUS.REMOVED,newLine, {'changeBlock': true});
                                               }
                                         } 
                                         else if(deleteLOC.indexOf(cntr) !== -1){
-                                            AO.deleteLine("#DSL");
+                                            if(specialReplacementLines.indexOf(cntr) !== -1){
+                                                console.log('cntr: '+cntr)
+                                                var index = specialReplacementLines.indexOf(cntr)
+                                                AO.changeLine('#CL1 START', STATUS.REMOVED, specialReplacementValues[index]);
+                                            } else {
+                                                if(deleteLOC.indexOf(cntr) !== -1){
+                                                    AO.deleteLine("#RM1");
+                                                } else {
+
+                                                    AO.keepLine("#QA1");
+                                                }
+                                            }
+                                            // AO.deleteLine("#DSL1");
                                         }
                                         else {
                                             if(deletableFunctions.indexOf(cntr) !== -1){
-                                                AO.deleteBlock("#KFB02");
+                                                
+
+                                                    AO.deleteBlock("#KFB02");
+                                                
                                             } else {
-                                                AO.keepLine("#QA1");
+                                                
+                                                if(specialReplacementLines.indexOf(cntr) !== -1){
+                                                    console.log('cntr: '+cntr)
+                                                    var index = specialReplacementLines.indexOf(cntr)
+                                                    AO.changeLine('#CL1 START', STATUS.REMOVED, specialReplacementValues[index]);
+                                                } else {
+
+                                                    AO.keepLine("#QA1");
+                                                }
+                                                
                                             }
                                         }
                                     }
@@ -848,12 +907,20 @@ const analyze = (line) => {
                             } else {
                                 // 3
                                 if (todoAutomize.indexOf(cntr) !== -1) {
-                                    AO.keepLine("#KBQ", STATUS.POTENTIAL, { 'keepFnBlock': true });
+                                    AO.keepLine("#KBQ", STATUS.OK, { 'keepFnBlock': true });
                                 } else {
                                     if(deletableFunctions.indexOf(cntr) !== -1){
+                                        if(keepFnName.indexOf(cntr) !== -1){
+                                            AO.keepLine("#KBZ", STATUS.OK, { 'keepFnBlock': true });
+                                        } else {
                                         AO.deleteBlock("#KFB03");
+                                        }
                                     } else {
+                                        if(deleteLOC.indexOf(cntr) !== -1){
+                                            AO.deleteLine("#RM2");
+                                        } else {
                                         AO.keepLine("#QB");
+                                        }
                                     }
                                 }
                             }
@@ -904,7 +971,6 @@ if (!noRun) {
 
 prevLine = '';
 rl.on('close', () => {
-
     writeNewLine(fs, NEW_FILE, finalCode, false);
     fs.copyFile(NEW_FILE, DIST_FILE, (err) => {
         if (err) throw err;
