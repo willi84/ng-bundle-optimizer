@@ -67,7 +67,7 @@ const updateLineStatus = (LOB) => {
 let specialReplacementLines = [];
 let specialReplacementValues = [];
 specialReplacements.forEach((entry) => {
-    console.log(entry);
+    // console.log(entry);
     specialReplacementValues.push(entry.value);
     specialReplacementLines.push(entry.line);
 })
@@ -507,7 +507,14 @@ class ActionObject {
             handleTrigger(this, trigger);
             this.lob.update('', statusText, status);
         } else {
-            this.keepLine('#NOT DELETABLE');
+            if(specialReplacementLines.indexOf(cntr) !== -1){
+                console.log('cntr: '+cntr)
+                var index = specialReplacementLines.indexOf(cntr)
+                this.changeLine('#CL1 START', STATUS.REMOVED, specialReplacementValues[index]);
+            } else {
+
+                this.keepLine('#NOT DELETABLE');
+            }
         }
     }
     deleteBlock(statusText){
@@ -539,7 +546,14 @@ class ActionObject {
                 if (undeletable.indexOf(this.lob.cntr) === -1) {
                     this.deleteLine(`#${text}`);
                 } else {
-                    this.keepLine('#NOT DELETABLE');
+                    if(specialReplacementLines.indexOf(cntr) !== -1){
+                        console.log('XXcntr: '+cntr)
+                        var index = specialReplacementLines.indexOf(cntr)
+                        this.changeLine('#CL1 START', STATUS.REMOVED, specialReplacementValues[index]);
+                    } else {
+        
+                        this.keepLine('#NOT DELETABLE');
+                        }
                 }
             } else {
                 log(this.dob[key])
@@ -549,7 +563,14 @@ class ActionObject {
                     if (undeletable.indexOf(this.lob.cntr) === -1) {
                         this.deleteLine(`#${text} END`, { key: false });
                     } else {
-                        this.keepLine('#NOT DELETABLE');
+                        if(specialReplacementLines.indexOf(cntr) !== -1){
+                console.log('cntr: '+cntr)
+                var index = specialReplacementLines.indexOf(cntr)
+                this.changeLine('#CL1 START', STATUS.REMOVED, specialReplacementValues[index]);
+            } else {
+
+                this.keepLine('#NOT DELETABLE');
+            }
                     }
                 }
                 this.dob[key] = false;
@@ -727,7 +748,6 @@ const analyze = (line) => {
                         doNext = sRemoveLines[DOB.indexDeletableLine] !== undefined;
 
                     } else if (DOB.getNextLine() === (cntr + 1) && useLine(cntr)) {
-                        console.log(cntr)
                         if (LOB.has(FOR)) {
                             AO.deleteLine('#NDL_IF', { 'deleteBlock': true, 'blockStart': line });
                         } else {
@@ -785,8 +805,15 @@ const analyze = (line) => {
                             // Delete IIFE
                             if(emptyIIFe.indexOf(cntr) !== -1){
                                 let newLine = line.replace(" (function() {", "function(){}();");
-                                AO.changeLine('#CB3 START', STATUS.REMOVED, newLine, { 'changeBlock': true });
 
+                                if(deletableFunctions.indexOf(cntr) !== -1){
+                                    AO.deleteBlock("#DB START YYY");
+
+                                } else {
+
+                                    AO.changeLine('#CB3 START', STATUS.REMOVED, newLine, { 'changeBlock': true });
+                                }
+                                
                             } else {
                                 if(deletableFunctions.indexOf(cntr) !== -1){
                                     AO.deleteBlock("#DB START YYY");
@@ -837,8 +864,18 @@ const analyze = (line) => {
                                             if([6374,8256, 8304,10087].indexOf(cntr) !== -1){
                                                 AO.deleteLine('#Q9')
                                             } else {
+                                                if(deletableFunctions.indexOf(cntr) !== -1){
+                                                if (LOB.has(FUNCTION_ONE_LINE)) {
+                                                    AO.deleteLine("#DL SINGLE FUNC");
+                                                } else{
+                
+                                                    AO.deleteBlock("#DB7");
+                                                }
+                                            } else {
 
                                                 AO.keepLine("#QA4");
+                                            }
+
                                             }
                                         } else if (DOB.hasIife(line, [691,181000,424009])) {
                                             // AO.keepLine("#QA7");
@@ -868,7 +905,6 @@ const analyze = (line) => {
                                         } 
                                         else if(deleteLOC.indexOf(cntr) !== -1){
                                             if(specialReplacementLines.indexOf(cntr) !== -1){
-                                                console.log('cntr: '+cntr)
                                                 var index = specialReplacementLines.indexOf(cntr)
                                                 AO.changeLine('#CL1 START', STATUS.REMOVED, specialReplacementValues[index]);
                                             } else {
@@ -890,7 +926,6 @@ const analyze = (line) => {
                                             } else {
                                                 
                                                 if(specialReplacementLines.indexOf(cntr) !== -1){
-                                                    console.log('cntr: '+cntr)
                                                     var index = specialReplacementLines.indexOf(cntr)
                                                     AO.changeLine('#CL1 START', STATUS.REMOVED, specialReplacementValues[index]);
                                                 } else {
@@ -959,6 +994,7 @@ const analyze = (line) => {
             }
         }
         updateLineStatus(LOB);
+        
         finalCode += LOB.newLine + '\n';
     } else {
     }
@@ -971,6 +1007,9 @@ if (!noRun) {
 
 prevLine = '';
 rl.on('close', () => {
+    // var m = finalCode.match(/e\(\)\(\)\,/g)
+    // console.log(m.length);
+    finalCode = finalCode.replace(/e\(\)\(\)\,/g,'');
     writeNewLine(fs, NEW_FILE, finalCode, false);
     fs.copyFile(NEW_FILE, DIST_FILE, (err) => {
         if (err) throw err;
