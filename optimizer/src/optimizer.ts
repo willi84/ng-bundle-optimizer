@@ -71,7 +71,6 @@ specialReplacements.forEach((entry) => {
     specialReplacementValues.push(entry.value);
     specialReplacementLines.push(entry.line);
 })
-console.log(specialReplacementLines);
 
 
 let undeletable = [];
@@ -494,7 +493,12 @@ class ActionObject {
     keepLine(statusText, statusCode?: STATUS, trigger?) {
 
         let status = statusCode || STATUS.OK;
+        if(specialReplacementLines.indexOf(cntr) !== -1){
+            var index = specialReplacementLines.indexOf(cntr)
+            this.changeLine('#CL1 START', STATUS.POTENTIAL, specialReplacementValues[index]);
+        } else {
         this.lob.update(this.lob.line, statusText, status);
+        }
         handleTrigger(this, trigger);
     }
     deleteLine(statusText, trigger?) {
@@ -508,9 +512,8 @@ class ActionObject {
             this.lob.update('', statusText, status);
         } else {
             if(specialReplacementLines.indexOf(cntr) !== -1){
-                console.log('cntr: '+cntr)
                 var index = specialReplacementLines.indexOf(cntr)
-                this.changeLine('#CL1 START', STATUS.REMOVED, specialReplacementValues[index]);
+                this.changeLine('#CL1 START', STATUS.POTENTIAL, specialReplacementValues[index]);
             } else {
 
                 this.keepLine('#NOT DELETABLE');
@@ -526,9 +529,6 @@ class ActionObject {
             this.deleteLine(`${statusText} START`, { 'deleteBlock': true });
         } else {
             if(cntr === 964){
-                console.log(keepFnName.indexOf(this.lob.cntr));
-                console.log(undeletable.indexOf(this.lob.cntr + 1))
-                console.log(statusText)
             }
             this.keepLine('#DB ERROR');
         }
@@ -547,9 +547,8 @@ class ActionObject {
                     this.deleteLine(`#${text}`);
                 } else {
                     if(specialReplacementLines.indexOf(cntr) !== -1){
-                        console.log('XXcntr: '+cntr)
                         var index = specialReplacementLines.indexOf(cntr)
-                        this.changeLine('#CL1 START', STATUS.REMOVED, specialReplacementValues[index]);
+                        this.changeLine('#CL1 START', STATUS.POTENTIAL, specialReplacementValues[index]);
                     } else {
         
                         this.keepLine('#NOT DELETABLE');
@@ -564,9 +563,8 @@ class ActionObject {
                         this.deleteLine(`#${text} END`, { key: false });
                     } else {
                         if(specialReplacementLines.indexOf(cntr) !== -1){
-                console.log('cntr: '+cntr)
                 var index = specialReplacementLines.indexOf(cntr)
-                this.changeLine('#CL1 START', STATUS.REMOVED, specialReplacementValues[index]);
+                this.changeLine('#CL1 START', STATUS.POTENTIAL, specialReplacementValues[index]);
             } else {
 
                 this.keepLine('#NOT DELETABLE');
@@ -660,21 +658,21 @@ const analyze = (line) => {
                 ) {
                     let loc = fnRemoveLines[fnIndex];
                     if (loc && loc.start) {
-                        if (LOB.has(PROTOTYPE)) {
+                        if (LOB.has(PROTOTYPE)  ||LOB.has(FUNCTION_OBJECT) ) {
                             AO.deleteBlock("#DB4");
-                        } else if (LOB.has(FUNCTION_OBJECT)) {
-                            AO.deleteBlock("#DB5");
+                        
                         } else if (LOB.has(FN_BLOCK)) {
                             if (
-                                keepFnName.indexOf(cntr) === -1 &&
+                                keepFnName.indexOf(cntr) === -1 
+                                &&
                                 undeletable.indexOf(cntr + 1) === -1
                             ) {
                                 AO.deleteBlock("#DB6");
 
                             } else {
-                                // 22
+                                // 5
                                 // TODO: delteable lines ??
-                                AO.keepLine("#KFB3 START", STATUS.OK, { 'keepFnBlock': true });
+                                AO.keepLine("#KFw3 START", STATUS.OK, { 'keepFnBlock': true });
 
                             }
 
@@ -692,18 +690,7 @@ const analyze = (line) => {
                                 }
                             } 
                             else {
-                                // TODO hier
-                            if(deletableFunctions.indexOf(cntr) !== -1){
-                                if (LOB.has(FUNCTION_ONE_LINE)) {
-                                    AO.deleteLine("#DL SINGLE FUNC");
-                                } else{
-
-                                    AO.deleteBlock("#DB11");
-                                }
-                            } else {
                                 AO.keepLine("#KFB01 START", STATUS.OK, { 'keepFnBlock': true });
-                            }
-                                // TODO: 19
                             }
                         }
                         // }
@@ -740,7 +727,7 @@ const analyze = (line) => {
                                 AO.deleteBlock("#DBAA");
                             } else {
 
-                                AO.changeBlock('keepFnBlock', 'KB1', true);
+                                AO.changeBlock('keepFnBlock', 'KB2', true);
                             }
                         } else {
                             AO.deleteBlock("#DB START");
@@ -803,29 +790,15 @@ const analyze = (line) => {
                         if (deleteUnusedFunctions(line, LOB, AO)) {
                         } else if (DOB.hasIife(line, deleteIifeBlocks)) {
                             // Delete IIFE
-                            if(emptyIIFe.indexOf(cntr) !== -1){
                                 let newLine = line.replace(" (function() {", "function(){}();");
 
                                 if(deletableFunctions.indexOf(cntr) !== -1){
-                                    AO.deleteBlock("#DB START YYY");
+                                    AO.deleteBlock("#DBxx START YYY");
 
                                 } else {
 
                                     AO.changeLine('#CB3 START', STATUS.REMOVED, newLine, { 'changeBlock': true });
                                 }
-                                
-                            } else {
-                                if(deletableFunctions.indexOf(cntr) !== -1){
-                                    AO.deleteBlock("#DB START YYY");
-
-                                } else {
-
-                                    let newLine = line.replace(" (function() {", "function(n){};");
-                                    AO.changeLine('#CB2 START', STATUS.REMOVED, newLine, { 'changeBlock': true });
-                                }
-
-                            }
-
                         } else {
                             //  AO.keepLine("#KFB1 START", STATUS.POTENTIAL, { 'keepFnBlock': true});
                             if (
@@ -840,73 +813,45 @@ const analyze = (line) => {
                                         if (cntr === 2746 || cntr === 7881) {
 
                                             AO.keepLine("#QA2");
-                                        } else {
-
-                                            AO.deleteBlock("#QCC");
-                                        }
+                                        } 
                                     } else {
                                         if (LOB.has(FUNCTION)) {
-                                            if (checkFn.indexOf(cntr) === -1) {
-                                                if(deletableFunctions.indexOf(cntr) !== -1){
-                                                    AO.deleteBlock("#Q8");
-                                                } else {
-
-                                                    AO.keepLine("#QA3", STATUS.OK, { 'keepFnBlock': true });
-                                                }
+                                            if(deletableFunctions.indexOf(cntr) !== -1){
+                                                AO.deleteBlock("#Q8");
                                             } else {
-                                                if(deletableFunctions.indexOf(cntr) !== -1){
-                                                    AO.deleteBlock("#Q10");
-                                                } else {
-                                                AO.keepLine("#QA5", STATUS.OK, { 'keepFnBlock': true });
-                                                }
+
+                                                AO.keepLine("#QA3", STATUS.OK, { 'keepFnBlock': true });
                                             }
                                         } else if (LOB.has(FUNCTION_ONE_LINE)) {
-                                            if([6374,8256, 8304,10087].indexOf(cntr) !== -1){
-                                                AO.deleteLine('#Q9')
-                                            } else {
-                                                if(deletableFunctions.indexOf(cntr) !== -1){
+                                            if(deletableFunctions.indexOf(cntr) !== -1){
                                                 if (LOB.has(FUNCTION_ONE_LINE)) {
                                                     AO.deleteLine("#DL SINGLE FUNC");
                                                 } else{
-                
                                                     AO.deleteBlock("#DB7");
                                                 }
                                             } else {
 
                                                 AO.keepLine("#QA4");
                                             }
-
-                                            }
-                                        } else if (DOB.hasIife(line, [691,181000,424009])) {
-                                            // AO.keepLine("#QA7");
-                                            // Delete IIFE
-                                            // TODO: var M=function(){function n(){}return n.prototype.get=function(n,t){return t},n}();
-                            let newLine = line.replace(" (function() {", "function(n){};");
-                            AO.changeLine('#CB1 START', STATUS.REMOVED, newLine, { 'changeBlock': true });
-                                        
                                         }  
                                           else if (LOB.has(START_IIFE)) {
-                                              if(cntr === 6806){
-                                                AO.deleteBlock("#DB START YYY");
-                                              } else {
-                                                    if(deletableFunctions.indexOf(cntr) !== -1){
-                                                        AO.deleteBlock("#DELFUN");
-                                                    } else {
-                                                        if(deleteLOC.indexOf(cntr) !== -1){
-                                                            AO.deleteLine("#RM3");
-                                                        } else {
-                                                        // Delete IIFE
-                                                        let newLine = line.replace(" (function() {", "function(n){};");
-                                                        AO.keepLine("#QA6");
-                                                        }
-                                                    }
-                                                  // AO.changeLine( '#CB START', STATUS.REMOVED,newLine, {'changeBlock': true});
-                                              }
+                                            
+                                            if(deletableFunctions.indexOf(cntr) !== -1){
+                                                AO.deleteBlock("#DELFUN");
+                                            } else {
+                                                if(deleteLOC.indexOf(cntr) !== -1){
+                                                    AO.deleteLine("#RM3");
+                                                } else {
+                                                // Delete IIFE
+                                                let newLine = line.replace(" (function() {", "function(n){};");
+                                                AO.keepLine("#QA6");
+                                                }
+                                            }
                                         } 
                                         else if(deleteLOC.indexOf(cntr) !== -1){
                                             if(specialReplacementLines.indexOf(cntr) !== -1){
                                                 var index = specialReplacementLines.indexOf(cntr)
-                                                AO.changeLine('#CL1 START', STATUS.REMOVED, specialReplacementValues[index]);
+                                                AO.changeLine('#CL1 START', STATUS.POTENTIAL, specialReplacementValues[index]);
                                             } else {
                                                 if(deleteLOC.indexOf(cntr) !== -1){
                                                     AO.deleteLine("#RM1");
@@ -919,20 +864,9 @@ const analyze = (line) => {
                                         }
                                         else {
                                             if(deletableFunctions.indexOf(cntr) !== -1){
-                                                
-
-                                                    AO.deleteBlock("#KFB02");
-                                                
+                                                AO.deleteBlock("#KFB02");
                                             } else {
-                                                
-                                                if(specialReplacementLines.indexOf(cntr) !== -1){
-                                                    var index = specialReplacementLines.indexOf(cntr)
-                                                    AO.changeLine('#CL1 START', STATUS.REMOVED, specialReplacementValues[index]);
-                                                } else {
-
-                                                    AO.keepLine("#QA1");
-                                                }
-                                                
+                                                AO.keepLine("#QA1");
                                             }
                                         }
                                     }
@@ -981,12 +915,6 @@ const analyze = (line) => {
             }
         }
 
-        // if(doNext === true){
-        //     DOB.indexDeletableLine++;
-        //     if (sRemoveLines[DOB.indexDeletableLine]) {
-        //         DOB.updateNext(sRemoveLines[DOB.indexDeletableLine]);
-        //     }
-        // }
         if (doNext || (sRemoveLines[DOB.indexDeletableLine] && sRemoveLines[DOB.indexDeletableLine].start.line <= cntr)) {
             DOB.indexDeletableLine++;
             if (sRemoveLines[DOB.indexDeletableLine]) {
@@ -1007,8 +935,11 @@ if (!noRun) {
 
 prevLine = '';
 rl.on('close', () => {
+    finalCode = 'function xxx(){};'+finalCode
     // var m = finalCode.match(/e\(\)\(\)\,/g)
     // console.log(m.length);
+    finalCode = finalCode.replace(/\s(We|tn|Vr|he)\(/g, ' xxx(')
+    finalCode = finalCode.replace(/\s(We|tn|Vr|he)\;/g, ' xxx;')
     finalCode = finalCode.replace(/e\(\)\(\)\,/g,'');
     writeNewLine(fs, NEW_FILE, finalCode, false);
     fs.copyFile(NEW_FILE, DIST_FILE, (err) => {
