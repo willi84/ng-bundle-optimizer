@@ -5,12 +5,13 @@ export let MAX_DELETE= 11080;// 4690 //#hier
 export let undeletablefn = [950,  1772,
     // 2746, // create nodes
     4668,
-     4678, 4682, 4714, 4709, 4719, 4724, 4730,  4735, 4741, 4746, 4751, 4756, 4762, 4767, // TODO wegen ternary
+     4678, 4682, 4714, 4709, 4719, 4724, 4730,  4735, 4741, 
+     4746, 4751, 4756, 4762, 4767, // TODO wegen ternary
     7865, // end of function wrong detected
     7881,  // TODO: important: contains content
     // 8041,
     9403, 
-    4662, 5317, 
+     5317, 
     9361, // INFO: create element,
      2746,
     //  4605, 4662, 5317, 6412, 7392, 7419, 8134,
@@ -32,19 +33,22 @@ export const undeletable2 = [1311]
 export const keepFnName = [
     // 109, 
     9271,
+    2758,
     1005,
+    3595,
     // 962,
      1179,
     4266,
-    3624, 4976,
-     4099,  // TODO: next is undeletable
+    // 3624,
+     4976,
+    //  4099,  // TODO: next is undeletable
     // next
     // 4277,
     4834, 
     8135, 
     // 8159,
     //   8350, 
-     502,
+    //  502,
      5105,
     //  7003,
      9403,
@@ -54,11 +58,12 @@ export const keepFnName = [
 
     // optimized
 
-    104,
+    // 104,
     
 ];
 // undeletable keep lines
 export const undeletable1 = [
+     5317, 8134,
     // 964, 973, 
     [2166,2169], [2180, 2184], 
     [2186,2187],
@@ -101,7 +106,11 @@ export const undeletable1 = [
      2764,   [2769,2772], 2775, 2776, 2796, 2817, 2819, 
     // TODO: 2844 wird nicht erkannt
    2830, 2831, 2833, [2835, 2837], [2842, 2846],   2852, 2861, 2862,
-    3596, 3598, 3601, 3605,3667,
+   // TODO: 3596 
+//    3596,
+    
+    3601, 
+    // 3667,
     4658,
     // [4667,4684], //TODO wegen ? 
     9375,
@@ -116,7 +125,7 @@ export const undeletable1 = [
     2938, 2939, 2940, 2942, 2945, 2947, 2948, 2952, // händisch ausprobiert
     
     // done
-    [2135, 2137], [2141,2145], [2147, 2155], 2159, 2161, 2162,
+    [2135, 2137], [2144,2145], [2147, 2155], 2159, 2161, 2162,
     2120,
     1756,[1758, 1762], [1764, 1765], [1769, 1770],
     // 1483,
@@ -129,7 +138,7 @@ export const undeletable1 = [
      1974, 1982, 1986, 1988, 1989, 1992, 1997, 2002, //todo
     2024, [2019, 2022], [2015, 2017], 2013, [2006, 2011], // TODO some stuff from other side deleted
     3706, 3710, 3713, 3715,
-    [4300, 4302],4306, 4308,[4310, 4316], [4323,4324],
+     4308,4314,[4310, 4312], 4316, [4323,4324],
     // [4349, 4350],
      4358, 4360, 
     4377,
@@ -139,7 +148,7 @@ export const undeletable1 = [
     //  [4379,4380],
      [4405, 4408], 4544,
     4529, 4533, 4534, 4536,
-    [4624,4629], [4645, 4648], 4654, 4653, 
+    [4624,4625  ], 4627, 4628, [4645, 4648], 4654, 4653, 
     // 4690,
      4797, 4804, 
     // [4807, 4823], 
@@ -147,10 +156,6 @@ export const undeletable1 = [
     [4840,4842 ],
     5027,
     5161, 
-    // TODO  why not working?
-    5188,
-    5218, 
-    5219,
     [6425, 6427], 6431, 
     [6929, 6931], [6934, 6935], 6937, 6944,
     [7386, 7389],
@@ -265,7 +270,7 @@ export let todoAutomize = [
 
 export let deleteLOC1 = [
     
-    12,[15,38], [40,52], [65,68], 105,112,113,
+    12,[15,29],[31,38], [40,52], [65,68], 105,112,113,
     [249, 250], 280, 310,
     502,[521, 538],  540, 596, 599,
     800,803,  [809, 813], 
@@ -278,25 +283,29 @@ export let deleteLOC1 = [
     // #2000
     [2138, 2140],[2188, 2208],2761, 2326,
     2924, 2926,2967,2972, 2981, 2982,[2984, 2986], 
-    [2991, 3025], 2959, 
-    // TODO: 2968,
+    [2991, 3025], 2959, 2967, 2968,2162,
 
     // #3000
     3030, 
     
     // #4000
-    4525,
-    [4663, 4684], 4526, 4541, 4543,  4562,
-    [4606,4608], 4876, 4572,  4540, 4565, 4539,
+    4525, 4417,
+    [4663, 4684], 4526, 4541, 4543,  4562, 4247, 4244,
+    [4606,4608], 4876, 4572,  4540, 4565, 4539, 4238,
+    4199,
+    // 4200,
+    // TODO 4201
+    // 4295,
+    [4300, 4306],
     [4045, 4059], [4066, 4083], [4096, 4098], [4120, 4122],
     4231, [4239,4243], [4251, 4261], 4273, 4274,4297,
     4202, 4235,  4245, 4246, 4296, [4485, 4487],
     [4428, 4444], 4412, 4414, [4454, 4463], [4807, 4833],
-[4465, 4474], 4450,4449, 4423, 4424, 4426, 4427,[4419,4421],
+[4465, 4474], 4450,4449, 4423, 4424, 4426, 4427,[4420,4421],
 [4546, 4561], 4563, 4564, [4633, 4638], [4871, 4873],[4223, 4229],[4285, 4294], 4281, 4789, [4569, 4571], [4036, 4038],
 
     // #5000
-    5314, 5219, [5018, 5020],  5517, [5229, 5233], 
+    [5036, 5039],5314, 5219, [5018, 5020],  5517, [5229, 5233], 
     [5071, 5080], 5069, 5065, 5081, 5085, 5086, 5087, 
 [5049, 5053], 5043, 5045, 5040, 5033, [5954, 5969],
 [5235, 5250], 5232, [5222, 5227], 5162, 5168,
@@ -309,23 +318,24 @@ export let deleteLOC1 = [
     
     // #7000
     7001, 7002, 7393, 7387, 7390, 7041,[7021, 7025],
-    7445, [7448, 7459], [7399,7418], 7421, [7424,7441],
-    7504, 7508, 7873, 
-    [7472, 7482],7392, 7396, 7397, 7460,
+      [7395,7461], 
+    7504, 7508, 7873,
+    [7472, 7482],7392, 
+   
     7506, 7706, 7020,
     7505,7668,[7895, 7899], [7922, 7925], [7956, 7959],[7983, 7986],
     [7527, 7541],7666, 7667, 7669, 7507,  7880,
     
     // #8000
     8917, [8308, 8353], 8306, 8307, 4653, 4656, [8010, 8014],
-    [8017, 8019], 8305, //
+    [8017, 8019], 8305, 8135,8137,//
     8244,   8255,8158, 8354, 8410, [8021,8024],
     [8154, 8156], [8150, 8151],8918,
     // #9000
     [9317, 9319], [9097, 9119], [9551,9557], [9682, 9712],
     [9771, 9785], [9955, 9988],
     9465, 9466, 9197,9713,[9546, 9550],
-    [9389, 9393],9198,
+    [9388, 9394],9198, 9309, 9271,
 
     // #10000
     10391, 10572, [10080, 10086],
@@ -349,23 +359,42 @@ export let deleteLOC1 = [
 ]
 export const specialReplacements = [
     { line: 30, value: 'n(e, u, c);'},
+    { line: 5088, value: '})(Ö,Ö);'},
+    { line: 10377, value: 'r.W(4608,K, K, [Ö,Ö]),'},
     { line: 4544, value: 'this.resolve();'},
     { line: 7386, value: 'var o = this;'},
     // { line: 4545, value: '}();'},
     { line: 4419, value: 's = n.value;'},
     { line: 2129, value: 'return {  providersByKey: t, providers: e };'},
-    // { line: 4488, value: 'var $;'},
+    { line: 4488, value: 'var $;'},
     { line: 7894, value: "[['style', 'text-align:center']]"},
     { line: 2337, value: "})(e, (t ));"},
     { line: 6369, value: " { provide: Ye },"},
     { line: 5228, value: "var n =this._componentFactoryResolver.resolveComponentFactory(e);"},
+    { line: 10355, value: "var Je = r.M(o, [Ö], function(e) {"},
+    // { line: 3601, value: "to(zt(e, 0).componentView, t);"},
+    { line: 4446, value: "? new (c.bind.apply(c))"},
+    { line: 4447, value: ": null;"},
+    { line: 4453, value: "})(t, n);"},
+    { line: 4413, value: "return (function e(t, n) {"},
+    { line: 4415, value: "return (function(t, n) {"},
+    { line: 8141, value: "Ö,"},
+    { line: 5035, value: "var o =new Ne();"},
+    { line: 4124, value: "return Ö;"},
+    { line: 6421, value: "var Rn = Xt(Ö);"},
+    // { line: 7443, value: "Qt.setCurrentNode = Ö;"},
     // { line: 5233, value: "var o = null;"},
     // { line: 5234, value: "var i;"},
     { line: 6937, value: "e._providers = [];"},
     { line: 6950, value: "return Hn(this, {  tokenKey: Xt(e) });"},
     { line: 5234, value: " n.create(P.NULL, [],  n.selector);"},
     { line: 6424, value: "function t(t, n, r) {"},
-    { line: 6465, value: "Qt.createRootView(e, t, n, o, r);"},
+    // { line: 6465, value: "Qt.createRootView(e, t, n, o, r);"},
+    { line: 2135, value: "if (t.flags) {"},
+    { line: 4314, value: "e(t, n[0]);"},
+    { line: 4627, value: "var o = e[0];"},
+    { line: 3601, value: "Zr(zt(e, 0).componentView)"},
+    // { line: 2141, value: "if (t.flags) {"},
 
     { line: 2299, value: "return (function(e, t) {"},
    { line: 2278, value: "function hr(e, t) {"},
@@ -373,6 +402,7 @@ export const specialReplacements = [
     { line: 1446, value: "e();"},
     // { line: 1448, value: "var s = n.concat(t);"},
     { line: 1450, value: "var e = P.create({ providers: n.concat(t) });"},
+    { line: 2120, value: "return { deps: yn(r, I(t)), flags: e, token: t, value: n };"},
     { line: 1466, value: "return Le;"},
     { line: 4198, value: "var r;"},
     { line: 1729, value: "return !!e.parent;"},
@@ -391,9 +421,29 @@ export const specialReplacements = [
     { line: 8020, value: ']'},
     { line: 8148, value: 'r.O(1, 49152),'},
     { line: 10331, value: "var qe = Object(r.D)(r.H, 'browser', []);"},
+
+    // TODO: IIFE automize
+    { line: 4200, value: "var i = Ö;"},
+    { line: 4201, value: "var s = Ö;"},
+    { line: 4203, value: "var a = Ö;"},
+    { line: 8134, value: "var o = Ö;"},
+    { line: 8135, value: "var i = Ö;"},
+    { line: 8138, value: "var s = Ö;"},
+    { line: 9395, value: "return document.querySelector(e);"},
+    { line: 2010, value: "r = s.createElement(o.name, o.ns);"},
+    // { line: 2016, value: "uerySelector(e);"},
+
+    // r = s.selectRootElement(e);
     // { line: 8149, value: '}'},
 
-    { line: 1781, value: 'return n.renderParent? zt(e, n.renderParent.nodeIndex).renderElement : t'}
+    { line: 1781, value: 'return n.renderParent? zt(e, n.renderParent.nodeIndex).renderElement : t'},
+    
+    // TODO: replace function automize
+    { line: 6465, value: 'io(e, t, n, o, r);'},
+    { line: 2975, value: 'a = Br(e, i, c, u);'},
+    { line: 7463, value: 'return ir('},
+
+
 ]
 
 //deletableFn 6375
@@ -438,7 +488,7 @@ export let deletableFunctions = [
 328, 
 181,4215, 4282, 4877, 4901, 5145, 5252, 5307, 5327, 6283, 6326,
 6392, 6478, 7664, 7658, 4573, 4586,
-//  104,
+ 104,
 10087, 10088, 9714, 545, 560, 5021, 
 // 4249,
 4975, 6374, 2348, 8489, 8994, 9120,
@@ -449,7 +499,6 @@ export let deletableFunctions = [
 // 7870,
 3,
 9271,
- 5188, // TODO: komplett löschen
   8086, 8033, 1423, 1362, 1386,
 4663, 4685,  4222, 7519, 10312,
 4204,
@@ -457,6 +506,9 @@ export let deletableFunctions = [
 801, 7392,
 // 964, 
 6806,
-4542, 5188, 1429,1656, 2863, 7003, 1481, 4605, 8041, 8304,
+4542, 7502, 502, 2758, 4147,
+5057, 10421, 943, 799, 1005, 6393,
+// TODO 3624,
+ 1429,1656, 2863, 7003, 1481, 4605, 8041, 8304, 4099,
 1409, 1416, 1420, 1423, 8129, 8359, 8394, 8355, 2954, 814, 9250, 9310, 4277,
 ]

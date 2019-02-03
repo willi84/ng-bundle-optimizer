@@ -67,7 +67,6 @@ const updateLineStatus = (LOB) => {
 let specialReplacementLines = [];
 let specialReplacementValues = [];
 specialReplacements.forEach((entry) => {
-    // console.log(entry);
     specialReplacementValues.push(entry.value);
     specialReplacementLines.push(entry.line);
 })
@@ -98,27 +97,6 @@ deleteLOC1.forEach((v, i) => {
         deleteLOC.push(v)
     }
 });
-
-const useLine = (line) => {
-    const useable = [
-        // { start: 0, end: 1779},
-        // IMPORTANT:  1781
-        { start: 0, end: 2018 }, //Sn
-        { start: 2023, end: 2348 }, // TODO
-        { start: 2355, end: 2431 }, // TODO: Cr
-        // { start: 2440, end: 2746 },
-        { start: 2440, end: 2928 },
-        { start: 2930, end: 9373 },// 9335-9338
-        { start: 9400, end: 12000 },
-    ]
-    let isOk = false;
-    useable.forEach((value, index) => {
-        if (line > value.start && line < value.end) {
-            isOk = true;
-        }
-    });
-    return isOk;
-}
 
 const getFileSize = (file) => {
     const
@@ -265,10 +243,8 @@ const getRemovableLines = (obj, objCov, type) => {
             // TODO 53-64
             if (removeLinesArray.length > 0) {
                 if (removeLinesArray[removeLinesArray.length - 1].start.line > loc.start.line) {
-                    // console.log(loc);
                 } else if (removeLinesArray[removeLinesArray.length - 1].end.line > loc.start.line) {
                 } else {
-                    // console.log(loc);
                     if (objCov[recordID] === 0) {
                         removeLinesArray.push(loc)
                         countRecords++;
@@ -493,31 +469,32 @@ class ActionObject {
     keepLine(statusText, statusCode?: STATUS, trigger?) {
 
         let status = statusCode || STATUS.OK;
+        // if(deletableFunctions.indexOf(cntr) !== -1){
+        //     console.log(cntr);
+        //     // this.deleteBlock("#KFB03");
+        //     // this.deleteLine(`${statusText} START`, { 'deleteBlock': true });
+        // } 
+        // else 
+        if(deleteLOC.indexOf(cntr) !== -1){
+            let status = STATUS.REMOVED;
+            handleTrigger(this, trigger);
+            this.lob.update('', statusText, status);
+        } else 
         if(specialReplacementLines.indexOf(cntr) !== -1){
             var index = specialReplacementLines.indexOf(cntr)
             this.changeLine('#CL1 START', STATUS.POTENTIAL, specialReplacementValues[index]);
         } else {
-        this.lob.update(this.lob.line, statusText, status);
+            this.lob.update(this.lob.line, statusText, status);
         }
         handleTrigger(this, trigger);
     }
     deleteLine(statusText, trigger?) {
-        // let status =  STATUS.REMOVED;
-        //     handleTrigger(this, trigger);
-        //     this.lob.update('', statusText, status);
-
         if (undeletable.indexOf(this.lob.cntr) === -1) {
             let status = STATUS.REMOVED;
             handleTrigger(this, trigger);
             this.lob.update('', statusText, status);
         } else {
-            if(specialReplacementLines.indexOf(cntr) !== -1){
-                var index = specialReplacementLines.indexOf(cntr)
-                this.changeLine('#CL1 START', STATUS.POTENTIAL, specialReplacementValues[index]);
-            } else {
-
-                this.keepLine('#NOT DELETABLE');
-            }
+            this.keepLine('#NOT DELETABLE');
         }
     }
     deleteBlock(statusText){
@@ -525,12 +502,13 @@ class ActionObject {
             keepFnName.indexOf(this.lob.cntr) === -1 &&
             undeletable.indexOf(this.lob.cntr + 1) === -1
         ){
-
-            this.deleteLine(`${statusText} START`, { 'deleteBlock': true });
-        } else {
-            if(cntr === 964){
+            if (this.lob.has(FUNCTION_ONE_LINE)) {
+                this.deleteLine("#DL1 SINGLE FUNC");
+            } else{
+                this.deleteLine(`${statusText} START`, { 'deleteBlock': true });
             }
-            this.keepLine('#DB ERROR');
+        } else {
+            this.keepLine(`${statusText} START`, STATUS.OK, { 'keepFnBlock': true });
         }
     }
     changeLine(statusText, statusCode?: STATUS, line?, trigger?) {
@@ -541,41 +519,29 @@ class ActionObject {
     }
     changeBlock(trigger: string, text: String, keep: Boolean) {
         const key: string = trigger;
-        if (this.dob[key] === true) {
-            if (!this.isStartActiveBlock()) {
-                if (undeletable.indexOf(this.lob.cntr) === -1) {
-                    this.deleteLine(`#${text}`);
-                } else {
-                    if(specialReplacementLines.indexOf(cntr) !== -1){
-                        var index = specialReplacementLines.indexOf(cntr)
-                        this.changeLine('#CL1 START', STATUS.POTENTIAL, specialReplacementValues[index]);
-                    } else {
-        
-                        this.keepLine('#NOT DELETABLE');
-                        }
-                }
+        let options = this.isStartActiveBlock() ? { key: false } : {};
+        let deleteLines =(options) => {
+            if (undeletable.indexOf(this.lob.cntr) === -1) {
+                this.deleteLine(`#${text}`, options);
             } else {
-                log(this.dob[key])
+                this.keepLine('#NOT DELETABLE');
+            }
+        }
+        if (this.dob[key] === true) {
+            if (this.isStartActiveBlock()) {
+                // deleteLines({});
                 if (keep === true) {
                     this.keepLine(`#${text} END`, STATUS.OK, { key: false });
                 } else {
-                    if (undeletable.indexOf(this.lob.cntr) === -1) {
-                        this.deleteLine(`#${text} END`, { key: false });
-                    } else {
-                        if(specialReplacementLines.indexOf(cntr) !== -1){
-                var index = specialReplacementLines.indexOf(cntr)
-                this.changeLine('#CL1 START', STATUS.POTENTIAL, specialReplacementValues[index]);
-            } else {
-
-                this.keepLine('#NOT DELETABLE');
-            }
-                    }
+                    deleteLines(options);
                 }
                 this.dob[key] = false;
-                log(this.dob[key])
+            } else {
+                deleteLines(options);
             }
             // this.dob[trigger]
         }
+        
     }
 }
 const handleTrigger = (ao, trigger) => {
@@ -639,263 +605,84 @@ const analyze = (line) => {
     if (cntr === 0) {
         DOB.updateNext(sRemoveLines[DOB.next]);
     }
-    // TODO: 310
     if (cntr++ >= 0) { // TODO in 540 bei LOB machen
         // TODO ! DOB.deletingFn && cntr === fnRemoveLines[fnIndex]['start']['line']
         //DELETEABLE line detected 
         // #hier        
-        if (([5057, 10421].indexOf(cntr) !== -1)) {
-            AO.deleteBlock("#DB3");
-        } else
-            if (cntr === 2758) {
-                AO.keepLine('#KB START2', STATUS.OK, { 'keepFnBlock': true });
+         if (fnRemoveLines[fnIndex] &&
+            !DOB.keepFnBlock && !DOB.active() &&
+            undeletablefn.indexOf(cntr) === -1 &&
+            fnRemoveLines[fnIndex].start.line === cntr
+        ) {
+            AO.deleteBlock("#DB4");
+        } else if (DOB.active()) {
+            if (AO.isStartActiveBlock()) {
+                if (DOB.changeBlock === true) {
+                    AO.deleteLine('#CB END', { 'changeBlock': false });
+                } else if (DOB.deleteBlock === true) {
+                    AO.deleteLine('#DB END', { 'deleteBlock': false, 'blockStart': '' });
+                } else if (DOB.keepFnBlock === true) {
+                    AO.changeBlock('keepFnBlock', 'KP2', true);
+                }
+            } else {
+                AO.deleteLine('#DB');
+            }
+            doNext = sRemoveLines[DOB.indexDeletableLine] !== undefined;
 
-            } else
-                if (fnRemoveLines[fnIndex] &&
-                    !DOB.keepFnBlock && !DOB.active() &&
-                    undeletablefn.indexOf(cntr) === -1 &&
-                    fnRemoveLines[fnIndex].start.line === cntr
+        }
+        else {
+            if (deleteUnusedFunctions(line, LOB, AO)) {
+            } else 
+            if (DOB.hasIife(line, deleteIifeBlocks)) {
+                // Delete IIFE
+                let newLine = line.replace(" (function() {", "Ö;");
+
+                if(deletableFunctions.indexOf(cntr) !== -1){
+                    AO.deleteBlock("#DBxx START YYY");
+                } else {
+                    AO.changeLine('#CB3 START', STATUS.POTENTIAL, newLine, { 'changeBlock': true });
+                }
+            } else {
+                if (
+                    keepFnName.indexOf(cntr) === -1 &&
+                    undeletable.indexOf(cntr + 1) === -1
                 ) {
-                    let loc = fnRemoveLines[fnIndex];
-                    if (loc && loc.start) {
-                        if (LOB.has(PROTOTYPE)  ||LOB.has(FUNCTION_OBJECT) ) {
-                            AO.deleteBlock("#DB4");
-                        
-                        } else if (LOB.has(FN_BLOCK)) {
-                            if (
-                                keepFnName.indexOf(cntr) === -1 
-                                &&
-                                undeletable.indexOf(cntr + 1) === -1
-                            ) {
-                                AO.deleteBlock("#DB6");
-
-                            } else {
-                                // 5
-                                // TODO: delteable lines ??
-                                AO.keepLine("#KFw3 START", STATUS.OK, { 'keepFnBlock': true });
-
-                            }
-
+                    if (todoAutomize.indexOf(cntr) !== -1) {
+                            AO.keepLine("#KBQ2", STATUS.OK, { 'keepFnBlock': true });
+                    } else {
+                        if (undeletablefn.indexOf(cntr) !== -1) {
+                            AO.keepLine("#QA2");
                         } else {
-                            if (
-                                keepFnName.indexOf(cntr) === -1 
-                                // &&
-                                // undeletable.indexOf(cntr + 1) === -1
-                            ) {
-                                if (LOB.has(FUNCTION_ONE_LINE)) {
-                                    AO.deleteLine("#DL SINGLE FUNC");
-                                } else{
-
-                                    AO.deleteBlock("#DB7");
-                                }
-                            } 
-                            else {
-                                AO.keepLine("#KFB01 START", STATUS.OK, { 'keepFnBlock': true });
-                            }
-                        }
-                        // }
-                    }
-                } else
-                    if (DOB.active()) {
-                        if (DOB.changeBlock === true) {
-                            // AO.changeBlock('changeBlock', '#CB', false);
-                            if (!AO.isStartActiveBlock()) {
-                                AO.deleteLine('#CB');
-                            } else {
-                                AO.deleteLine('#CB END', { 'changeBlock': false });
-                            }
-                        } else if (DOB.deleteBlock === true) {
-                            if (!AO.isStartActiveBlock()) {
-                                AO.deleteLine('#DB');
-                            } else {
-                                if (DOB.blockStart !== '') {
-
-                                    if (LOB.has(IF, DOB.blockStart)) {
-                                        AO.deleteLine('#DBZ', { 'deleteBlock': LOB.has(ELSE) === true, 'blockStart': '' })
-                                    } else {
-
-                                        AO.deleteLine('#DBX END', { 'deleteBlock': false, 'blockStart': '' });
-                                    }
-                                } else {
-                                    AO.deleteLine('#DB END', { 'deleteBlock': false, 'blockStart': '' });
-
-                                }
-                            }
-                        } else if (DOB.keepFnBlock === true) {
-                            // TODO hier
                             if(deletableFunctions.indexOf(cntr) !== -1){
-                                AO.deleteBlock("#DBAA");
+                                AO.deleteBlock("#KFB02");
                             } else {
-
-                                AO.changeBlock('keepFnBlock', 'KB2', true);
-                            }
-                        } else {
-                            AO.deleteBlock("#DB START");
-                        }
-                        doNext = sRemoveLines[DOB.indexDeletableLine] !== undefined;
-
-                    } else if (DOB.getNextLine() === (cntr + 1) && useLine(cntr)) {
-                        if (LOB.has(FOR)) {
-                            AO.deleteLine('#NDL_IF', { 'deleteBlock': true, 'blockStart': line });
-                        } else {
-                            // TODO Potential
-                            if (LOB.has(/^\s*[^\}\)]+.*$/)) {
-                                AO.keepLine('#NDL_POT', STATUS.ERROR);
-                            }
-                        }
-                    } else if (DOB.getNextLine() === cntr) {
-                        if (useLine(cntr)) {
-                            // not prev line has =
-                            if (prevLine.match(/.*[^\=]{1}$/)) {
-                                //NOT: line ends with ?|:|{|(|[
-                                if (LOB.has(IF)) {
-                                    AO.keepLine('#KB START2', STATUS.OK, { 'keepFnBlock': true });
-                                } else if (line.match(/(switch|case|function)/)) {
-                                    AO.deleteBlock("#DB START");
+                                if (LOB.has(FUNCTION)) {
+                                    
+                                    AO.keepLine("#QA3", STATUS.OK, { 'keepFnBlock': true });
                                 } else {
-                                    if (line.match(/\)\;/)) {
-                                        // TODO: if davor oder deletable function
-                                        AO.deleteLine('#5')
-                                    } else if (line.match(/.*\{\s*$/)) {
-                                        if (LOB.has(FOR) && (cntr < 1325 || cntr > 1340)) {
-                                            AO.deleteBlock("#FOR START");
-                                        } else {
+                                    AO.keepLine("#QA1");
 
-                                            AO.keepLine('#4')
-                                        }
-                                    } else if (line.match(/.*\(\s*$/)) {
-                                        AO.deleteBlock("#DB START");
-                                    } else {
-                                        AO.deleteLine('#2');
-                                    }
                                 }
-                            } else {
-                                AO.keepLine('#NOP');
                             }
-                        } else {
-                            AO.keepLine('#NOP');
-                        }
-
-                        // create an Array of deletable stuff
-                        doNext = sRemoveLines[DOB.indexDeletableLine] !== undefined;
-                        // if (deletableEntry) {
-                        // //     DOB.indexDeletableLine++;
-                        // //     if (sRemoveLines[DOB.indexDeletableLine]) {
-                        // //         DOB.updateNext(sRemoveLines[DOB.indexDeletableLine]);
-                        // //     }
-                        // }
+                        } 
 
                     }
-                    else {
-                        if (deleteUnusedFunctions(line, LOB, AO)) {
-                        } else if (DOB.hasIife(line, deleteIifeBlocks)) {
-                            // Delete IIFE
-                                let newLine = line.replace(" (function() {", "function(){}();");
 
-                                if(deletableFunctions.indexOf(cntr) !== -1){
-                                    AO.deleteBlock("#DBxx START YYY");
-
-                                } else {
-
-                                    AO.changeLine('#CB3 START', STATUS.REMOVED, newLine, { 'changeBlock': true });
-                                }
+                } else {
+                    // 3
+                    if (todoAutomize.indexOf(cntr) !== -1) {
+                        AO.keepLine("#KBQ1", STATUS.OK, { 'keepFnBlock': true });
+                    } else {
+                        if(deletableFunctions.indexOf(cntr) !== -1){
+                            AO.deleteBlock("#KFB03");
                         } else {
-                            //  AO.keepLine("#KFB1 START", STATUS.POTENTIAL, { 'keepFnBlock': true});
-                            if (
-                                keepFnName.indexOf(cntr) === -1 &&
-                                undeletable.indexOf(cntr + 1) === -1
-                            ) {
-                                if (todoAutomize.indexOf(cntr) !== -1) {
-                                    AO.keepLine("#KBQ", STATUS.OK, { 'keepFnBlock': true });
-                                } else {
-                                    if (LOB.has(FUNCTION) &&
-                                        undeletablefn.indexOf(cntr) !== -1) {
-                                        if (cntr === 2746 || cntr === 7881) {
-
-                                            AO.keepLine("#QA2");
-                                        } 
-                                    } else {
-                                        if (LOB.has(FUNCTION)) {
-                                            if(deletableFunctions.indexOf(cntr) !== -1){
-                                                AO.deleteBlock("#Q8");
-                                            } else {
-
-                                                AO.keepLine("#QA3", STATUS.OK, { 'keepFnBlock': true });
-                                            }
-                                        } else if (LOB.has(FUNCTION_ONE_LINE)) {
-                                            if(deletableFunctions.indexOf(cntr) !== -1){
-                                                if (LOB.has(FUNCTION_ONE_LINE)) {
-                                                    AO.deleteLine("#DL SINGLE FUNC");
-                                                } else{
-                                                    AO.deleteBlock("#DB7");
-                                                }
-                                            } else {
-
-                                                AO.keepLine("#QA4");
-                                            }
-                                        }  
-                                          else if (LOB.has(START_IIFE)) {
-                                            
-                                            if(deletableFunctions.indexOf(cntr) !== -1){
-                                                AO.deleteBlock("#DELFUN");
-                                            } else {
-                                                if(deleteLOC.indexOf(cntr) !== -1){
-                                                    AO.deleteLine("#RM3");
-                                                } else {
-                                                // Delete IIFE
-                                                let newLine = line.replace(" (function() {", "function(n){};");
-                                                AO.keepLine("#QA6");
-                                                }
-                                            }
-                                        } 
-                                        else if(deleteLOC.indexOf(cntr) !== -1){
-                                            if(specialReplacementLines.indexOf(cntr) !== -1){
-                                                var index = specialReplacementLines.indexOf(cntr)
-                                                AO.changeLine('#CL1 START', STATUS.POTENTIAL, specialReplacementValues[index]);
-                                            } else {
-                                                if(deleteLOC.indexOf(cntr) !== -1){
-                                                    AO.deleteLine("#RM1");
-                                                } else {
-
-                                                    AO.keepLine("#QA1");
-                                                }
-                                            }
-                                            // AO.deleteLine("#DSL1");
-                                        }
-                                        else {
-                                            if(deletableFunctions.indexOf(cntr) !== -1){
-                                                AO.deleteBlock("#KFB02");
-                                            } else {
-                                                AO.keepLine("#QA1");
-                                            }
-                                        }
-                                    }
-
-                                }
-
-                            } else {
-                                // 3
-                                if (todoAutomize.indexOf(cntr) !== -1) {
-                                    AO.keepLine("#KBQ", STATUS.OK, { 'keepFnBlock': true });
-                                } else {
-                                    if(deletableFunctions.indexOf(cntr) !== -1){
-                                        if(keepFnName.indexOf(cntr) !== -1){
-                                            AO.keepLine("#KBZ", STATUS.OK, { 'keepFnBlock': true });
-                                        } else {
-                                        AO.deleteBlock("#KFB03");
-                                        }
-                                    } else {
-                                        if(deleteLOC.indexOf(cntr) !== -1){
-                                            AO.deleteLine("#RM2");
-                                        } else {
-                                        AO.keepLine("#QB");
-                                        }
-                                    }
-                                }
-                            }
+                            AO.keepLine("#QB");
                         }
-
                     }
+                }
+            }
+
+        }
         if (LOB.newLine == '') {
             metrics.deleted++;
         }
@@ -935,11 +722,11 @@ if (!noRun) {
 
 prevLine = '';
 rl.on('close', () => {
-    finalCode = 'function xxx(){};'+finalCode
+    finalCode = 'function Ö(){};'+finalCode
     // var m = finalCode.match(/e\(\)\(\)\,/g)
     // console.log(m.length);
-    finalCode = finalCode.replace(/\s(We|tn|Vr|he)\(/g, ' xxx(')
-    finalCode = finalCode.replace(/\s(We|tn|Vr|he)\;/g, ' xxx;')
+    finalCode = finalCode.replace(/\s(We|tn|Vr|he)\(/g, ' Ö(')
+    finalCode = finalCode.replace(/\s(We|tn|Vr|he)\;/g, ' Ö;')
     finalCode = finalCode.replace(/e\(\)\(\)\,/g,'');
     writeNewLine(fs, NEW_FILE, finalCode, false);
     fs.copyFile(NEW_FILE, DIST_FILE, (err) => {
