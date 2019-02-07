@@ -22,7 +22,7 @@ let noRun = false;
 let show = {
     output: false,
     delete: false,
-    deleteStatus: false
+    deleteStatus: true
 }
 let metrics = {
     ok: 0,
@@ -481,8 +481,9 @@ class ActionObject {
             this.lob.update('', statusText, status);
         } else 
         if(specialReplacementLines.indexOf(cntr) !== -1){
+            var spaces = this.lob.line.match(/^(\s*)/)
             var index = specialReplacementLines.indexOf(cntr)
-            this.changeLine('#CL1 START', STATUS.POTENTIAL, specialReplacementValues[index]);
+            this.changeLine('#CL1 START', STATUS.POTENTIAL, spaces[1] + specialReplacementValues[index]);
         } else {
             this.lob.update(this.lob.line, statusText, status);
         }
@@ -640,7 +641,7 @@ const analyze = (line) => {
                 if(deletableFunctions.indexOf(cntr) !== -1){
                     AO.deleteBlock("#DBxx START YYY");
                 } else {
-                    AO.changeLine('#CB3 START', STATUS.POTENTIAL, newLine, { 'changeBlock': true });
+                    // NOP
                 }
             } else {
                 if (
@@ -728,6 +729,9 @@ rl.on('close', () => {
     finalCode = finalCode.replace(/\s(We|tn|Vr|he)\(/g, ' Ö(')
     finalCode = finalCode.replace(/\s(We|tn|Vr|he)\;/g, ' Ö;')
     finalCode = finalCode.replace(/e\(\)\(\)\,/g,'');
+    // finalCode = finalCode.replace(/componentView/g,'cV');
+    // finalCode = finalCode.replace(/childCount/g,'cC');
+    finalCode = finalCode.replace(/r\.\_1\(-1\,\snull\,/g,'r._1(');
     writeNewLine(fs, NEW_FILE, finalCode, false);
     fs.copyFile(NEW_FILE, DIST_FILE, (err) => {
         if (err) throw err;
