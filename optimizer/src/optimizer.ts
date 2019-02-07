@@ -22,7 +22,7 @@ let noRun = false;
 let show = {
     output: false,
     delete: false,
-    deleteStatus: true
+    deleteStatus: false
 }
 let metrics = {
     ok: 0,
