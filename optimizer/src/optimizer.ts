@@ -723,7 +723,8 @@ if (!noRun) {
 
 prevLine = '';
 rl.on('close', () => {
-    finalCode = 'function Ö(){};'+finalCode
+    finalCode = 'Ö = function () {};'+finalCode
+    // finalCode = 'function Ö(){};'+finalCode
     // var m = finalCode.match(/e\(\)\(\)\,/g)
     // console.log(m.length);
     finalCode = finalCode.replace(/\s(We|tn|Vr|he)\(/g, ' Ö(')
