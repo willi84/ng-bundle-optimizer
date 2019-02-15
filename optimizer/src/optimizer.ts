@@ -698,7 +698,7 @@ const analyze = (line) => {
         if (fnRemoveLines[fnIndex] && fnRemoveLines[fnIndex].start.line === cntr) {
             let loc = fnRemoveLines[fnIndex];
             if (loc && loc.start) {
-                LOB.newLine += `//#RF ${loc.start}`
+                LOB.newLine; // += `//#RF ${loc.start}`
                 fnIndex++;
             }
         }

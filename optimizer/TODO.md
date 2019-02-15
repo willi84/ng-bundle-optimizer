@@ -12,3 +12,13 @@ var u = gn(e, t, n);// #QA1 i:3789 orig:
 
 
             var s = n('t7NR'); // TOOD: how to detect
+
+
+unnütz überschriebne
+e.prototype.appendChild = function(e, t) {
+          e.appendChild(t);
+        };
+
+        e.prototype.createText = function(e) {// #DB4 START i:10399 orig: 8
+          return document.createTextNode(e);// #NOT DELETABLE i:10399 orig: 8
+        };
