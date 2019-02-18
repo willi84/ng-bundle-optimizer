@@ -10,21 +10,6 @@
         },
         WT6e: function(e, t, n) {
             (function(e) {
-                function Ge(e, n) {
-                    return function(t) {
-                        return e ? e() : function() {
-                            var e = P.create({
-                                providers: n.concat(t)
-                            });
-                            Le = e.get(Ye)
-                        }(), Le
-                    }
-                }
-
-                function zt(e, t) {
-                    return e.nodes[t]
-                }
-
                 function Xt(e) {
                     var t = Jt.get(e);
                     return t || (t = "_" + Jt.size, Jt.set(e, t)), t
@@ -33,7 +18,7 @@
                 function yn(e) {
                     return e.map(function(e) {
                         var r;
-                        return n = Array.isArray(e) ? (r = e[0], e[1]) : e, {
+                        return n = e, Array.isArray(e) && (r = e[0], n = e[1]), {
                             flags: r,
                             token: n,
                             tokenKey: Xt(n)
@@ -42,7 +27,7 @@
                 }
 
                 function gn(e, t, n) {
-                    return n.renderParent ? zt(e, n.renderParent.nodeIndex).renderElement : t
+                    return n.renderParent ? e.nodes[n.renderParent.nodeIndex].renderElement : t
                 }
 
                 function On(o, i, s, l) {
@@ -61,16 +46,11 @@
                 }
 
                 function Nn(e, t, n) {
-                    var o = n.element,
-                        s = e.renderer;
-                    if (e.parent) {
-                        r = s.createElement(o.name);
-                        gn(e, t, n);
-                        s.appendChild(gn(e, t, n), r)
-                    } else r = s.selectRootElement("app-root");
+                    var o = n.element;
+                    e.parent ? (r = document.createElement(o.name), gn(e, t, n).appendChild(r)) : r = document.querySelector("app-root");
                     for (var a = 0; a < o.attrs.length; a++) {
                         var c = o.attrs[a];
-                        s.setAttribute(r, c[1], c[2])
+                        r.setAttribute(c[1], c[2])
                     }
                     return r
                 }
@@ -87,7 +67,7 @@
                 function Vn(e) {
                     for (var n = 0; n < e.length; n++) {
                         var r = e[n];
-                        r.index = n, t[Xt(r.token)] = r
+                        t[Xt(r.token)] = e[n]
                     }
                     return {
                         providersByKey: t,
@@ -102,21 +82,10 @@
                 }
 
                 function Ln(e, t) {
-                    switch (201347067 & t.flags) {
-                        case 512:
-                            n = function(e, t, n) {
-                                for (var o = new Array(r), i = 0; i < n.length; i++) o[i] = Hn(e, n[i]);
-                                return new(t.bind.apply(t, [void 0].concat(o)))
-                            }(e, t.value, t.deps);
-                            break;
-                        case 2048:
-                            n = Hn(e, t.deps[0])
-                    }
-                    return n
-                }
-
-                function Qn(e, n) {
-                    return new Gn(e, n)
+                    return n = function(e, t, n) {
+                        for (var o = new Array(r), i = 0; i < n.length; i++) o[i] = Hn(e, n[i]);
+                        return new(t.bind.apply(t, [void 0].concat(o)))
+                    }(e, t.value, t.deps)
                 }
 
                 function Pr(n) {
@@ -126,13 +95,6 @@
                             prefix: n[0]
                         }
                     }
-                }
-
-                function Dr(e, t, n) {
-                    var o = e.renderer,
-                        r = o.createText(n.text.prefix),
-                        i = gn(e, t, n);
-                    o.appendChild(i, r)
                 }
 
                 function jr(t) {
@@ -150,67 +112,49 @@
                     }
                 }
 
-                function Br(e, t, n) {
-                    return zr(e.root, e.root.renderer, e, t.element.componentProvider, n)
-                }
-
-                function zr(e, t, n, r, o) {
+                function zr(n, r, o) {
                     return {
                         def: o,
                         parent: n,
                         parentNodeDef: r,
-                        nodes: i,
-                        root: e,
-                        renderer: t
+                        nodes: i
                     }
                 }
 
                 function Zr(e) {
-                    e.parent && (t = zt(e.parent, e.parentNodeDef.parent.nodeIndex).renderElement);
+                    e.parent && (t = e.parent.nodes[e.parentNodeDef.parent.nodeIndex].renderElement);
                     for (var n = e.def, r = e.nodes, o = 0; o < n.nodes.length; o++) {
                         var i = n.nodes[o];
                         switch (201347067 & i.flags) {
                             case 1:
-                                var u = Nn(e, t, i);
                                 if (33554432 & i.flags) var c = i.element.componentView();
                                 s = {
-                                    renderElement: u,
-                                    componentView: Br(e, i, c)
+                                    renderElement: Nn(e, t, i),
+                                    componentView: zr(e, i.element.componentProvider, c)
                                 };
                                 break;
                             case 2:
-                                s = Dr(e, t, i)
+                                s = gn(e, t, i).appendChild(document.createTextNode(i.text.prefix))
                         }
                         r[o] = s
                     }
-                    Zr(zt(e, 0).componentView)
+                    Zr(e.nodes[0].componentView)
                 }
 
-                function io(r, o) {
-                    return n = o.injector.get($e), e = {
-                        renderer: n.createRenderer()
-                    }, t = r, void Zr(zr(e, e.renderer, null, null, t));
-                    var e, t, n
-                }
-
-                function Uo(t, n) {
-                    return new Wo(t, n)
+                function Uo(n) {
+                    return new Wo(n)
                 }
                 var r;
                 n.d(t, "e", function() {
                     return Je
-                }), n.d(t, "D", function() {
-                    return Ge
                 }), n.d(t, "c", function() {
                     return re
-                }), n.d(t, "v", function() {
-                    return $e
                 }), n.d(t, "H", function() {
                     return At
                 }), n.d(t, "J", function() {
                     return we
                 }), n.d(t, "L", function() {
-                    return Qn
+                    return Gn
                 }), n.d(t, "M", function() {
                     return Uo
                 }), n.d(t, "P", function() {
@@ -224,34 +168,18 @@
                 }), n.d(t, "_2", function() {
                     return jr
                 });
-                var Le, i = Ö,
-                    s = Ö,
-                    a = Ö,
+                var i = Ö,
                     l = "__paramaters__",
-                    P = (e.create = function(e) {
-                        return new U(e.providers)
-                    }, e),
-                    R = [],
                     U = function() {
-                        function e(e, t, n) {
-                            ! function e(t, n) {
-                                n && (n instanceof Array ? e(t, n[0]) : t.set(n.provide, {
-                                    fn: n.provide,
-                                    value: R
-                                }))
-                            }(this._records = new Map, e)
+                        function e(e) {
+                            (this._records = new Map).set(e[0].provide, {
+                                fn: e[0].provide,
+                                value: []
+                            })
                         }
-                        return e.prototype.get = function(e) {
-                            return function(t, n) {
-                                return function(t, n) {
-                                    var s;
-                                    if (n && (s = n.value) === R) {
-                                        var c = n.fn;
-                                        n.value = s = a ? new(c.bind.apply(c)) : null
-                                    }
-                                    return s
-                                }(0, n)
-                            }(0, this._records.get(e))
+                        return e.prototype.get = function() {
+                            var n = this._records.get(Ö);
+                            return new(n.fn.bind.apply(n.fn))
                         }, e
                     }(),
                     re = function() {
@@ -266,100 +194,72 @@
                         }, e
                     }(),
                     we = function() {
-                        function e(e, t, n) {
-                            this._ngModule = n, this._factories = new Map;
-                            var o = e[0];
-                            this._factories.set(o.componentType, o)
+                        function e(e) {
+                            this._factories = new Map, this._factories.set(Ö, e[0])
                         }
                         return e.prototype.resolveComponentFactory = function(e) {
-                            var t = this._factories.get(e);
-                            return new Ce(t, this._ngModule)
+                            return new Ce(this._factories.get(e))
                         }, e
                     }(),
                     Ce = function() {
-                        function t(t, n) {
-                            var r = e.call(this) || this;
-                            r.factory = t, r.ngModule = n, r.selector = t.selector
+                        function t(t) {
+                            this.factory = t
                         }
                         return t.prototype.create = function() {
-                            return this.factory.create(this.ngModule)
+                            return Zr(zr(null, null, this.factory.viewDefFactory()))
                         }, t
                     }(),
-                    Ne = function() {
-                        function e(e) {
-                            this._inner = Zone.current, (t = this)._inner = t._inner.fork({
-                                onHandleError: function() {}
+                    Ne = function(e) {
+                        this._inner = Zone.current, (t = this)._inner = t._inner.fork({
+                            onHandleError: function() {}
+                        })
+                    },
+                    Ye = (e.prototype.bootstrapModuleFactory = function(e) {
+                        return (new Ne)._inner.run(function() {
+                            var n = e.create();
+                            (s = n.injector.get(re)).runInitializers(), s.donePromise.then(function() {
+                                n.injector.get(Je)._componentFactoryResolver.resolveComponentFactory(Ö).create()
                             })
+                        })
+                    }, Ö),
+                    Je = function(u) {
+                        this._componentFactoryResolver = u
+                    },
+                    At = function(n) {
+                        return function(t) {
+                            return new U({
+                                providers: n
+                            }.providers).get()
                         }
-                        return e.prototype.run = function(e, t, n) {
-                            return this._inner.run(e, t, n)
-                        }, e
-                    }(),
-                    Ye = function() {
-                        var e = Ö;
-                        return e.prototype.bootstrapModuleFactory = function(e) {
-                            var r = this;
-                            return (new Ne).run(function() {
-                                var n = e.create(),
-                                    s = n.injector.get();
-                                (s = n.injector.get(re)).runInitializers(), s.donePromise.then(function() {
-                                    r._moduleDoBootstrap(n)
-                                })
-                            })
-                        }, e.prototype._moduleDoBootstrap = function(e) {
-                            var t = e.injector.get(Je);
-                            e._bootstrapComponents.forEach(function(e) {
-                                return t.bootstrap(e)
-                            })
-                        }, e
-                    }(),
-                    Je = function() {
-                        function e(u) {
-                            this._componentFactoryResolver = u
-                        }
-                        return e.prototype.bootstrap = function(e, t) {
-                            this._componentFactoryResolver.resolveComponentFactory(e).create()
-                        }, e
-                    }(),
-                    $e = function() {},
-                    At = Ge(null, [{
+                    }([{
                         provide: Ye
                     }]),
-                    Jt = new Map;
-                Xt(Ö);
-                var Gn = function() {
-                        function t(t, r) {
-                            var u = e.call(this) || this;
-                            u.selector = t, u.componentType = Ö, u.viewDefFactory = r
-                        }
-                        var e = Ö;
-                        return t.prototype.create = function(r) {
-                            io(this.viewDefFactory(), r)
-                        }, t
-                    }(),
+                    Jt = new Map,
+                    Gn = function() {
+                        return e.viewDefFactory = arguments[0], e
+                    },
                     sr = function() {
-                        function e(n, r) {
-                            this._bootstrapComponents = n, this._def = r, this.injector = this
+                        function e(r) {
+                            this._def = r, this.injector = this
                         }
-                        return e.prototype.get = function(e, t) {
+                        return e.prototype.get = function(e) {
                             return Hn(this, {
                                 tokenKey: Xt(e)
                             })
                         }, e
                     }(),
                     Wo = function() {
-                        function t(n, r) {
-                            this._bootstrapComponents = n, this._ngModuleDefFactory = r
+                        function t(r) {
+                            this._ngModuleDefFactory = r
                         }
                         return t.prototype.create = function() {
-                            var n, t = this._ngModuleDefFactory();
-                            return n = this._bootstrapComponents, new sr(n, t)
+                            return new sr(this._ngModuleDefFactory())
                         }, t
                     }()
             }).call(t, Ö)
         },
         x35b: function(e, t, n) {
-            function u() {
+            function u(e) {
                 return r._2([r._1(["\n"]), r.P(6, "div", [
                     ["style", "text-align:center"]
                 ], Ö), r.P(1, "h1", [], Ö), r._1(["\n    Welcome to ", "!\n  "]), r._1(["\n  "]), r.P(0, "img", [
@@ -381,37 +281,17 @@
                 ], Ö), r._1(["Angular blog"])])
             }
             var r = n("WT6e"),
-                a = r.L("app-root", function(e) {
+                a = r.L(function(e) {
+                    console.log(u);
                     return r._2([r.P(1, "app-root", [], u), {
                         flags: 49152
                     }])
                 }),
-                K = function() {
-                    function e() {}
-                    return e.prototype.createRenderer = function() {
-                        return new JJ(e)
-                    }, e
-                }(),
-                JJ = function() {
-                    var e = Ö;
-                    return e.prototype.createElement = function(e) {
-                        return document.createElement(e)
-                    }, e.prototype.createText = function(e) {
-                        return document.createTextNode(e)
-                    }, e.prototype.appendChild = function(e, t) {
-                        e.appendChild(t)
-                    }, e.prototype.selectRootElement = function(e) {
-                        return document.querySelector(e)
-                    }, e.prototype.setAttribute = function(e, t, n, r) {
-                        e.setAttribute(t, n)
-                    }, e
-                }(),
-                Je = r.M([Ö], function(e) {
+                Je = r.M(function(e) {
                     return r.V([r.W(512, r.g, r.J, [
-                        [8, [a]],
-                        [3], Ö
-                    ]), r.W(4608, K, K, [Ö, Ö]), r.W(6144, r.v, Ö, [K]), r.W(512, r.c, r.c, []), r.W(131584, r.e, r.e, [r.g])])
+                        [8, [a]]
+                    ]), r.W(512, r.c, r.c, []), r.W(131584, r.e, r.e, [r.g])])
                 });
-            Object(r.D)(r.H)().bootstrapModuleFactory(Je)
+            Object(r.H)().bootstrapModuleFactory(Je)
         }
     }, [0]);
