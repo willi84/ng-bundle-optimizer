@@ -1890,7 +1890,7 @@ webpackJsonp(
 
 
 
-        function On( o, i, s, l) {
+        On = function( o, i, s, l) {
 
 
 
@@ -2119,14 +2119,14 @@ webpackJsonp(
 
 
 
-        function Vn(e) {
+        Vn = function(e) {
 
           for (var n = 0; n < e.length; n++) {
 
 
             t[Ö] = e[n];
           }
-          return {  providersByKey: t };
+          return  t ;
         }
         function Hn(e, t) {
 
@@ -2156,16 +2156,16 @@ webpackJsonp(
 
 
 
-              return Ln(e, e._def.providersByKey[t.tokenKey]);
+              t = e._def[t.tokenKey];
 
 
 
-        }
-        function Ln(e, t) {
 
 
 
-              n = (function(e, t, n) {
+
+
+
 
 
 
@@ -2178,12 +2178,10 @@ webpackJsonp(
 
 
                     var o = new Array(r);
-                    for (var i = 0; i < n.length; i++) {
-                      o[i] = Hn(e, n[i]);
+                    for (var i = 0; i < t.deps.length; i++) {
+                      o[i] = Hn(e, t.deps[i]);
                     }
-                    return new (t.bind.apply(t, [void 0].concat(o)))();
-
-              })(e, t.value, t.deps);
+                    return new (t.value.bind.apply(t.value, Ö))();
 
 
 
@@ -2215,7 +2213,9 @@ webpackJsonp(
 
 
 
-            return n;
+
+
+
 
         }
 
@@ -2705,7 +2705,7 @@ webpackJsonp(
 
 
 
-        function Pr( n) {
+        Pr = function( n) {
 
 
 
@@ -2755,7 +2755,7 @@ webpackJsonp(
 
 
 
-        function jr(t) {
+        jr = function(t) {
 
 
 
@@ -4027,9 +4027,6 @@ webpackJsonp(
 
 
 
-        function Uo( n) {
-          return new Wo( n);
-        }
 
 
 
@@ -4057,9 +4054,6 @@ webpackJsonp(
 
 
 
-        n.d(t, 'c', function() {
-          return re;
-        });
 
 
 
@@ -4132,9 +4126,6 @@ webpackJsonp(
 
 
 
-        n.d(t, 'H', function() {
-          return At;
-        });
 
 
 
@@ -4156,33 +4147,42 @@ webpackJsonp(
 
 
 
-        n.d(t, 'L', function() {
-          return Gn;
-        });
-        n.d(t, 'M', function() {
-          return Uo;
-        });
 
 
 
 
 
 
-        n.d(t, 'P', function() {
-          return On;
-        });
-        n.d(t, 'V', function() {
-          return Vn;
-        });
 
 
 
-        n.d(t, '_1', function() {
-          return Pr;
-        });
-        n.d(t, '_2', function() {
-          return jr;
-        });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -4402,7 +4402,7 @@ webpackJsonp(
 
 
 
-                  r.set(e[0].provide, {  fn: e[0].provide,  value: [] });
+                  r.set(e, {  fn: e,  value: [] });
 
 
 
@@ -4524,7 +4524,7 @@ webpackJsonp(
 
 
 
-        var re = (function() {
+        re = (function() {
           function e(e) {
             var t = this;
 
@@ -4535,13 +4535,6 @@ webpackJsonp(
 
             });
           }
-          e.prototype.runInitializers = function() {
-
-
-
-
-
-                this.resolve();
 
 
 
@@ -4563,7 +4556,14 @@ webpackJsonp(
 
 
 
-          };
+
+
+
+
+
+
+
+
           return e;
         })();
 
@@ -5063,7 +5063,7 @@ webpackJsonp(
 
 
 
-                  (s =Hn(n.injector, {  tokenKey: Ö })).runInitializers();
+                  (s =Hn(n.injector, {  tokenKey: Ö })).resolve();
                   s.donePromise.then(function() {
                     Zr(zr( null, null,Ö.viewDefFactory()))
 
@@ -6364,7 +6364,7 @@ webpackJsonp(
 
 
 
-        var At = function(){ return  (new U(({ providers: [{ provide: Ye }] }).providers)).get()};
+        At = function(){ return  (new U(Ye)).get()};
 
 
 
@@ -6420,7 +6420,7 @@ webpackJsonp(
 
 
 
-        var Gn = function(a) {
+        Gn = function(a) {
 
 
 
@@ -7381,7 +7381,7 @@ webpackJsonp(
 
 
 
-        var Wo = function(a) {
+        Wo = function(a) {
 
 
 
@@ -7879,12 +7879,12 @@ webpackJsonp(
     x35b: function(e, t, n) {
 
       function u(e) {
-        return r._2(
+        return jr(
 
           [
-            ( r._1( ['\n'])),
+            ( Pr( ['\n'])),
             (
-            r.P(
+            On(
 
 
 
@@ -7900,11 +7900,11 @@ webpackJsonp(
             )),
 
             (
-            r.P( 1, 'h1', [],Ö)),
-            ( r._1( ['\n    Welcome to ', '!\n  '])),
-            ( r._1( ['\n  '])),
+            On( 1, 'h1', [],Ö)),
+            ( Pr( ['\n    Welcome to ', '!\n  '])),
+            ( Pr( ['\n  '])),
             (
-            r.P(
+            On(
 
 
 
@@ -7928,20 +7928,20 @@ webpackJsonp(
 
 
             (
-            r.P( 1, 'h2', [],Ö)),
+            On( 1, 'h2', [],Ö)),
             (
-            r._1( ['Here are some links to help you start: '])),
+            Pr( ['Here are some links to help you start: '])),
 
             (
-            r.P( 22, 'ul', [],Ö)),
+            On( 22, 'ul', [],Ö)),
 
             (
-            r.P( 5, 'li', [],Ö)),
+            On( 5, 'li', [],Ö)),
 
             (
-            r.P( 2, 'h2', [],Ö)),
+            On( 2, 'h2', [],Ö)),
             (
-            r.P(
+            On(
 
 
 
@@ -7959,16 +7959,16 @@ webpackJsonp(
 
 
             )),
-            ( r._1( ['Tour of Heroes'])),
+            ( Pr( ['Tour of Heroes'])),
 
 
             (
-            r.P( 5, 'li', [],Ö)),
+            On( 5, 'li', [],Ö)),
 
             (
-            r.P( 2, 'h2', [],Ö)),
+            On( 2, 'h2', [],Ö)),
             (
-            r.P(
+            On(
 
 
 
@@ -7986,16 +7986,16 @@ webpackJsonp(
 
 
             )),
-            ( r._1( ['CLI Documentation'])),
+            ( Pr( ['CLI Documentation'])),
 
 
             (
-            r.P( 5, 'li', [],Ö)),
+            On( 5, 'li', [],Ö)),
 
             (
-            r.P( 2, 'h2', [],Ö)),
+            On( 2, 'h2', [],Ö)),
             (
-            r.P(
+            On(
 
 
 
@@ -8013,7 +8013,7 @@ webpackJsonp(
 
 
             )),
-            ( r._1( ['Angular blog'])),
+            ( Pr( ['Angular blog'])),
 
 
 
@@ -8136,15 +8136,15 @@ webpackJsonp(
 
 
 
-      var a = r.L(
+      var a = Gn(
 
 
         function(e) {
-          return r._2(
+          return jr(
 
             [
               (
-              r.P( 1, 'app-root', [], u)),
+              On( 1, 'app-root', [], u)),
               { flags: 49152},
             ]
 
@@ -10352,8 +10352,8 @@ webpackJsonp(
 
 
 
-       r.M(  function() {
-        return r.V([
+      Wo(  function() {
+        return Vn([
 
 
 
@@ -10408,7 +10408,7 @@ webpackJsonp(
 
 
 
-          { deps: Ö,  value:  r.c},
+          { deps: Ö,  value:  re},
 
 
 
@@ -10416,7 +10416,7 @@ webpackJsonp(
         ]);
       });
 
-      Object(r.H)()
+      Object(At)()
         .bootstrapModuleFactory(Ö)
 
 

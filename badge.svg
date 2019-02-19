@@ -63,7 +63,7 @@
     <!-- line 1 -->
     <text x="110" y="42" fill="#777" letter-spacing="1px">20kB</text>
     <text x="110" y="17" fill="#777" letter-spacing="1px">312kB</text>
-    <text x="110" y="67" fill="#777" letter-spacing="1px">8kB</text>
+    <text x="110" y="67" fill="#777" letter-spacing="1px">4kB</text>
     <text x="110" y="92" fill="#777" letter-spacing="1px">34.8kB</text>
     <text x="110" y="117" fill="#777" letter-spacing="1px"> &lt; 2.7kB</text>
   </g>

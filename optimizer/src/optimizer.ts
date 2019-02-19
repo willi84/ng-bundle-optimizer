@@ -733,6 +733,9 @@ rl.on('close', () => {
     // finalCode = finalCode.replace(/componentView/g,'cV');
     // finalCode = finalCode.replace(/childCount/g,'cC');
     finalCode = finalCode.replace(/r\.\_1\(-1\,\snull\,/g,'r._1(');
+    finalCode = finalCode.replace(/r\._1\s*\(/g, 'Pr(');
+    finalCode = finalCode.replace(/r\._2\s*\(/g, 'jr(');
+    finalCode = finalCode.replace(/r\.P\s*\(/g, 'On(');
     writeNewLine(fs, NEW_FILE, finalCode, false);
     fs.copyFile(NEW_FILE, DIST_FILE, (err) => {
         if (err) throw err;

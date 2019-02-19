@@ -22,3 +22,6 @@ e.prototype.appendChild = function(e, t) {
         e.prototype.createText = function(e) {// #DB4 START i:10399 orig: 8
           return document.createTextNode(e);// #NOT DELETABLE i:10399 orig: 8
         };
+
+        var At = function(){ return  (new U(({ providers:  Ye  }).providers)).get()};
+        var At = function(){ return  (new U(Ye)).get()};
