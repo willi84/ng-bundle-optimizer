@@ -62,7 +62,7 @@ export const undeletable1 = [
     //  [2201, 2205],
         2220, // optimized Ln(e, t)
     3029, 3027, [2978,2980], 2983, 
-[2973, 2976], [2969,2971],3026, 3028, [2959, 2969], 2969,
+ [2969,2971],3026, 3028, [2959, 2969], 2969,
    
 
 // 1311,
@@ -71,7 +71,7 @@ export const undeletable1 = [
     2013, // otherwise not shown: append to dom
 // 3004, // create instance
 1781, // render Element
-1948, 2024,
+ 2024,
     // 2926, 
     2961, 
     // 3022,
@@ -79,7 +79,7 @@ export const undeletable1 = [
     
      2010, 2011,  2974, 2975, 2989, 3029,
     // 6474,
-    2971,  2973,
+    2971,  
     [2960,2964], 2976,[2978-2983],[2988,2990],
     // 2557, 2559,// fn call && Ft(e, 512, r)
     2159,  
@@ -93,7 +93,7 @@ export const undeletable1 = [
     2720, 2727,   2741, 2744,
      2764,   [2769,2772], 2775, 2776, 2796, 2817, 2819, 
     // TODO: 2844 wird nicht erkannt
-   2830, 2831, 2833, [2835, 2837], [2842, 2846],   2852, 2861, 2862,
+   2830, 2831, 2833, [2835, 2836], [2842, 2846],   2852, 2861, 2862,
    // TODO: 3596 
 //    3596,
     
@@ -117,7 +117,7 @@ export const undeletable1 = [
      2159,  2162,
     // 1483,
     // 1884,
-     1945,1948, 1949, [1964, 1967],
+       1967,
      1974, 1982, 1986, 1988, 1989, 1992, 1997, 2002, //todo
     2024, [2019, 2022], [2015, 2017], 2013, 2006, [2009, 2011], // TODO some stuff from other side deleted
     
@@ -255,7 +255,7 @@ export let deleteLOC1 = [
     // #1000
     1762, 1764,1445,1446, 1447,1456,1176,[1024, 1033],1902, 1906, 1909,1793, 1468, 1448,1477, 1478,
     // #2000
-    2163, 2164, 2125,2971,2749,2948,2747,2947,2011,2126,2007,2975,2147, 2150, [2138, 2140],[2188, 2208],2761, 2326,
+    2974,2163, 2164, 2125,2971,2749,2948,2747,2947,2011,2126,2007,2973, 2976,2975,2147, 2150, [2138, 2140],[2188, 2208],2761, 2326,
     2924, 2926,2967,2972, 2981, 2982,[2984, 2986], 
     [2991, 3025], 2959, 2967, 2968,2162,
 2709, 2169,
@@ -279,7 +279,7 @@ export let deleteLOC1 = [
 [4546, 4561], 4563, 4564, [4633, 4638], [4871, 4873],[4223, 4229],[4285, 4294], 4281, 4789, [4569, 4571], [4036, 4038],
 
     // #5000
-    5155,5220,5034,5234, 5035,5026,5317,5048,5009,[5036, 5039],5314, 5219, [5018, 5020],  5517, [5229, 5233], 
+    5047,5155,5220,5034,5234, 5035,5026,5317,5048,5009,[5036, 5039],5314, 5219, [5018, 5020],  5517, [5229, 5233], 
     [5071, 5080], 5069, 5065, 5081, 5085, 5086, 5087, 
 [5049, 5053], [5042, 5046], 5040, 5033, [5954, 5969],
 [5235, 5250], 5232, [5222, 5227], 5162, 5168,5031,
@@ -291,7 +291,7 @@ export let deleteLOC1 = [
 6464, [6466, 6474], [6460, 6462],[6947, 6949],
     
     // #7000
-    7385, 7391, 7462,7388,7001, 7002, 7393, 7387, 7390, 7041,[7021, 7025],
+    7500,7385, 7391, 7462,7388,7001, 7002, 7393, 7387, 7390, 7041,[7021, 7025],
       [7395,7461], 7928, 7929, 7934,
       7937, 7940,
       7464, 7465,
@@ -348,12 +348,17 @@ export let deleteLOC1 = [
 
 ]
 export const specialReplacements = [
-    { line: 30, value: 'n(e, u, c);'},
+    { line: 30, value: 'nn(e, u, c);'},
+    { line: 7881, value: 'u = function(e) {'},
+    { line: 1177, value: 'var e = Ö;'},
+    { line: 1175, value: 'WT6e: function() {'},
+    { line: 13, value: 'var nn = window.webpackJsonp;'},
+    { line: 1989, value: 'attrs:s,'},
     { line: 4527, value: 're = (function() {'},
     { line: 2122, value: 'Vn = function(e) {'},
     { line: 8139, value: 'var a = Gn('},
     { line: 6423, value: 'Gn = function(a) {'},
-    // { line: 2842, value: 'l = (c = m)  ? c.renderParent : c;'},
+    { line: 2842, value: 'l = (c = c.parent) && Ö(c) ? c.renderParent : c;'},
     { line: 1654, value: 'return Ö;'},
     { line: 1769, value: 'return { flags: r, token: n, tokenKey: Ö };'},
     { line: 4034, value: 'return Ö;'},
@@ -384,9 +389,10 @@ export const specialReplacements = [
     { line: 2184, value: 'return new (t.value.bind.apply(t.value, Ö))();'},
     { line: 2166, value: 'if ((201347067 & t.flags) === 512) {'},
     { line: 1758, value: 'var r;n = e;'},
+    { line: 1974, value: 'flags: (t |= 33554433),'},
     // { line:2748, value: 'var r = document.createTextNode(n.text.prefix);'},
     // { line:3695, value: 'return Fr({renderer: (o.injector.get($e))}, r);'},
-    { line:2021, value: 'r.setAttribute( c[1], c[2]);'},
+    { line:2021, value: 'r.setAttribute( c[0], c[1]);'},
     { line:2016, value: 'r = document.querySelector(\'app-root\');'},
     { line:2010, value: 'r = document.createElement(o.name);'},
     // { line:5068, value: '( Hn(n, {  tokenKey: Xt(Je) }))._componentFactoryResolver.resolveComponentFactory();'},
@@ -401,11 +407,10 @@ export const specialReplacements = [
     { line: 2127, value: 't[Ö] = e[n];'},
     { line: 4834, value: 'onHandleError: function() {'},
     { line: 4797, value: 'this._inner = Zone.current;'},
-    { line: 5047, value: 'var n = sr(e._ngModuleDefFactory());'},
-    { line: 7500, value: '}.call(t, Ö));'},
+    { line: 4797, value: 'this._inner = Zone.current;'},
     { line: 2016, value: ' r = s.selectRootElement(\'app-root\');'},
     { line: 2979, value: 'renderElement: Nn(e, t, i),'},
-    { line: 2980, value: 'componentView: zr( e, i.element.componentProvider, c),'},
+    { line: 2980, value: 'componentView: zr( e, i.element.componentProvider, i.element.componentView()),'},
     // { line: 7385, value: 'function t(  r) {'},
     { line: 2131, value: 'function Hn(e, t) {'},
     { line: 2159, value: 't = e._def[t.tokenKey];'},
@@ -422,10 +427,8 @@ export const specialReplacements = [
     { line: 2181, value: 'for (var i = 0; i < t.deps.length; i++) {'},
     { line: 2182, value: 'o[i] = Hn(e, t.deps[i]);'},
     { line: 2960, value: 'if (!!e.parent) {'},
-    { line: 1945, value: 'var M = (s).map(function(e) {'},
     { line: 4405, value: 'r.set(e, {  fn: e,  value: [] });'},
     { line: 4312, value: 'if (n instanceof Array) {'},
-    { line: 1948, value: 'return [\'\', e[0], e[1]];'},
     { line: 9356, value: 'var e = Ö;'},
     { line: 6427, value: ' u.componentType = Ö;'},
     // { line: 5088, value: '})(Ö,Ö);'},
@@ -445,12 +448,11 @@ export const specialReplacements = [
     { line: 2933, value: 'return zr( e, t.element.componentProvider, n);'},
     // { line: 2931, value: '? e.root.rendererFactory.createRenderer()'},
     { line: 4360, value: 'var i = e.provide;'},
-    { line: 2974, value: 'var c = i.element.componentView();'},
     // { line: 6463, value: 'var o = this.viewDefFactory();'},
     // { line: 4545, value: '}();'},
     { line: 4419, value: 's = n.value;'},
     // { line: 5155, value: 'function e( u) {'},
-    { line: 5066, value: '(s =Hn(n.injector, {  tokenKey: Ö })).resolve();'},
+    { line: 5066, value: '(s =Hn(sr(e._ngModuleDefFactory()).injector, {  tokenKey: Ö })).resolve();'},
     { line: 5067, value: 's.donePromise.then(function() {'},
     // { line: 3703, value: 'function uo(n) {'},
     // { line: 9327, value: 'e.prototype.createRenderer = function() {'},

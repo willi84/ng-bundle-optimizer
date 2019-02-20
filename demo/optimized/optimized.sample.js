@@ -282,7 +282,6 @@
             }
             var r = n("WT6e"),
                 a = r.L(function(e) {
-                    console.log(u);
                     return r._2([r.P(1, "app-root", [], u), {
                         flags: 49152
                     }])
