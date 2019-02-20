@@ -217,6 +217,8 @@ export let todoDeletable = [
     [2192, 2199],
 ]
 export let todoAutomize = [
+
+    
     // 9327, 
     // 4807, 4815 /// not automized deletable?
     4823,  1772, 601,
@@ -251,6 +253,7 @@ export let deleteLOC1 = [
     [944, 958],
     [902, 910], [947, 952], [954, 955],959,
       
+    [2,1175], 7501, 7879, 8133, [10424, 10430],
 
     // #1000
     1762, 1764,1445,1446, 1447,1456,1176,[1024, 1033],1902, 1906, 1909,1793, 1468, 1448,1477, 1478,
@@ -350,7 +353,7 @@ export let deleteLOC1 = [
 export const specialReplacements = [
     { line: 30, value: 'nn(e, u, c);'},
     { line: 7881, value: 'u = function(e) {'},
-    { line: 1177, value: 'var e = Ö;'},
+    { line: 1177, value: 'var r = e = Ö;'},
     { line: 1175, value: 'WT6e: function() {'},
     { line: 13, value: 'var nn = window.webpackJsonp;'},
     { line: 1989, value: 'attrs:s,'},
