@@ -18,7 +18,7 @@ export let undeletablefn = [950,  1772,
 export const checkFn = [
     
     // hard to delete or single line fn or fn dependency
-  2122,    8129,
+     8129,
     // 2278,
     // manuell vs. automatic ???
     // 801, 
@@ -58,9 +58,8 @@ export const keepFnName = [
 export const undeletable1 = [
      5317, 8134,
     // 964, 973, 
-    [2169], [2180, 2184], 
+    [2169],  
     //  [2201, 2205],
-        2220, // optimized Ln(e, t)
     3029, 3027, [2978,2980], 2983, 
  [2969,2971],3026, 3028, [2959, 2969], 2969,
    
@@ -82,7 +81,6 @@ export const undeletable1 = [
     2971,  
     [2960,2964], 2976,[2978-2983],[2988,2990],
     // 2557, 2559,// fn call && Ft(e, 512, r)
-    2159,  
     // 1614, 
     // [2418, 2422],
     // [2930, 2933],
@@ -114,7 +112,7 @@ export const undeletable1 = [
     2938, 2939, 2940, 2942, 2945, 2947, 2948, 2952, // händisch ausprobiert
     
     // done
-     2159,  2162,
+       2162,
     // 1483,
     // 1884,
        1967,
@@ -137,13 +135,9 @@ export const undeletable1 = [
     4834,  
     [4840,4842 ],
     // 5027,
-    6431, 
-    [6930, 6931], 6934,
-    [7387, 7389],
     9325,
     // [10397,10400],
     // 802, 804,
-    [2124, 2129],    
     // 8130,
 
 // 4685, 4686, 4693,4778, 
@@ -187,10 +181,9 @@ export let deleteIifeBlocks = [114, 159,
         6776,
         //  6806
         6825, 
-        // 6926,
         // 7003, // hides view
         7026, 7042, 7209, 7235, 
-        //7384, 7512
+        // 7512
         7670, 7681, 7713, 
         // 7722,
         7818, 8245,
@@ -225,7 +218,6 @@ export let todoAutomize = [
     4663,
     // optimized
     //  2958, // TODO
-    2131, 
     // 1423, 
      692,
     //  1789,
@@ -258,7 +250,7 @@ export let deleteLOC1 = [
     // #1000
     1762, 1764,1445,1446, 1447,1456,1176,[1024, 1033],1902, 1906, 1909,1793, 1468, 1448,1477, 1478,
     // #2000
-    2974,2163, 2164, 2125,2971,2749,2948,2747,2947,2011,2126,2007,2973, 2976,2975,2147, 2150, [2138, 2140],[2188, 2208],2761, 2326,
+    2220, 2974,2163, 2164, 2125,2971,2749,2948,2747,2947,2011,2126,2007,2973, 2976,2975,2147, 2150, [2138, 2140],[2188, 2208],2761, 2326,
     2924, 2926,2967,2972, 2981, 2982,[2984, 2986], 
     [2991, 3025], 2959, 2967, 2968,2162,
 2709, 2169,
@@ -266,7 +258,7 @@ export let deleteLOC1 = [
     3030, 3710,
     
     // #4000
-    4627, 4632,4624,4647, 4648,4425,4445,4280,4203,4525, [4415, 4419], 4311, 4407, 4451, 4453,4422, 4413, 4464,[4446, 4448], 4248, 4323, 4324, 4236, 4237,
+    4411, 4627, 4632,4624,4647, 4648,4425,4445,4280,4203,4525, [4415, 4419], 4311, 4407, 4451, 4453,4422, 4413, 4464,[4446, 4448], 4248, 4323, 4324, 4236, 4237,
     [4663, 4684], 4526, 4541, 4543,  4562, 4247, 4244,
     [4606,4608], 4876, 4572,  4540, 4565, 4539, 4238,
     4199,
@@ -282,13 +274,13 @@ export let deleteLOC1 = [
 [4546, 4561], 4563, 4564, [4633, 4638], [4871, 4873],[4223, 4229],[4285, 4294], 4281, 4789, [4569, 4571], [4036, 4038],
 
     // #5000
-    5047,5155,5220,5034,5234, 5035,5026,5317,5048,5009,[5036, 5039],5314, 5219, [5018, 5020],  5517, [5229, 5233], 
+    5152,5047,5155,5220,5034,5234, 5035,5026,5317,5048,5009,[5036, 5039],5314, 5219, [5018, 5020],  5517, [5229, 5233], 
     [5071, 5080], 5069, 5065, 5081, 5085, 5086, 5087, 
 [5049, 5053], [5042, 5046], 5040, 5033, [5954, 5969],
 [5235, 5250], 5232, [5222, 5227], 5162, 5168,5031,
     5064, 5088,
     // #6000
-  6413,6369, 6372, 6927,6945,6427,6421,6426, 6930,6434,6463,6364, 6417, 6365, 6366, 6368, 6997, 6999, 
+  6367,6413,6369, 6372, 6927,6945,6427,6421,6426, 6930,6434,6463,6364, 6417, 6365, 6366, 6368, 6997, 6999, 
     [6414, 6416], [6418, 6420], 6422,
     6370, 6371, 6373, [6394, 6410], [6435, 6458], [6952, 6992], 6936,
 6464, [6466, 6474], [6460, 6462],[6947, 6949],
@@ -313,7 +305,7 @@ export let deleteLOC1 = [
     [7527, 7541],7666, 7667, 7669, 7507,  7880,
     
     // #8000
-    8140, 8141,8134, 8917, [8308, 8353], 8306, 8307, 4653, 4656, [8010, 8014],
+    8157, 8140, 8141,8134, 8917, [8308, 8353], 8306, 8307, 4653, 4656, [8010, 8014],
     [8017, 8019], 8305, 8135,8137, 8144,//
     8244,   8255,8158, 8354, 8410, [8021,8024],
     [8154, 8156], [8150, 8151],8918, 8138, 8132,
@@ -324,7 +316,7 @@ export let deleteLOC1 = [
     [9388, 9394],9198, 9309, 9271, 
 
     // #10000
-    10357,10412,10377, 10378,10391, 10572, [10080, 10086], 10331,
+    10417,10356,10416, 10419,10411,10357,10412,10377, 10378,10391, 10572, [10080, 10086], 10331,
     [10358, 10376], 10371, [10379, 10410], [10413, 10415] , [10392, 10402],
     10418,[10313, 10329], [10352, 10354],
 
@@ -352,44 +344,33 @@ export let deleteLOC1 = [
 ]
 export const specialReplacements = [
     { line: 30, value: 'nn(e, u, c);'},
+    { line: 2124, value: 'e = [{ deps: Ö,  value:  re}];for (var n = 0; n < e.length; n++) {'},
     { line: 7881, value: 'u = function(e) {'},
     { line: 1177, value: 'var r = e = Ö;'},
     { line: 1175, value: 'WT6e: function() {'},
     { line: 13, value: 'var nn = window.webpackJsonp;'},
     { line: 1989, value: 'attrs:s,'},
     { line: 4527, value: 're = (function() {'},
-    { line: 2122, value: 'Vn = function(e) {'},
-    { line: 8139, value: 'var a = Gn('},
-    { line: 6423, value: 'Gn = function(a) {'},
+    { line: 8139, value: 'e.BAR = '},
     { line: 2842, value: 'l = (c = c.parent) && Ö(c) ? c.renderParent : c;'},
     { line: 1654, value: 'return Ö;'},
     { line: 1769, value: 'return { flags: r, token: n, tokenKey: Ö };'},
     { line: 4034, value: 'return Ö;'},
-    { line: 10355, value: 'Wo(  function() {'},
-    { line: 10356, value: 'return Vn(['},
-    { line: 10420, value: '.bootstrapModuleFactory(Ö)'},
-    { line: 7470, value: 'return e;'},
-    { line: 7384, value: 'Wo = function(a) {'},
-    { line: 7471, value: '};'},
-    { line: 7389, value: 'e._ngModuleDefFactory = a'},
+    { line: 10355, value: 'e;'},
+    { line: 10420, value: '(new U(Ö)).get().bootstrapModuleFactory(Ö)'},
     { line: 6994, value: '};'},
     { line: 6931, value: 'e._def = a;'},
     { line: 6934, value: 'e.injector = e;'},
     { line: 5154, value: 'var Je = function(a) {'},
     { line: 5316, value: '};'},
-    { line: 6423, value: 'var Gn = function(a) {'},
     { line: 6476, value: 'return e;'},
     { line: 6477, value: '};'},
-    { line: 7389, value: 'this._ngModuleDefFactory = r'},
     { line: 2989, value: 's = gn(e, t, i).appendChild(document.createTextNode(i.text.prefix));'},
     { line: 5041, value: 'return (new Ne())._inner.run(function() {'},
-    { line: 6431, value: 'e.viewDefFactory = a;'},
-    { line: 5152, value: 'return Ö;'},
-    { line: 4411, value: 'var n = this._records.get(Ö);'},
     { line: 4644, value: 'function t(t) {'},
     { line: 2935, value: 'function zr( n, r, o) {'},
     { line: 2923, value: 'var r = zr( null, null, t);'},
-    { line: 2184, value: 'return new (t.value.bind.apply(t.value, Ö))();'},
+    { line: 2184, value: 'return new re();'},
     { line: 2166, value: 'if ((201347067 & t.flags) === 512) {'},
     { line: 1758, value: 'var r;n = e;'},
     { line: 1974, value: 'flags: (t |= 33554433),'},
@@ -399,7 +380,7 @@ export const specialReplacements = [
     { line:2016, value: 'r = document.querySelector(\'app-root\');'},
     { line:2010, value: 'r = document.createElement(o.name);'},
     // { line:5068, value: '( Hn(n, {  tokenKey: Xt(Je) }))._componentFactoryResolver.resolveComponentFactory();'},
-    { line:5068, value: 'Zr(zr( null, null,Ö.viewDefFactory()))'},
+    { line:5068, value: 'Zr(zr( null, null,Ö.BAR()))'},
     { line: 2961, value: 't = (e.parent).nodes[e.parentNodeDef.parent.nodeIndex].renderElement;'},
     { line: 4299, value: 'function e(e) {'},
     { line: 1447, value: 'if (!e) {'},
@@ -407,7 +388,7 @@ export const specialReplacements = [
     { line: 2751, value: 'gn(e, t, n).appendChild(document.createTextNode(n.text.prefix));'},
     { line: 2013, value: 'gn(e, t, n).appendChild(r);'},
     { line: 1466, value: 'return (new U(({ providers: n }).providers)).get();'},
-    { line: 2127, value: 't[Ö] = e[n];'},
+    { line: 2127, value: 't[Ö] = { deps: Ö,  value:  re}'},
     { line: 4834, value: 'onHandleError: function() {'},
     { line: 4797, value: 'this._inner = Zone.current;'},
     { line: 4797, value: 'this._inner = Zone.current;'},
@@ -415,12 +396,9 @@ export const specialReplacements = [
     { line: 2979, value: 'renderElement: Nn(e, t, i),'},
     { line: 2980, value: 'componentView: zr( e, i.element.componentProvider, i.element.componentView()),'},
     // { line: 7385, value: 'function t(  r) {'},
-    { line: 2131, value: 'function Hn(e, t) {'},
-    { line: 2159, value: 't = e._def[t.tokenKey];'},
     { line: 4410, value: 'e.prototype.get = function() {'},
-    { line: 7463, value: 'return new sr(this._ngModuleDefFactory());'},
+    { line: 7463, value: 'return new sr(this.FOO());'},
     { line: 2010, value: 'r = s.createElement(o.name);'},
-    { line: 6926, value: 'var sr = function(a) {'},
     // { line: 9374, value: 'e.prototype.appendChild = function(t) {'},
     // { line: 2013, value: 's.appendChild(r);'},
     // { line: 2751, value: 'o.appendChild(r);'},
@@ -440,26 +418,23 @@ export const specialReplacements = [
     { line: 4379, value: 'return {  fn: e.provide,  value: R };'},
     { line: 10377, value: 'r.W( Ö'},
     // { line: 1433, value: 'function Ge(  n) {'},
-    { line: 6367, value: 'At = function(){ return  (new U(Ye)).get()};'},
     // { line: 6459, value: 't.prototype.create = function() {'},
     { line: 4657, value: 't.prototype.create = function() {'},
     { line: 10378, value: 'r.W( Ö),'},
-    { line: 10411, value: '{ deps: Ö,  value:  re},'},
     { line: 4544, value: 'this.resolve();'},
     { line: 4312, value: 'if ((n = n) instanceof Array) {'},
     { line: 4323, value: 'var o = n.provide;'},
     { line: 2933, value: 'return zr( e, t.element.componentProvider, n);'},
     // { line: 2931, value: '? e.root.rendererFactory.createRenderer()'},
     { line: 4360, value: 'var i = e.provide;'},
-    // { line: 6463, value: 'var o = this.viewDefFactory();'},
+    // { line: 6463, value: 'var o = this.BAR();'},
     // { line: 4545, value: '}();'},
     { line: 4419, value: 's = n.value;'},
     // { line: 5155, value: 'function e( u) {'},
-    { line: 5066, value: '(s =Hn(sr(e._ngModuleDefFactory()).injector, {  tokenKey: Ö })).resolve();'},
+    { line: 5066, value: '(s = new re()).resolve();'},
     { line: 5067, value: 's.donePromise.then(function() {'},
     // { line: 3703, value: 'function uo(n) {'},
     // { line: 9327, value: 'e.prototype.createRenderer = function() {'},
-    { line: 2129, value: 'return  t ;'},
     { line: 5048, value: 'var s = n.injector.get();'},
     { line: 7894, value: "[['style', 'text-align:center']], Ö"},
     { line: 2337, value: "})(e, (t ));"},
@@ -469,7 +444,7 @@ export const specialReplacements = [
     // { line: 4445, value: "n.value = new (c.bind.apply(c))"},
     { line: 4446, value: ""},
     { line: 4447, value: ""},
-    { line: 4452, value: "return new (n.fn.bind.apply(n.fn))"},
+    { line: 4452, value: "return new Ö;"},
     { line: 4453, value: "})(t, n);"},
     { line: 4413, value: "return (function e(t, n) {"},
     { line: 4415, value: "return (function(t, n) {"},
@@ -486,7 +461,7 @@ export const specialReplacements = [
     // { line: 5233, value: "var o = null;"},
     { line: 6937, value: "e._providers = [];"},
     // { line: 6424, value: "function t(r) {"},
-    // { line: 6465, value: "Zr(zr( null, null,this.viewDefFactory()));"},
+    // { line: 6465, value: "Zr(zr( null, null,this.BAR()));"},
     // { line: 4314, value: "e(t, n[0]);"},
     { line: 3601, value: "Zr(e.nodes[0].componentView)"},
     { line: 1790, value: "var t = e();"},
@@ -518,7 +493,6 @@ export const specialReplacements = [
 
     { line: 8148, value: '{ flags: 49152},'},
     // { line: 10331, value: "var qe = Object(r.D)(r.H);"},
-    { line: 10419, value: "Object(At)()"},
 
     // TODO: IIFE automize
     { line: 4200, value: "var i = Ö;"},
@@ -663,7 +637,7 @@ export let deletableFunctions = [
 6806, 1728, 1879, 1178, 4042, 3703, 6424, 9387, 9327, 9355, 9320, 4643,
 4264, 4111, 3694, 2922, 2928, 5221, 2275, 1610, 2746, 4856, 5105, 6459,
 4542, 7502, 502, 2758, 4147, 4488, 1303, 1789, 4168,2278, 2257,  4033,
-5154, 4538,
+5154, 4538, 6423, 6926, 2131, 2122, 7384,
 5057, 10421, 943, 799, 1005, 6393, 9199, 1005, 1269, 3595, 7394, 1648,
  1429,1656, 2863, 7003, 1481, 4605, 8041, 8304, 4099, 4165,4123,
 1409, 1416, 1420, 1423, 8129, 8359, 8394, 8355, 2954, 814, 9250, 9310, 4277,

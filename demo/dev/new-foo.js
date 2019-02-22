@@ -2119,16 +2119,9 @@
 
 
 
-        Vn = function(e) {
 
-          for (var n = 0; n < e.length; n++) {
 
 
-            t[Ö] = e[n];
-          }
-          return  t ;
-        }
-        function Hn(e, t) {
 
 
 
@@ -2156,7 +2149,6 @@
 
 
 
-              t = e._def[t.tokenKey];
 
 
 
@@ -2177,11 +2169,6 @@
 
 
 
-                    var o = new Array(r);
-                    for (var i = 0; i < t.deps.length; i++) {
-                      o[i] = Hn(e, t.deps[i]);
-                    }
-                    return new (t.value.bind.apply(t.value, Ö))();
 
 
 
@@ -2217,7 +2204,20 @@
 
 
 
-        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -4408,7 +4408,6 @@
 
           }
           e.prototype.get = function() {
-            var n = this._records.get(Ö);
 
 
 
@@ -4449,7 +4448,8 @@
 
 
 
-                    return new (n.fn.bind.apply(n.fn))
+
+                    return new Ö;
 
 
 
@@ -5063,9 +5063,9 @@
 
 
 
-                  (s =Hn(sr(e._ngModuleDefFactory()).injector, {  tokenKey: Ö })).resolve();
+                  (s = new re()).resolve();
                   s.donePromise.then(function() {
-                    Zr(zr( null, null,Ö.viewDefFactory()))
+                    Zr(zr( null, null,Ö.BAR()))
 
                   });
 
@@ -5149,7 +5149,7 @@
 
 
 
-          return Ö;
+
         })();
 
 
@@ -6364,7 +6364,6 @@
 
 
 
-        At = function(){ return  (new U(Ye)).get()};
 
 
 
@@ -6420,7 +6419,6 @@
 
 
 
-        Gn = function(a) {
 
 
 
@@ -6428,7 +6426,6 @@
 
 
 
-            e.viewDefFactory = a;
 
 
 
@@ -6473,8 +6470,6 @@
 
 
 
-          return e;
-        };
 
 
 
@@ -6923,15 +6918,12 @@
 
 
 
-        var sr = function(a) {
 
 
 
 
-            e._def = a;
 
 
-            e.injector = e;
 
 
 
@@ -6990,8 +6982,6 @@
 
 
 
-          return e;
-        };
 
 
 
@@ -7381,12 +7371,10 @@
 
 
 
-        Wo = function(a) {
 
 
 
 
-            e._ngModuleDefFactory = a
 
 
 
@@ -7467,8 +7455,20 @@
 
 
 
-          return e;
-        };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -8136,7 +8136,7 @@
 
 
 
-      var a = Gn(
+      e.BAR = 
 
 
         function(e) {
@@ -8154,7 +8154,6 @@
 
 
 
-      );
 
 
 
@@ -10352,9 +10351,8 @@
 
 
 
-      Wo(  function() {
-        return Vn([
 
+      e;
 
 
 
@@ -10408,16 +10406,18 @@
 
 
 
-          { deps: Ö,  value:  re},
 
 
 
 
-        ]);
-      });
 
-      Object(At)()
-        .bootstrapModuleFactory(Ö)
+
+
+
+
+
+
+        (new U(Ö)).get().bootstrapModuleFactory(Ö)
 
 
 
