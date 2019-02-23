@@ -89,7 +89,7 @@ export const undeletable1 = [
     2709, 
     
     2720, 2727,   2741, 2744,
-     2764,   [2769,2772], 2775, 2776, 2796, 2817, 2819, 
+     2764,   [2769,2772], 2775,  2796, 2817, 2819, 
     // TODO: 2844 wird nicht erkannt
    2830, 2831, 2833, [2835, 2836], [2842, 2846],   2852, 2861, 2862,
    // TODO: 3596 
@@ -119,7 +119,6 @@ export const undeletable1 = [
      1974, 1982, 1986, 1988, 1989, 1992, 1997, 2002, //todo
     2024, [2019, 2022], [2015, 2017], 2013, 2006, [2009, 2011], // TODO some stuff from other side deleted
     
-     4308, [4323,4324],
     // [4349, 4350],
     //  4358, 4360, 
     // 4377,
@@ -127,7 +126,6 @@ export const undeletable1 = [
     // 4379, 
     // 4380,
     //  [4379,4380],
-     4405,
     4529, 4533, 4534, 4536,
     // 4690,
      4797, 4804, 
@@ -221,7 +219,7 @@ export let todoAutomize = [
     // 1423, 
      692,
     //  1789,
-     4299, 4528, 4644, 
+      4528, 4644, 
      2746, 
     // 4685, 
     //  7519,
@@ -258,7 +256,7 @@ export let deleteLOC1 = [
     3030, 3710,
     
     // #4000
-    4411, 4627, 4632,4624,4647, 4648,4425,4445,4280,4203,4525, [4415, 4419], 4311, 4407, 4451, 4453,4422, 4413, 4464,[4446, 4448], 4248, 4323, 4324, 4236, 4237,
+    4198,4411, 4627, 4632,4624,4647, 4648,4425,4445,4280,4203,4525, [4415, 4419], 4311, 4407, 4451, 4453,4422, 4413, 4464,[4446, 4448], 4248, 4323, 4324, 4236, 4237,
     [4663, 4684], 4526, 4541, 4543,  4562, 4247, 4244,
     [4606,4608], 4876, 4572,  4540, 4565, 4539, 4238,
     4199,
@@ -336,7 +334,6 @@ export let deleteLOC1 = [
 // [8010, 8014],
 // [8154, 8156],8150, 8151, 
 
-// 4405
 //t.set(n.provide, {  fn: n.provide,  value: R });
 // var o = n.provide;// #CL1 START i:10399 orig: 10
 // var i = {  fn: n.provide,  value: R };
@@ -345,7 +342,7 @@ export let deleteLOC1 = [
 export const specialReplacements = [
     { line: 30, value: 'nn(e, u, c);'},
     { line: 2124, value: 'e = [{ deps: Ö,  value:  re}];for (var n = 0; n < e.length; n++) {'},
-    { line: 7881, value: 'u = function(e) {'},
+    { line: 7881, value: 'u = function() {'},
     { line: 1177, value: 'var r = e = Ö;'},
     { line: 1175, value: 'WT6e: function() {'},
     { line: 13, value: 'var nn = window.webpackJsonp;'},
@@ -357,7 +354,7 @@ export const specialReplacements = [
     { line: 1769, value: 'return { flags: r, token: n, tokenKey: Ö };'},
     { line: 4034, value: 'return Ö;'},
     { line: 10355, value: 'e;'},
-    { line: 10420, value: '(new U(Ö)).get().bootstrapModuleFactory(Ö)'},
+    { line: 10420, value: '(new Ö).bootstrapModuleFactory(Ö)'},
     { line: 6994, value: '};'},
     { line: 6931, value: 'e._def = a;'},
     { line: 6934, value: 'e.injector = e;'},
@@ -373,7 +370,7 @@ export const specialReplacements = [
     { line: 2184, value: 'return new re();'},
     { line: 2166, value: 'if ((201347067 & t.flags) === 512) {'},
     { line: 1758, value: 'var r;n = e;'},
-    { line: 1974, value: 'flags: (t |= 33554433),'},
+    { line: 1974, value: 'flags: (33554433),'},
     // { line:2748, value: 'var r = document.createTextNode(n.text.prefix);'},
     // { line:3695, value: 'return Fr({renderer: (o.injector.get($e))}, r);'},
     { line:2021, value: 'r.setAttribute( c[0], c[1]);'},
@@ -382,7 +379,6 @@ export const specialReplacements = [
     // { line:5068, value: '( Hn(n, {  tokenKey: Xt(Je) }))._componentFactoryResolver.resolveComponentFactory();'},
     { line:5068, value: 'Zr(zr( null, null,Ö.BAR()))'},
     { line: 2961, value: 't = (e.parent).nodes[e.parentNodeDef.parent.nodeIndex].renderElement;'},
-    { line: 4299, value: 'function e(e) {'},
     { line: 1447, value: 'if (!e) {'},
     { line: 5041, value: 'return (new Ne())._inner.run(function() {'},
     { line: 2751, value: 'gn(e, t, n).appendChild(document.createTextNode(n.text.prefix));'},
@@ -396,7 +392,6 @@ export const specialReplacements = [
     { line: 2979, value: 'renderElement: Nn(e, t, i),'},
     { line: 2980, value: 'componentView: zr( e, i.element.componentProvider, i.element.componentView()),'},
     // { line: 7385, value: 'function t(  r) {'},
-    { line: 4410, value: 'e.prototype.get = function() {'},
     { line: 7463, value: 'return new sr(this.FOO());'},
     { line: 2010, value: 'r = s.createElement(o.name);'},
     // { line: 9374, value: 'e.prototype.appendChild = function(t) {'},
@@ -408,7 +403,6 @@ export const specialReplacements = [
     { line: 2181, value: 'for (var i = 0; i < t.deps.length; i++) {'},
     { line: 2182, value: 'o[i] = Hn(e, t.deps[i]);'},
     { line: 2960, value: 'if (!!e.parent) {'},
-    { line: 4405, value: 'r.set(e, {  fn: e,  value: [] });'},
     { line: 4312, value: 'if (n instanceof Array) {'},
     { line: 9356, value: 'var e = Ö;'},
     { line: 6427, value: ' u.componentType = Ö;'},
@@ -444,7 +438,6 @@ export const specialReplacements = [
     // { line: 4445, value: "n.value = new (c.bind.apply(c))"},
     { line: 4446, value: ""},
     { line: 4447, value: ""},
-    { line: 4452, value: "return new Ö;"},
     { line: 4453, value: "})(t, n);"},
     { line: 4413, value: "return (function e(t, n) {"},
     { line: 4415, value: "return (function(t, n) {"},
@@ -473,7 +466,6 @@ export const specialReplacements = [
     // { line: 1446, value: "e();"},
     // { line: 1448, value: "var s = n.concat(t);"},
     { line: 1651, value: "t =  '_' + Jt.size;"},
-    { line: 4198, value: "var r;"},
     { line: 1729, value: "return !!e.parent;"},
     { line: 4379, value: "return {  fn: n,  value: r };"},
     { line: 8146, value: '('},
@@ -628,7 +620,7 @@ export let deletableFunctions = [
 // 7870,
 3,
 9271,
-  8086, 8033, 1423, 1362, 1386,
+  8086, 8033, 1423, 1362, 1386, 4298,
 4663, 4685,  4222, 7519, 10312, 4030,
 4204, 4162, 4159, 4171, 4180, 4183,
 8919, 6412, 901, 806, 962, 6946, 1755, 4177,
