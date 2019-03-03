@@ -90,9 +90,9 @@ export const undeletable1 = [
     2709, 
     
     2720, 2727,   2741, 2744,
-     2764,   [2769,2772], 2775,  2796, 2817, 2819, 
+     2764,   [2769,2772], 2775,  
     // TODO: 2844 wird nicht erkannt
-   2830, 2831, 2833, [2835, 2836], [2842, 2846],   2852, 2861, 2862,
+   2830, 2831,  [2835, 2836], [2842, 2846],   2852, 2861, 2862,
    // TODO: 3596 
 //    3596,
     
@@ -110,7 +110,7 @@ export const undeletable1 = [
     //  2336,
     // 2326, 
     //  2337,  //TODO: händisch ausprobiert
-    2938, 2939, 2940, 2942, 2945, 2947, 2948, 2952, // händisch ausprobiert
+    2938, 2939, 2940,  2945, 2947, 2948, 2952, // händisch ausprobiert
     
     // done
        2162,
@@ -243,7 +243,7 @@ export let deleteLOC1 = [
     [2,1175], 7501, 7879, 8133, [10424, 10430],
 
     // #1000
-    1762, 1764,1445,1446, 1447,1456,1176,[1024, 1033],1902, 1906, 1909,1793, 1468, 1448,1477, 1478,
+   1177,  1762, 1764,1445,1446, 1447,1456,1176,[1024, 1033],1902, 1906, 1909,1793, 1468, 1448,1477, 1478,
     // #2000
     // TODO 2959
     2964,2220, 2974,2163, 2164, 2125,2971,2749,2948,2747,2947,2011,2126,2007,2973, 2976,2975,2147, 2150, [2138, 2140],[2188, 2208],2761, 2326,
@@ -285,6 +285,7 @@ export let deleteLOC1 = [
     7500,7385, 7391, 7462,7388,7001, 7002, 7393, 7387, 7390, 7041,[7021, 7025],
       [7395,7461], 7928, 7929, 7934,
       7937, 7940,
+      7886, 7902, 7906, 7930, 7932, 7935, 7938, 7941, 7943, 7992, 7995, 7997, 7965, 7968, 7970, 
       7464, 7465,
       7963, 7964, 7967,
       7990, 7991, 7994,
@@ -292,7 +293,7 @@ export let deleteLOC1 = [
     [7472, 7482],7392, 7883,
     // 7963, 7964, 7967, 7885, 
     // 7901, 
-    // TODO: 7885
+    7885,
     // TODO 7905, // mach bullets mittig 
    
     7506, 7706, 7020, [7466, 7468],
@@ -312,7 +313,7 @@ export let deleteLOC1 = [
     [9388, 9394],9198, 9309, 9271, 
 
     // #10000
-     10417,10356,10416, 10419,10411,10357,10412,10377, 10378,10391, 10572, [10080, 10086], 10331,
+     10355, 10417,10356,10416, 10419,10411,10357,10412,10377, 10378,10391, 10572, [10080, 10086], 10331,
     [10358, 10376], 10371, [10379, 10410], [10413, 10415] , [10392, 10402],
     10418,[10313, 10329], [10352, 10354],
 
@@ -339,33 +340,34 @@ export let deleteLOC1 = [
 ]
 export const specialReplacements = [
     { line: 30, value: 'nn(e, u, c);'},
+    { line: 7918, value: '\'ng.svg\''},
+    { line: 2831, value: 'c = l = v;'},
+    { line: 7933, value: 'Pr( \'Here are some links to help you start: \'),'},
     { line: 2959, value: 'if(!e)return;'},
-    { line: 10420, value: 'Zr(zr( null, null,jr([On(1, "app-root", [], u), { flags: 49152}])))'},
-    { line: 2741, value: 'text: { prefix: n },'},
-    { line: 7904, value: '( Pr([\'\\n    Welcome to app!\\n  \'])),'},
+    { line: 10420, value: 'Zr(zr( null,jr([On(1, "app-root"), { flags: 49152}])))'},
+    { line: 2741, value: 'text: n,'},
     { line: 5067, value: '(new Promise(function(e) { e();})).then(function() {'},
     { line: 4534, value: 'e();'},
     { line: 4214, value: 'var l = \'\';'},
     { line: 2969, value: 'switch (i.flags) {'},
     //{ line: 2970, value: 'case 33554433:'},
     { line: 1772, value: 'function gn(n) {'},
-    { line: 2714, value: 'text: { prefix: n },'},
     { line: 4875, value: ' });'},
     { line: 3027, value: 'Ö[o] = s;'},
-    { line: 2945, value: 'nodes: e,'},
+    // TODO: wegmachen
+    { line: 2945, value: 'nodes: Ö,'},
     { line: 2124, value: 'e = [{ deps: Ö,  value:  re}];for (var n = 0; n < e.length; n++) {'},
     { line: 7881, value: 'u = function() {'},
     { line: 4843, value: 'onHandleError: Ö'},
     { line: 1177, value: 'var r = e = Ö;'},
     { line: 1175, value: 'WT6e: function() {'},
     { line: 13, value: 'var nn = window.webpackJsonp;'},
-    { line: 1989, value: 'attrs:s,'},
+    { line: 1989, value: 'attrs:s || [],'},
     { line: 4527, value: 're = (function() {'},
-    { line: 2842, value: 'l = (c = c.parent) && Ö(c) ? c.renderParent : c;'},
+    { line: 2842, value: 'l = (c = c.parent) && null ? c.renderParent : c;'},
     { line: 1654, value: 'return Ö;'},
     { line: 1769, value: 'return { flags: r, token: n, tokenKey: Ö };'},
     { line: 4034, value: 'return Ö;'},
-    { line: 10355, value: 'e;'},
     { line: 6994, value: '};'},
     { line: 6931, value: 'e._def = a;'},
     { line: 6934, value: 'e.injector = e;'},
@@ -373,11 +375,11 @@ export const specialReplacements = [
     { line: 5316, value: '};'},
     { line: 6476, value: 'return e;'},
     { line: 6477, value: '};'},
-    { line: 2989, value: 's = gn(i.renderParent).appendChild(document.createTextNode(i.text.prefix));'},
+    { line: 2989, value: 's = gn(i.renderParent).appendChild(document.createTextNode(i.text));'},
     { line: 5041, value: '(Zone.current.fork({onHandleError: Ö })).run(function() {'},
     { line: 4644, value: 'function t(t) {'},
-    { line: 2935, value: 'function zr( n, r, o) {'},
-    { line: 2923, value: 'var r = zr( null, null, t);'},
+    { line: 2935, value: 'function zr( n, o) {'},
+    { line: 2923, value: 'var r = zr( null, t);'},
     { line: 2184, value: 'return new re();'},
     { line: 2166, value: 'if ((201347067 & t.flags) === 512) {'},
     { line: 1758, value: 'var r;n = e;'},
@@ -389,8 +391,8 @@ export const specialReplacements = [
     { line:2016, value: 'r = document.querySelector(\'app-root\');'},
     { line:2010, value: 'r = document.createElement(o.name);'},
     // { line:5068, value: '( Hn(n, {  tokenKey: Xt(Je) }))._componentFactoryResolver.resolveComponentFactory();'},
-    { line:5068, value: 'Zr(zr( null, null,jr([On(1, "app-root", [], u), { flags: 49152}])))'},
-    { line: 2961, value: 'FOO = (e.parent).nodes[e.parentNodeDef.parent.nodeIndex].renderElement;'},
+    { line:5068, value: 'Zr(zr( null,jr([On(1, "app-root"), { flags: 49152}])))'},
+    { line: 2961, value: 'FOO = (e.parent).nodes[0].renderElement;'},
     { line: 1447, value: 'if (!e) {'},
     { line: 2751, value: 'gn(n.renderParent).appendChild(document.createTextNode(n.text.prefix));'},
     { line: 2013, value: 'gn(n.renderParent).appendChild(r);'},
@@ -398,7 +400,7 @@ export const specialReplacements = [
     { line: 2127, value: 't[Ö] = { deps: Ö,  value:  re}'},
     { line: 2016, value: ' r = s.selectRootElement(\'app-root\');'},
     { line: 2979, value: 'renderElement: Nn(e, i),'},
-    { line: 2980, value: 'componentView: zr( e, i.element.componentProvider, i.element.componentView()),'},
+    { line: 2980, value: 'componentView: zr( e, i.element.componentView()),'},
     // { line: 7385, value: 'function t(  r) {'},
     { line: 7463, value: 'return new sr(this.FOO());'},
     { line: 2010, value: 'r = s.createElement(o.name);'},
@@ -406,7 +408,7 @@ export const specialReplacements = [
     // { line: 2013, value: 's.appendChild(r);'},
     // { line: 2751, value: 'o.appendChild(r);'},
     { line: 9348, value: 'return new J(e);'},
-    { line: 3029, value: 'Zr(Ö[0].componentView)'},
+    { line: 3029, value: 'Zr(s.componentView)'},
     { line: 1988, value: 'name: i,'},
     { line: 2181, value: 'for (var i = 0; i < t.deps.length; i++) {'},
     { line: 2182, value: 'o[i] = Hn(e, t.deps[i]);'},
@@ -426,7 +428,7 @@ export const specialReplacements = [
     { line: 4544, value: 'this.resolve();'},
     { line: 4312, value: 'if ((n = n) instanceof Array) {'},
     { line: 4323, value: 'var o = n.provide;'},
-    { line: 2933, value: 'return zr( e, t.element.componentProvider, n);'},
+    { line: 2933, value: 'return zr( e, n);'},
     // { line: 2931, value: '? e.root.rendererFactory.createRenderer()'},
     { line: 4360, value: 'var i = e.provide;'},
     // { line: 6463, value: 'var o = this.BAR();'},
@@ -437,7 +439,7 @@ export const specialReplacements = [
     // { line: 3703, value: 'function uo(n) {'},
     // { line: 9327, value: 'e.prototype.createRenderer = function() {'},
     { line: 5048, value: 'var s = n.injector.get();'},
-    { line: 7894, value: "[['style', 'text-align:center']], Ö"},
+    { line: 7894, value: "[['style', 'text-align:center']]"},
     { line: 2337, value: "})(e, (t ));"},
     // { line: 6369, value: " { provide: Ye },"},
     { line: 2708, value: "Pr = function(n) {"},
@@ -448,7 +450,7 @@ export const specialReplacements = [
     { line: 4453, value: "})(t, n);"},
     { line: 4413, value: "return (function e(t, n) {"},
     { line: 4415, value: "return (function(t, n) {"},
-    { line: 1992, value: "componentView: l,"},
+    { line: 1992, value: "componentView: u,"},
     { line: 8141, value: "Ö,"},
     { line: 2009, value: "if (e.parent ) {"},
     { line: 2319, value: "flags: t"},
@@ -461,7 +463,7 @@ export const specialReplacements = [
     // { line: 5233, value: "var o = null;"},
     { line: 6937, value: "e._providers = [];"},
     // { line: 6424, value: "function t(r) {"},
-    // { line: 6465, value: "Zr(zr( null, null,this.BAR()));"},
+    // { line: 6465, value: "Zr(zr( null,this.BAR()));"},
     // { line: 4314, value: "e(t, n[0]);"},
     { line: 3601, value: "Zr(e.nodes[0].componentView)"},
     { line: 1790, value: "var t = e();"},
@@ -489,7 +491,6 @@ export const specialReplacements = [
     { line: 8020, value: ']'},
     // { line: 1907, value: 'A = kn(i);'},
     // TODO: HOTFIX: app is variable
-    { line: 7904, value: '( r._1( [\'\\n    Welcome to app\', \'!\\n  \'])),'},
 
     { line: 8148, value: '{ flags: 49152},'},
     // { line: 10331, value: "var qe = Object(r.D)(r.H);"},
@@ -517,6 +518,12 @@ export const specialReplacements = [
     { line: 2975, value: 'a = Br(e, i, c);'},
     { line: 7463, value: 'return ir('},
     { line: 8148, value: '{ flags: 49152},'},
+    { line: 7962, value: ' Pr(\'Tour of Heroes\'),'},
+    { line: 7904, value: 'Pr([\'\\n    Welcome to app!\\n  \']),'},
+    { line: 7905, value: 'Pr(\'\\n  \'),'},
+    { line: 7989, value: 'Pr(\'CLI Documentation\'),'},
+    { line: 8016, value: ' Pr(\'Angular blog\'),'},
+
     
     // replacements
     // { line: 7888, value: 'Ö,'},
@@ -554,23 +561,28 @@ export const specialReplacements = [
     // { line: 8147, value: 'r.P( Ö,Ö,Ö,Ö,1, \'app-root\', [], Ö,Ö,Ö,u,Ö)),'},
     
     
-    { line: 1893, value: 'On = function( o, i, s, l) {'},
+    { line: 1893, value: 'On = function( o, i, s) {'},
 
     // #r.P
-    { line: 7903, value: 'r.P( 1, \'h1\', [],Ö)),'},
-    { line: 7931, value: 'r.P( 1, \'h2\', [],Ö)),'},
-    { line: 7936, value: 'r.P( 22, \'ul\', [],Ö)),'},
-    { line: 7939, value: 'r.P( 5, \'li\', [],Ö)),'},
-    { line: 7942, value: 'r.P( 2, \'h2\', [],Ö)),'},
-    { line: 7966, value: 'r.P( 5, \'li\', [],Ö)),'},
-    { line: 7969, value: 'r.P( 2, \'h2\', [],Ö)),'},
-    { line: 7993, value: 'r.P( 5, \'li\', [],Ö)),'},
-    { line: 7996, value: 'r.P( 2, \'h2\', [],Ö)),'},
-    { line: 8147, value: 'r.P( 1, \'app-root\', [], u)),'},
-    { line: 7921, value: '], Ö'},
-    { line: 7955, value: '], Ö'},
-    { line: 7982, value: '],Ö'},
-    { line: 8009, value: '],Ö'},
+    { line: 7900, value: '),'},
+    { line: 7927, value: '),'},
+    { line: 7988, value: '),'},
+    { line: 7961, value: '),'},
+    { line: 8015, value: '),'},
+    { line: 7903, value: 'r.P( 1, \'h1\'),'},
+    { line: 7931, value: 'r.P( 1, \'h2\'),'},
+    { line: 7936, value: 'r.P( 22, \'ul\'),'},
+    { line: 7939, value: 'r.P( 5, \'li\'),'},
+    { line: 7942, value: 'r.P( 2, \'h2\'),'},
+    { line: 7966, value: 'r.P( 5, \'li\'),'},
+    { line: 7969, value: 'r.P( 2, \'h2\'),'},
+    { line: 7993, value: 'r.P( 5, \'li\'),'},
+    { line: 7996, value: 'r.P( 2, \'h2\'),'},
+    { line: 8147, value: 'r.P( 1, \'app-root\'),'},
+    { line: 7921, value: ']'},
+    { line: 7955, value: ']'},
+    { line: 7982, value: ']'},
+    { line: 8009, value: ']'},
 
 
 ]

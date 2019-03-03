@@ -723,7 +723,7 @@ if (!noRun) {
 
 prevLine = '';
 rl.on('close', () => {
-    finalCode = 'Ö = function () {};'+finalCode
+    finalCode = 'Ö = [];'+finalCode
     // finalCode = 'function Ö(){};'+finalCode
     // var m = finalCode.match(/e\(\)\(\)\,/g)
     // console.log(m.length);

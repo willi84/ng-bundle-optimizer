@@ -1,4 +1,4 @@
-Ö = function () {};//export const helper = () => {}
+Ö = [];//export const helper = () => {}
 
 
 
@@ -1174,7 +1174,7 @@
 
 
 
-      var r = e = Ö;
+
 
 
 
@@ -1890,7 +1890,7 @@
 
 
 
-        On = function( o, i, s, l) {
+        On = function( o, i, s) {
 
 
 
@@ -1986,10 +1986,10 @@
             element: {
 
               name: i,
-              attrs:s,
+              attrs:s || [],
 
 
-              componentView: l,
+              componentView: u,
 
 
 
@@ -2738,7 +2738,7 @@
 
 
 
-            text: { prefix: n },
+            text: n,
 
 
           };
@@ -2793,7 +2793,6 @@
 
 
 
-            if (20224 & v.flags) {
 
 
 
@@ -2814,9 +2813,10 @@
 
 
 
-                c.element.componentProvider = v;
 
-            }
+
+
+
 
 
 
@@ -2828,9 +2828,9 @@
 
 
             if (v.childCount > 0) {
-              c = v;
+              c = l = v;
 
-                l = v;
+
 
             } else {
               while (c && h === c.nodeIndex + c.childCount) {
@@ -2839,7 +2839,7 @@
 
 
 
-                l = (c = c.parent) && Ö(c) ? c.renderParent : c;
+                l = (c = c.parent) && null ? c.renderParent : c;
               }
             }
           }
@@ -2932,17 +2932,17 @@
 
 
 
-        function zr( n, r, o) {
+        function zr( n, o) {
 
 
           return {
             def: o,
             parent: n,
 
-            parentNodeDef: r,
 
 
-            nodes: e,
+
+            nodes: Ö,
 
 
 
@@ -2958,7 +2958,7 @@
         function Zr(e) {
           if(!e)return;
           if (e.parent) {
-            FOO = (e.parent).nodes[e.parentNodeDef.parent.nodeIndex].renderElement;
+            FOO = (e.parent).nodes[0].renderElement;
           }
           var n = e.def;
 
@@ -2977,7 +2977,7 @@
 
                 s = {
                   renderElement: Nn(e, i),
-                  componentView: zr( e, i.element.componentProvider, i.element.componentView()),
+                  componentView: zr( e, i.element.componentView()),
 
 
                 };
@@ -2986,7 +2986,7 @@
 
                 break;
               case 2:
-                s = gn(i.renderParent).appendChild(document.createTextNode(i.text.prefix));
+                s = gn(i.renderParent).appendChild(document.createTextNode(i.text));
                 break;
 
 
@@ -3026,7 +3026,7 @@
             }
             Ö[o] = s;
           }
-          Zr(Ö[0].componentView)
+          Zr(s.componentView)
 
         }
 
@@ -7882,8 +7882,8 @@
         return jr(
 
           [
-            ( Pr('\n')),
-            (
+
+
             On(
 
 
@@ -7891,19 +7891,19 @@
 
               6,
               'div',
-              [['style', 'text-align:center']], Ö
+              [['style', 'text-align:center']]
 
 
 
 
 
-            )),
+            ),
 
-            (
-            On( 1, 'h1', [],Ö)),
-            ( Pr(['\n    Welcome to app!\n  '])),
-            ( Pr('\n  ')),
-            (
+
+            On( 1, 'h1'),
+            Pr(['\n    Welcome to app!\n  ']),
+            Pr('\n  '),
+
             On(
 
 
@@ -7915,32 +7915,32 @@
                 ['alt', 'Angular Logo'],
                 [
                   'src',
-                  'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAgMjUwIj4KICAgIDxwYXRoIGZpbGw9IiNERDAwMzEiIGQ9Ik0xMjUgMzBMMzEuOSA2My4ybDE0LjIgMTIzLjFMMTI1IDIzMGw3OC45LTQzLjcgMTQuMi0xMjMuMXoiIC8+CiAgICA8cGF0aCBmaWxsPSIjQzMwMDJGIiBkPSJNMTI1IDMwdjIyLjItLjFWMjMwbDc4LjktNDMuNyAxNC4yLTEyMy4xTDEyNSAzMHoiIC8+CiAgICA8cGF0aCAgZmlsbD0iI0ZGRkZGRiIgZD0iTTEyNSA1Mi4xTDY2LjggMTgyLjZoMjEuN2wxMS43LTI5LjJoNDkuNGwxMS43IDI5LjJIMTgzTDEyNSA1Mi4xem0xNyA4My4zaC0zNGwxNy00MC45IDE3IDQwLjl6IiAvPgogIDwvc3ZnPg==',
+                  'ng.svg'
                 ],
                 ['width', '300'],
-              ], Ö
+              ]
 
 
 
 
 
-            )),
+            ),
 
 
-            (
-            On( 1, 'h2', [],Ö)),
-            (
-            Pr('Here are some links to help you start: ')),
 
-            (
-            On( 22, 'ul', [],Ö)),
+            On( 1, 'h2'),
 
-            (
-            On( 5, 'li', [],Ö)),
+            Pr( 'Here are some links to help you start: '),
 
-            (
-            On( 2, 'h2', [],Ö)),
-            (
+
+            On( 22, 'ul'),
+
+
+            On( 5, 'li'),
+
+
+            On( 2, 'h2'),
+
             On(
 
 
@@ -7952,22 +7952,22 @@
                 ['href', 'https://angular.io/tutorial'],
                 ['rel', 'noopener'],
                 ['target', '_blank'],
-              ], Ö
+              ]
 
 
 
 
 
-            )),
-            ( Pr('Tour of Heroes')),
+            ),
+             Pr('Tour of Heroes'),
 
 
-            (
-            On( 5, 'li', [],Ö)),
 
-            (
-            On( 2, 'h2', [],Ö)),
-            (
+            On( 5, 'li'),
+
+
+            On( 2, 'h2'),
+
             On(
 
 
@@ -7979,22 +7979,22 @@
                 ['href', 'https://github.com/angular/angular-cli/wiki'],
                 ['rel', 'noopener'],
                 ['target', '_blank'],
-              ],Ö
+              ]
 
 
 
 
 
-            )),
-            ( Pr('CLI Documentation')),
+            ),
+            Pr('CLI Documentation'),
 
 
-            (
-            On( 5, 'li', [],Ö)),
 
-            (
-            On( 2, 'h2', [],Ö)),
-            (
+            On( 5, 'li'),
+
+
+            On( 2, 'h2'),
+
             On(
 
 
@@ -8006,14 +8006,14 @@
                 ['href', 'https://blog.angular.io/'],
                 ['rel', 'noopener'],
                 ['target', '_blank'],
-              ],Ö
+              ]
 
 
 
 
 
-            )),
-            ( Pr('Angular blog')),
+            ),
+             Pr('Angular blog'),
 
 
 
@@ -10352,7 +10352,6 @@
 
 
 
-      e;
 
 
 
@@ -10417,7 +10416,8 @@
 
 
 
-        Zr(zr( null, null,jr([On(1, "app-root", [], u), { flags: 49152}])))
+
+        Zr(zr( null,jr([On(1, "app-root"), { flags: 49152}])))
 
 
 
