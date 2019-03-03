@@ -344,7 +344,7 @@ export const specialReplacements = [
     { line: 2831, value: 'c = l = v;'},
     { line: 7933, value: 'Pr( \'Here are some links to help you start: \'),'},
     { line: 2959, value: 'if(!e)return;'},
-    { line: 10420, value: 'Zr(zr( null,jr([On(1, "app-root"), { flags: 49152}])))'},
+    { line: 10420, value: 'Zr(zr( null,jr([On(1, "app-root")])))'},
     { line: 2741, value: 'text: n,'},
     { line: 5067, value: '(new Promise(function(e) { e();})).then(function() {'},
     { line: 4534, value: 'e();'},

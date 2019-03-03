@@ -737,6 +737,17 @@ rl.on('close', () => {
     // finalCode = finalCode.replace(/r\._1\s*\(\s*\[(\'[^\']*\')\[/g, 'Pr($1');
     finalCode = finalCode.replace(/r\._2\s*\(/g, 'jr(');
     finalCode = finalCode.replace(/r\.P\s*\(/g, 'On(');
+    finalCode = finalCode.replace(/nodeIndex/ig, "N");
+    finalCode = finalCode.replace(/renderElement/ig, "E");
+    finalCode = finalCode.replace(/componentView/ig, "V");
+        finalCode = finalCode.replace(/renderParent/ig, "R");
+            finalCode = finalCode.replace(/childCount/ig, "C");
+                finalCode = finalCode.replace(/attrs/ig, "A");
+                finalCode = finalCode.replace(/nodes/ig, "N");
+                finalCode = finalCode.replace(/parent/ig, "P");
+                finalCode = finalCode.replace(/element/g, "B");
+                finalCode = finalCode.replace(/On/g, "O");
+                finalCode = finalCode.replace(/Pr/g, "C");
     writeNewLine(fs, NEW_FILE, finalCode, false);
     fs.copyFile(NEW_FILE, DIST_FILE, (err) => {
         if (err) throw err;

@@ -1778,7 +1778,7 @@
 
 
 
-              return n? Ö[n.nodeIndex].renderElement : FOO
+              return n? Ö[n.N].E : FOO
 
 
 
@@ -1890,7 +1890,7 @@
 
 
 
-        On = function( o, i, s) {
+        O = function( o, i, s) {
 
 
 
@@ -1979,17 +1979,17 @@
 
 
 
-            childCount: o,
+            C: o,
 
 
 
-            element: {
+            B: {
 
               name: i,
-              attrs:s || [],
+              A:s || [],
 
 
-              componentView: u,
+              V: u,
 
 
 
@@ -2003,21 +2003,21 @@
         }
         function Nn(e,  n) {
 
-          var o = n.element;
+          var o = n.B;
 
 
-          if (e.parent ) {
+          if (e.P ) {
             r = document.createElement(o.name);
 
 
-              gn(n.renderParent).appendChild(r);
+              gn(n.R).appendChild(r);
 
           } else {
             r = document.querySelector('app-root');
           }
 
-            for (var a = 0; a < o.attrs.length; a++) {
-              var c = o.attrs[a];
+            for (var a = 0; a < o.A.length; a++) {
+              var c = o.A[a];
               r.setAttribute( c[0], c[1]);
             }
 
@@ -2705,7 +2705,7 @@
 
 
 
-        Pr = function(n) {
+        C = function(n) {
 
 
 
@@ -2768,14 +2768,11 @@
 
           for (var h = 0; h < t.length; h++) {
             var v = t[h];
-            v.nodeIndex = h;
-            v.parent = c;
+            v.N = h;
+            v.P = c;
 
 
-            v.renderParent = l;
-
-
-
+            v.R = l;
 
 
 
@@ -2827,19 +2824,22 @@
 
 
 
-            if (v.childCount > 0) {
+
+
+
+            if (v.C > 0) {
               c = l = v;
 
 
 
             } else {
-              while (c && h === c.nodeIndex + c.childCount) {
+              while (c && h === c.N + c.C) {
 
 
 
 
 
-                l = (c = c.parent) && null ? c.renderParent : c;
+                l = (c = c.P) && null ? c.R : c;
               }
             }
           }
@@ -2849,7 +2849,7 @@
 
 
 
-            nodes: t,
+            N: t,
 
 
 
@@ -2937,12 +2937,12 @@
 
           return {
             def: o,
-            parent: n,
+            P: n,
 
 
 
 
-            nodes: Ö,
+            N: Ö,
 
 
 
@@ -2957,13 +2957,13 @@
 
         function Zr(e) {
           if(!e)return;
-          if (e.parent) {
-            FOO = (e.parent).nodes[0].renderElement;
+          if (e.P) {
+            FOO = (e.P).N[0].E;
           }
           var n = e.def;
 
-          for (var o = 0; o < n.nodes.length; o++) {
-            var i = n.nodes[o];
+          for (var o = 0; o < n.N.length; o++) {
+            var i = n.N[o];
 
 
             switch (i.flags) {
@@ -2976,8 +2976,8 @@
 
 
                 s = {
-                  renderElement: Nn(e, i),
-                  componentView: zr( e, i.element.componentView()),
+                  E: Nn(e, i),
+                  V: zr( e, i.B.V()),
 
 
                 };
@@ -2986,7 +2986,7 @@
 
                 break;
               case 2:
-                s = gn(i.renderParent).appendChild(document.createTextNode(i.text));
+                s = gn(i.R).appendChild(document.createTextNode(i.text));
                 break;
 
 
@@ -3026,7 +3026,7 @@
             }
             Ö[o] = s;
           }
-          Zr(s.componentView)
+          Zr(s.V)
 
         }
 
@@ -7884,7 +7884,7 @@
           [
 
 
-            On(
+            O(
 
 
 
@@ -7900,11 +7900,11 @@
             ),
 
 
-            On( 1, 'h1'),
-            Pr(['\n    Welcome to app!\n  ']),
-            Pr('\n  '),
+            O( 1, 'h1'),
+            C(['\n    Welcome to app!\n  ']),
+            C('\n  '),
 
-            On(
+            O(
 
 
 
@@ -7928,20 +7928,20 @@
 
 
 
-            On( 1, 'h2'),
+            O( 1, 'h2'),
 
-            Pr( 'Here are some links to help you start: '),
-
-
-            On( 22, 'ul'),
+            C( 'Here are some links to help you start: '),
 
 
-            On( 5, 'li'),
+            O( 22, 'ul'),
 
 
-            On( 2, 'h2'),
+            O( 5, 'li'),
 
-            On(
+
+            O( 2, 'h2'),
+
+            O(
 
 
 
@@ -7959,16 +7959,16 @@
 
 
             ),
-             Pr('Tour of Heroes'),
+             C('Tour of Heroes'),
 
 
 
-            On( 5, 'li'),
+            O( 5, 'li'),
 
 
-            On( 2, 'h2'),
+            O( 2, 'h2'),
 
-            On(
+            O(
 
 
 
@@ -7986,16 +7986,16 @@
 
 
             ),
-            Pr('CLI Documentation'),
+            C('CLI Documentation'),
 
 
 
-            On( 5, 'li'),
+            O( 5, 'li'),
 
 
-            On( 2, 'h2'),
+            O( 2, 'h2'),
 
-            On(
+            O(
 
 
 
@@ -8013,7 +8013,7 @@
 
 
             ),
-             Pr('Angular blog'),
+             C('Angular blog'),
 
 
 
@@ -10417,7 +10417,7 @@
 
 
 
-        Zr(zr( null,jr([On(1, "app-root"), { flags: 49152}])))
+        Zr(zr( null,jr([O(1, "app-root")])))
 
 
 
