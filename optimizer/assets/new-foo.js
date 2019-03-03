@@ -2738,7 +2738,7 @@
 
 
 
-            text: { prefix: n[0] },
+            text: { prefix: n },
 
 
           };
@@ -2956,7 +2956,7 @@
 
 
         function Zr(e) {
-
+          if(!e)return;
           if (e.parent) {
             FOO = (e.parent).nodes[e.parentNodeDef.parent.nodeIndex].renderElement;
           }
@@ -5038,7 +5038,6 @@
 
 
 
-            (FOO = Zone.current.fork({onHandleError: Ö })).run(function() {
 
 
 
@@ -5064,10 +5063,6 @@
 
 
 
-                  (new Promise(function(e) { e();})).then(function() {
-                    Zr(zr( null, null,jr([On(1, "app-root", [], u), { flags: 49152}])))
-
-                  });
 
 
 
@@ -5086,7 +5081,12 @@
 
 
 
-            });
+
+
+
+
+
+
 
 
 
@@ -7882,7 +7882,7 @@
         return jr(
 
           [
-            ( Pr(['\n'])),
+            ( Pr('\n')),
             (
             On(
 
@@ -7901,8 +7901,8 @@
 
             (
             On( 1, 'h1', [],Ö)),
-            ( Pr(['\n    Welcome to app', '!\n  '])),
-            ( Pr(['\n  '])),
+            ( Pr(['\n    Welcome to app!\n  '])),
+            ( Pr('\n  ')),
             (
             On(
 
@@ -7930,7 +7930,7 @@
             (
             On( 1, 'h2', [],Ö)),
             (
-            Pr(['Here are some links to help you start: '])),
+            Pr('Here are some links to help you start: ')),
 
             (
             On( 22, 'ul', [],Ö)),
@@ -7959,7 +7959,7 @@
 
 
             )),
-            ( Pr(['Tour of Heroes'])),
+            ( Pr('Tour of Heroes')),
 
 
             (
@@ -7986,7 +7986,7 @@
 
 
             )),
-            ( Pr(['CLI Documentation'])),
+            ( Pr('CLI Documentation')),
 
 
             (
@@ -8013,7 +8013,7 @@
 
 
             )),
-            ( Pr(['Angular blog'])),
+            ( Pr('Angular blog')),
 
 
 
@@ -10417,7 +10417,7 @@
 
 
 
-
+        Zr(zr( null, null,jr([On(1, "app-root", [], u), { flags: 49152}])))
 
 
 
