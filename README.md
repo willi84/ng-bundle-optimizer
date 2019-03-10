@@ -28,6 +28,10 @@ main bundle: new-foo.min.js
 * https://blog.risingstack.com/building-a-node-js-app-with-typescript-tutorial/
 * https://journal.artfuldev.com/unit-testing-node-applications-with-typescript-using-mocha-and-chai-384ef05f32b2
 
+# Links
+* multiline badge inspired by:https://github.com/tanhauhau/generator-badge
+* Ivy Demo: https://ng-ivy-demo.firebaseapp.com/
+
 # data
 
 * v1: angular5, foo.js is demo data, manually unminified, problem: testBed misconfigured the data

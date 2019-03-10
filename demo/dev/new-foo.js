@@ -2981,12 +2981,12 @@
 
 
                 };
-
+                Ö[o] = s;
 
 
                 break;
               case 2:
-                s = gn(i.R).appendChild(document.createTextNode(i.text));
+                s = FOO; Ö[i.P.N].E.appendChild(document.createTextNode(i.text));
                 break;
 
 
@@ -3024,7 +3024,7 @@
 
 
             }
-            Ö[o] = s;
+
           }
           Zr(s.V)
 
