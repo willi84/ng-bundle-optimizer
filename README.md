@@ -1,9 +1,14 @@
+
+
+
 # ng-bundle-optimizer
 Reducing bundle size with the help of (unit) tests
 
 
 [Demo (minified)](https://willi84.github.io/ng-bundle-optimizer/demo/prod)
 [Demo (raw for dev)](https://willi84.github.io/ng-bundle-optimizer/demo/dev)
+
+[Demo (like ivy)](https://willi84.github.io/ng-bundle-optimizer/demo/ivy)
 
 # current metrics
 main bundle: new-foo.min.js
@@ -35,3 +40,7 @@ main bundle: new-foo.min.js
 # data
 
 * v1: angular5, foo.js is demo data, manually unminified, problem: testBed misconfigured the data
+
+
+# TODO
+* PEG.js

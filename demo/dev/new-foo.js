@@ -1989,7 +1989,7 @@
               A:s || [],
 
 
-              V: u,
+
 
 
 
@@ -2761,7 +2761,7 @@
 
 
 
-          var c = null;
+          var c = l = null;
 
 
 
@@ -2956,18 +2956,18 @@
 
 
         function Zr(e) {
-          if(!e)return;
-          if (e.P) {
-            FOO = (e.P).N[0].E;
-          }
+          
+
+
+
           var n = e.def;
 
           for (var o = 0; o < n.N.length; o++) {
             var i = n.N[o];
 
 
-            switch (i.flags) {
-              case 1:
+            if(i.flags === 1) {
+
 
 
 
@@ -2977,17 +2977,17 @@
 
                 s = {
                   E: Nn(e, i),
-                  V: zr( e, i.B.V()),
+                  V: zr( e,jr([O(6, "div", [["style", "text-align:center"]]), O(1, "h1"), C(["\n    Welcome to app!\n  "]), C("\n  "), O(0, "img", [["alt", "Angular Logo"], ["src", "ng.svg"], ["width", "300"]]), O(1, "h2"), C("Here are some links to help you start: "), O(22, "ul"), O(5, "li"), O(2, "h2"), O(1, "a", [["href", "https://angular.io/tutorial"], ["rel", "noopener"], ["target", "_blank"]]), C("Tour of Heroes"), O(5, "li"), O(2, "h2"), O(1, "a", [["href", "https://github.com/angular/angular-cli/wiki"], ["rel", "noopener"], ["target", "_blank"]]), C("CLI Documentation"), O(5, "li"), O(2, "h2"), O(1, "a", [["href", "https://blog.angular.io/"], ["rel", "noopener"], ["target", "_blank"]]), C("Angular blog")])),
 
 
                 };
                 Ö[o] = s;
 
 
-                break;
-              case 2:
-                s = FOO; Ö[i.P.N].E.appendChild(document.createTextNode(i.text));
-                break;
+
+              } else {
+                Ö[i.P.N].E.appendChild(document.createTextNode(i.text));
+
 
 
 
@@ -3025,8 +3025,8 @@
 
             }
 
-          }
-          Zr(s.V)
+          } FOO = Ö[0].E;
+          !e.P && Zr(s.V);
 
         }
 
@@ -4211,7 +4211,6 @@
 
 
 
-        var l = '';
 
 
 
@@ -7878,152 +7877,153 @@
 
 
 
-      u = function() {
-        return jr(
 
-          [
 
 
-            O(
 
 
 
 
-              6,
-              'div',
-              [['style', 'text-align:center']]
 
 
 
 
 
-            ),
 
 
-            O( 1, 'h1'),
-            C(['\n    Welcome to app!\n  ']),
-            C('\n  '),
 
-            O(
 
 
 
 
-              0,
-              'img',
-              [
-                ['alt', 'Angular Logo'],
-                [
-                  'src',
-                  'ng.svg'
-                ],
-                ['width', '300'],
-              ]
 
 
 
 
 
-            ),
 
 
 
-            O( 1, 'h2'),
 
-            C( 'Here are some links to help you start: '),
 
 
-            O( 22, 'ul'),
 
 
-            O( 5, 'li'),
 
 
-            O( 2, 'h2'),
 
-            O(
 
 
 
 
-              1,
-              'a',
-              [
-                ['href', 'https://angular.io/tutorial'],
-                ['rel', 'noopener'],
-                ['target', '_blank'],
-              ]
 
 
 
 
 
-            ),
-             C('Tour of Heroes'),
 
 
 
-            O( 5, 'li'),
 
 
-            O( 2, 'h2'),
 
-            O(
 
 
 
 
-              1,
-              'a',
-              [
-                ['href', 'https://github.com/angular/angular-cli/wiki'],
-                ['rel', 'noopener'],
-                ['target', '_blank'],
-              ]
 
 
 
 
 
-            ),
-            C('CLI Documentation'),
 
 
 
-            O( 5, 'li'),
 
 
-            O( 2, 'h2'),
 
-            O(
 
 
 
 
-              1,
-              'a',
-              [
-                ['href', 'https://blog.angular.io/'],
-                ['rel', 'noopener'],
-                ['target', '_blank'],
-              ]
 
 
 
 
 
-            ),
-             C('Angular blog'),
 
 
 
-          ]
 
 
 
 
-        );
-      }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

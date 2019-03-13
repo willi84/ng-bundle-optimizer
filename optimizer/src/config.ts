@@ -10,7 +10,7 @@ export let undeletablefn = [950,  1772,
      4678, 4682, 4714, 4709, 4719, 4724, 4730,  4735, 4741, 
      4746, 4751, 4756, 4762, 4767, // TODO wegen ternary
     7865, // end of function wrong detected
-    7881,  // TODO: important: contains content
+    // 7881,  // TODO: important: contains content
     // 8041,
      5317, 
     //  4605, 4662, 5317, 6412, 7392, 7419, 8134,
@@ -57,29 +57,19 @@ export const keepFnName = [
 ];
 // undeletable keep lines
 export const undeletable1 = [
-     5317, 8134,
-    // 964, 973, 
-    [2169],  
-    //  [2201, 2205],
     3029,  [2978,2980], 2983, 
- [2969,2971],3026, 3028, [2959, 2969], 2969,
+ [2959,2969],  
    
 
-// 1311,
-//  1729, 
-// 1753, //  TODO: possible somewhere else to delete properties
     2013, // otherwise not shown: append to dom
-// 3004, // create instance
 1781, // render Element
  2024,
-    // 2926, 
     2961, 
-    // 3022,
     
      2010, 2011,  2974, 2975, 2989, 3029,
     // 6474,
     2971,  
-    [2960,2963], 2976,[2978-2983],[2988,2990],
+    2962, 2976,[2978-2983],[2988,2990],
     // 2557, 2559,// fn call && Ft(e, 512, r)
     // 1614, 
     // [2418, 2422],
@@ -104,43 +94,14 @@ export const undeletable1 = [
     2989,
     // 2299,
 
-    // TODO: warum nicht löschbar
-    //  2312, 2319, 
-    //  2336,
-    // 2326, 
-    //  2337,  //TODO: händisch ausprobiert
     2938, 2939, 2940,  2945, 2947, 2948, 2952, // händisch ausprobiert
     
     // done
        2162,
-    // 1483,
-    // 1884,
        1967,
-     1974, 1982, 1986, 1988, 1989, 1992, 1997, 2002, //todo
+     1974, 1982, 1986, 1988, 1989,  1997, 2002, //todo
     2024, [2019, 2022], [2015, 2017], 2013, 2006, [2009, 2011], // TODO some stuff from other side deleted
-    
-    // [4349, 4350],
-    //  4358, 4360, 
-    // 4377,
-    // 4369,
-    // 4379, 
-    // 4380,
-    //  [4379,4380],
-    // 4690,
-    // [4807, 4823], 
-    // 5027,
     9325,
-    // [10397,10400],
-    // 802, 804,
-    // 8130,
-
-// 4685, 4686, 4693,4778, 
-// 4779,
-// [5127, 5129],
-//  7018,
-
-
-
     ];
 export let deleteIifeBlocks = [114, 159,
         //  181,
@@ -245,7 +206,7 @@ export let deleteLOC1 = [
    1177,  1762, 1764,1445,1446, 1447,1456,1176,[1024, 1033],1902, 1906, 1909,1793, 1468, 1448,1477, 1478,
     // #2000
     // TODO 2959
-    2964,2220, 2974,2163, 2164, 2125,2971,2749,2948,2747,2947,2011,2126,2007,2973, 2976,2975,2147, 2150, [2138, 2140],[2188, 2208],2761, 2326,
+    [2960, 2962],2970, 2987, 2990, 2964,2220, 2974,2163, 2164, 2125,2971,2749,2948,2747,2947,2011,2126,2007,2973, 2976,2975,2147, 2150, [2138, 2140],[2188, 2208],2761, 2326,
     2924, 2926,2967,2972, 2981, 2982,[2985, 2986], 
     [2991, 3025],  2967, 2968,2162,
 2709, 2169,
@@ -253,7 +214,7 @@ export let deleteLOC1 = [
     3030, 3710, 3027,
     
     // #4000
-    4200,4198,4411, 4627, 4632,4624,4647, 4648,4425,4445,4280,4203,4525, [4415, 4419], 4311, 4407, 4451, 4453,4422, 4413, 4464,[4446, 4448], 4248, 4323, 4324, 4236, 4237,
+    4214, 4200,4198,4411, 4627, 4632,4624,4647, 4648,4425,4445,4280,4203,4525, [4415, 4419], 4311, 4407, 4451, 4453,4422, 4413, 4464,[4446, 4448], 4248, 4323, 4324, 4236, 4237,
     [4663, 4684], 4526, 4541, 4543,  4562, 4247, 4244,
     [4606,4608], 4876, 4572,  4540, 4565, 4539, 4238,
     4199,
@@ -339,162 +300,41 @@ export let deleteLOC1 = [
 ]
 export const specialReplacements = [
     { line: 1772, value: 'function gn(n) {'},
+    { line: 1781, value: 'return n? Ö[n.nodeIndex].renderElement : FOO'},
     { line: 1974, value: 'flags: 1,'},
+    { line: 1893, value: 'On = function( o, i, s) {'},
+    { line: 1988, value: 'name: i,'},
     { line: 1989, value: 'attrs:s || [],'},
 
     { line: 2004, value: 'function Nn(e,  n) {'},
-    { line:2010, value: 'r = document.createElement(o.name);'},
+    { line: 2009, value: "if (e.parent ) {"},
+    { line: 2010, value: 'r = document.createElement(o.name);'},
     { line: 2013, value: 'gn(n.renderParent).appendChild(r);'},
-    { line:2016, value: 'r = document.querySelector(\'app-root\');'},
-    { line:2021, value: 'r.setAttribute( c[0], c[1]);'},
+    { line: 2016, value: 'r = document.querySelector(\'app-root\');'},
+    { line: 2021, value: 'r.setAttribute( c[0], c[1]);'},
+    { line: 2708, value: "Pr = function(n) {"},
     { line: 2741, value: 'text: n,'},
+    { line: 2758, value: 'jr = function(t) {'},
+    { line: 2764, value: 'var c = l = null;'},
     { line: 2831, value: 'c = l = v;'},
     { line: 2842, value: 'l = (c = c.parent) && null ? c.renderParent : c;'},
     { line: 2935, value: 'function zr( n, o) {'},
     { line: 2945, value: 'nodes: Ö,'},
-    { line: 2959, value: 'if(!e)return;'},
-    { line: 2969, value: 'switch (i.flags) {'},
-    { line: 2984, value: 'Ö[o] = s;'},
-    { line: 2989, value: 's = FOO; Ö[i.parent.nodeIndex].renderElement.appendChild(document.createTextNode(i.text));'},
+    { line: 2959, value: ''},
     { line: 2960, value: 'if (e.parent) {'},
-    { line: 2961, value: 'FOO = (e.parent).nodes[0].renderElement;'},
+    { line: 2969, value: 'if(i.flags === 1) {'},
+    { line: 2961, value: 'FOO = Ö[0].renderElement;'},
     { line: 2979, value: 'renderElement: Nn(e, i),'},
-    { line: 2980, value: 'componentView: zr( e, i.element.componentView()),'},
+    { line: 2980, value: 'componentView: zr( e,jr([On(6, "div", [["style", "text-align:center"]]), On(1, "h1"), Pr(["\\n    Welcome to app!\\n  "]), Pr("\\n  "), On(0, "img", [["alt", "Angular Logo"], ["src", "ng.svg"], ["width", "300"]]), On(1, "h2"), Pr("Here are some links to help you start: "), On(22, "ul"), On(5, "li"), On(2, "h2"), On(1, "a", [["href", "https://angular.io/tutorial"], ["rel", "noopener"], ["target", "_blank"]]), Pr("Tour of Heroes"), On(5, "li"), On(2, "h2"), On(1, "a", [["href", "https://github.com/angular/angular-cli/wiki"], ["rel", "noopener"], ["target", "_blank"]]), Pr("CLI Documentation"), On(5, "li"), On(2, "h2"), On(1, "a", [["href", "https://blog.angular.io/"], ["rel", "noopener"], ["target", "_blank"]]), Pr("Angular blog")])),'},
+    { line: 2984, value: 'Ö[o] = s;'},
+    { line: 2988, value: '} else {'},
+    { line: 2989, value: 'Ö[i.parent.nodeIndex].renderElement.appendChild(document.createTextNode(i.text));'},
     
-
-
-
-    { line: 4534, value: 'e();'},
-    { line: 4214, value: 'var l = \'\';'},
-    { line: 4875, value: ' });'},
-    { line: 4527, value: 're = (function() {'},
-    { line: 4034, value: 'return Ö;'},
-    { line: 4843, value: 'onHandleError: Ö'},
-    { line: 4644, value: 'function t(t) {'},
+    { line: 3028, value: '} FOO = Ö[0].renderElement;'},
+    { line: 3029, value: '!e.parent && Zr(s.componentView);'},
     
-    { line: 5067, value: '(new Promise(function(e) { e();})).then(function() {'},
-    { line: 5154, value: 'var Je = function(a) {'},
-    { line: 5316, value: '};'},
-    { line: 5041, value: '(Zone.current.fork({onHandleError: Ö })).run(function() {'},
-   
-    { line: 6994, value: '};'},
-    { line: 6931, value: 'e._def = a;'},
-    { line: 6934, value: 'e.injector = e;'},
-    { line: 6476, value: 'return e;'},
-    { line: 6477, value: '};'},
-   
-    { line: 7918, value: '\'ng.svg\''},
-    { line: 7933, value: 'Pr( \'Here are some links to help you start: \'),'},
-    { line: 7881, value: 'u = function() {'},
     { line: 10420, value: 'Zr(zr( null,jr([On(1, "app-root")])))'},
-    // TODO: wegmachen
-    { line:5068, value: 'Zr(zr( null,jr([On(1, "app-root"), { flags: 49152}])))'},
-    { line: 7463, value: 'return new sr(this.FOO());'},
-    { line: 9348, value: 'return new J(e);'},
-    { line: 3029, value: 'Zr(s.componentView)'},
-    { line: 1988, value: 'name: i,'},
-    { line: 4312, value: 'if (n instanceof Array) {'},
-    { line: 9356, value: 'var e = Ö;'},
-    { line: 6427, value: ' u.componentType = Ö;'},
-    // { line: 5088, value: '})(Ö,Ö);'},
-    { line: 4324, value: 'var i = {  fn: n.provide,  value: R };'},
-    { line: 4379, value: 'return {  fn: e.provide,  value: R };'},
-    { line: 10377, value: 'r.W( Ö'},
-    { line: 4657, value: 't.prototype.create = function() {'},
-    { line: 10378, value: 'r.W( Ö),'},
-    { line: 4544, value: 'this.resolve();'},
-    { line: 4312, value: 'if ((n = n) instanceof Array) {'},
-    { line: 4323, value: 'var o = n.provide;'},
-    { line: 2933, value: 'return zr( e, n);'},
-    { line: 5067, value: 's.donePromise.then(function() {'},
-    { line: 5048, value: 'var s = n.injector.get();'},
-    { line: 7894, value: "[['style', 'text-align:center']]"},
-    { line: 2337, value: "})(e, (t ));"},
-    { line: 2708, value: "Pr = function(n) {"},
-    { line: 1992, value: "componentView: u,"},
-    { line: 8141, value: "Ö,"},
-    { line: 2009, value: "if (e.parent ) {"},
-    { line: 2319, value: "flags: t"},
-    { line: 2154, value: "var i =  Ln(e, o);"},
-    { line: 5032, value: "e.prototype.bootstrapModuleFactory = function(e) {"},
-    { line: 2021, value: "s.setAttribute(r, c[1], c[2]);"},
-    { line: 6937, value: "e._providers = [];"},
-    { line: 1790, value: "var t = e();"},
-   { line: 2278, value: "function hr(e, t) {"},
-    { line: 1651, value: "t =  '_' + Jt.size;"},
-    { line: 1729, value: "return !!e.parent;"},
-    { line: 4379, value: "return {  fn: n,  value: r };"},
-    { line: 8146, value: '('},
-    { line: 1790, value: 'var t = (!t) ? e() : mn.get(e);'},
-    { line: 4464, value: '})(e, n);'},
-    { line: 7465, value: 'e,'},
-    { line: 2758, value: 'jr = function(t) {'},
-    { line: 7398, value: 'var e = {'},
-    // { line: 1792, value: 't = e() '},
-    { line: 8153, value: '}'},
-    { line: 3029, value: '$r(e);'},
-    { line: 8149, value: ']'},
-    // { line: 8009, value: ']'},
-    { line: 8020, value: ']'},
-    // { line: 1907, value: 'A = kn(i);'},
-    // TODO: HOTFIX: app is variable
-
-    { line: 8148, value: '{ flags: 49152},'},
-    // { line: 10331, value: "var qe = Object(r.D)(r.H);"},
-
-    // TODO: IIFE automize
-    // { line: 4200, value: "var i = Ö;"},
-    { line: 4201, value: "var s = Ö;"},
-    { line: 4203, value: "var a = Ö;"},
-    { line: 9395, value: "return document.querySelector(e);"},
-    { line: 2010, value: "r = s.createElement(o.name, o.ns);"},
-    // { line: 2016, value: "uerySelector(e);"},
-
-    // r = s.selectRootElement(e);
-    // { line: 8149, value: '}'},
-
-    { line: 1781, value: 'return n? Ö[n.nodeIndex].renderElement : FOO'},
     
-    // TODO: replace function automize
-    // { line: 6465, value: 'io( o, r);'},
-    { line: 7394, value: 't.prototype.create = function() {'},
-    { line: 4266, value: 'e.create = function(e) {'},
-    { line: 2975, value: 'a = Br(e, i, c);'},
-    { line: 7463, value: 'return ir('},
-    { line: 8148, value: '{ flags: 49152},'},
-    { line: 7962, value: ' Pr(\'Tour of Heroes\'),'},
-    { line: 7904, value: 'Pr([\'\\n    Welcome to app!\\n  \']),'},
-    { line: 7905, value: 'Pr(\'\\n  \'),'},
-    { line: 7989, value: 'Pr(\'CLI Documentation\'),'},
-    { line: 8016, value: ' Pr(\'Angular blog\'),'},
-
-    
-      
-    
-    { line: 1893, value: 'On = function( o, i, s) {'},
-
-    // #r.P
-    { line: 7900, value: '),'},
-    { line: 7927, value: '),'},
-    { line: 7988, value: '),'},
-    { line: 7961, value: '),'},
-    { line: 8015, value: '),'},
-    { line: 7903, value: 'r.P( 1, \'h1\'),'},
-    { line: 7931, value: 'r.P( 1, \'h2\'),'},
-    { line: 7936, value: 'r.P( 22, \'ul\'),'},
-    { line: 7939, value: 'r.P( 5, \'li\'),'},
-    { line: 7942, value: 'r.P( 2, \'h2\'),'},
-    { line: 7966, value: 'r.P( 5, \'li\'),'},
-    { line: 7969, value: 'r.P( 2, \'h2\'),'},
-    { line: 7993, value: 'r.P( 5, \'li\'),'},
-    { line: 7996, value: 'r.P( 2, \'h2\'),'},
-    { line: 8147, value: 'r.P( 1, \'app-root\'),'},
-    { line: 7921, value: ']'},
-    { line: 7955, value: ']'},
-    { line: 7982, value: ']'},
-    { line: 8009, value: ']'},
-
-
 ]
 
 //deletableFn 6375
