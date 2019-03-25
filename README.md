@@ -4,11 +4,14 @@
 # ng-bundle-optimizer
 Reducing bundle size with the help of (unit) tests
 
+bundle under 1KB
+* [Demo (minified)](https://willi84.github.io/ng-bundle-optimizer/demo/prod)
 
-[Demo (minified)](https://willi84.github.io/ng-bundle-optimizer/demo/prod)
-[Demo (raw for dev)](https://willi84.github.io/ng-bundle-optimizer/demo/dev)
+dev mode
+* [Demo (raw for dev)](https://willi84.github.io/ng-bundle-optimizer/demo/dev)
 
-[Demo (like ivy)](https://willi84.github.io/ng-bundle-optimizer/demo/ivy)
+full angular app under 1 kb
+* [Demo (like ivy)](https://willi84.github.io/ng-bundle-optimizer/demo/ivy) 
 
 # current metrics
 main bundle: new-foo.min.js
