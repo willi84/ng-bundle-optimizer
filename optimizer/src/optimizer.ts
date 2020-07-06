@@ -7,6 +7,18 @@ import {
     from './config';
 
     let deleteLOC = [];
+    const DIST_FOLDER ='./../demo';
+    const ASSETS_FOLDER = `./assets`;
+    const FOO = `foo`;
+    const RAW_FILE = `${ASSETS_FOLDER}/${FOO}.js`;
+const MIN_FILE = `${DIST_FOLDER}/prod/new-${FOO}.min.js`;
+const MIN_FILE_BASE = `${DIST_FOLDER}/base-${FOO}.min.js`;
+const DIST_FILE_DEV = `${DIST_FOLDER}/dev/new-${FOO}.js`; // `${ASSETS_FOLDER}/dist/new-foo.min.js`;
+const RAW_FILE_NAME = `${FOO}.js`;
+let replacement = '\n';
+
+const NEW_FILE = `${ASSETS_FOLDER}/new-${FOO}.js`;
+
 // let MAX_DELETE = config.MAX_DELETE;
 // let undeletablefn = config.undeletablefn;
 // export const hello = () => 'Hello world!';
@@ -114,18 +126,18 @@ const uglifyFile = (file, newFile) => {
         }
         console.log(colorize(GREEN, `✓ files uglified`));
         // TODO dist path
-        // exec('pwd', (error, stdout, stderr) => {
-            exec('git status -s -uno ../demo/ | wc -l', (error, stdout, stderr) => {
-                if (error) {
-                    console.log(colorize(RED, `🗙 getting git status (error ${error})`));
-                return;
-            }
-            let statusFileChanged = stdout == 0;
-            if(statusFileChanged === true){
-                console.log(colorize(GREEN, `✓ no changes in dist`));
-            } else {
-                console.log(colorize(RED, `🗙 no changes in dist`));
-            }
+        exec(`git status -s -uno ${DIST_FOLDER} | wc -l`, (error, stdout, stderr) => {
+            if (error) {
+                console.log(colorize(RED, `🗙 getting git status (error ${error})`));
+            return;
+        }
+        let statusFileChanged = stdout == 0;
+        console.log(`${stdout}`)
+        if(statusFileChanged === true){
+            console.log(colorize(GREEN, `✓ no changes in dist`));
+        } else {
+            console.log(colorize(RED, `🗙 no changes in dist`));
+        }
 
         });
     });
@@ -134,33 +146,20 @@ const uglifyFile = (file, newFile) => {
 
 
 
-const testFileBase = 'foo';
-const testFileName = testFileBase + '.js';
-const pathAssets = './assets/';
-let replacement = '\n';
 
-const testFileStr = pathAssets + testFileName;
-const coverageData = JSON.parse(fs.readFileSync('./assets/coverage/coverage-final.json', 'utf8'));
-const NEW_FILE = pathAssets + 'new-' + testFileName;
-const BUNDLE_FILE = pathAssets + 'dist/main.js';
-const NEW_FILE2 = pathAssets + 'new2-' + testFileName;
-const testFileStrNew = pathAssets + NEW_FILE;
-const pathToDist = './../demo/dev/new-foo.js'; // './assets/dist/new-foo.min.js';
-const MIN_FILE = './../demo/prod/new-foo.min.js';
-const MIN_FILE_BASE = './../demo/new-foo-base.min.js';
-const DIST_FILE = pathToDist;
-// const DIST_FILE = pathAssets + 'dist/new-' + testFileBase + '.min.js';
+const coverageData = JSON.parse(fs.readFileSync(`${ASSETS_FOLDER}/coverage/coverage-final.json`, 'utf8'));
+
 const updateIndexFile = () => {
-    const indexData = JSON.parse(fs2.readFileSync('./assets/dist/index.html', 'utf8'));
+    const indexData = JSON.parse(fs2.readFileSync(`${ASSETS_FOLDER}/dist/index.html`, 'utf8'));
 }
 
 
-var testFile = fs.readFileSync(pathAssets + testFileName, 'utf8');
-const getTargetData = (obj, testFileName) => {
+var testFile = fs.readFileSync(`${RAW_FILE}`, 'utf8');
+const getTargetData = (obj, RAW_FILE_NAME) => {
     let key = '';
     let targetData = false;
     Object.keys(obj).forEach(object => {
-        if (object.indexOf(testFileName) !== -1) {
+        if (object.indexOf(RAW_FILE_NAME) !== -1) {
             key = object;
         }
     });
@@ -186,7 +185,7 @@ const WHITE = '37';
 const REGEX_NAMED_FUNCTION = /^\s*function\s[^\(]+\(\)\s*\{\}\s*$/;
 const REGEX_ANONYM_FUNCTION = /^\s*var\s[^\s]+\s*\=\s*function\(\)\s*\{\};*$/;
 
-const coverageObj = getTargetData(coverageData, testFileName);
+const coverageObj = getTargetData(coverageData, RAW_FILE_NAME);
 if (!coverageObj) {
     //('no coverage data')
 }; //stop program
@@ -313,7 +312,7 @@ let log = (status) => {
 }
 
 var rl = readline.createInterface({
-    input: fs.createReadStream(testFileStr),
+    input: fs.createReadStream(RAW_FILE),
 });
 
 let isDeleting = false;
@@ -673,14 +672,13 @@ const analyze = (line) => {
                                 AO.deleteBlock("#KFB02");
                             } else {
                                 if (LOB.has(FUNCTION)) {
-                                    
                                     AO.keepLine("#QA3", STATUS.OK, { 'keepFnBlock': true });
                                 } else {
                                     AO.keepLine("#QA1");
 
                                 }
                             }
-                        } 
+                        }
 
                     }
 
@@ -764,21 +762,21 @@ rl.on('close', () => {
                 finalCode = finalCode.replace(/On/g, "O");
                 finalCode = finalCode.replace(/Pr/g, "C");
     writeNewLine(fs, NEW_FILE, finalCode, false);
-    fs.copyFile(NEW_FILE, DIST_FILE, (err) => {
+    fs.copyFile(NEW_FILE, DIST_FILE_DEV, (err) => {
         if (err) throw err;
         const time2 = new Date().getTime();
-        // console.log(colorize(BLUE, NEW_FILE2 + ' was copied to' + DIST_FILE));
-        const sizeStart = getFileSize('./assets/foo.js').match(/(\d*)/)[0];
-        const sizeEnd = getFileSize(pathToDist).match(/(\d*)/)[0];
+        // console.log(colorize(BLUE, NEW_FILE + ' was copied to' + DIST_FILE_DEV));
+        const sizeStart = getFileSize(`${RAW_FILE}`).match(/(\d*)/)[0];
+        const sizeEnd = getFileSize(DIST_FILE_DEV).match(/(\d*)/)[0];
         const sizeDiff = (100 * sizeEnd) / sizeStart;
 
-        uglifyFile(DIST_FILE, MIN_FILE);
+        uglifyFile(DIST_FILE_DEV, MIN_FILE);
 
         const sizeGzip = '34.8';
         const sizeMin = getFileSize(MIN_FILE).match(/(\d*)/)[0];
         const sizeMinBase = getFileSize(MIN_FILE_BASE).match(/(\d*)/)[0];
         const sizeDiffBase = (sizeMin - sizeMinBase);
-        const finalStatus = ' ❤️✔️ DONE ⌛' + ((time2 - time) / 1000) + ' 💾 ' + getFileSize('./assets/foo.js') + (sizeDiffBase < 0 ? ' ⬇️ ' : ' ⬆️ ') + ' ' + sizeDiffBase + '%)' + '\n metrics: ✔️' + metrics.ok + '❌ ' + metrics.deleted + '⚠️ ' + metrics.potential;
+        const finalStatus = ' ❤️✔️ DONE ⌛' + ((time2 - time) / 1000) + ' 💾 ' + getFileSize(`${RAW_FILE}`) + (sizeDiffBase < 0 ? ' ⬇️ ' : ' ⬆️ ') + ' ' + sizeDiffBase + '%)' + '\n metrics: ✔️' + metrics.ok + '❌ ' + metrics.deleted + '⚠️ ' + metrics.potential;
         notifier.notify({
             title: 'ngBundle optimizer',
             icon: path.join(__dirname, 'logo_small.png'),
@@ -803,4 +801,4 @@ rl.on('close', () => {
             });
         });
     });
-});  
+});
