@@ -109,10 +109,25 @@ const uglifyFile = (file, newFile) => {
     const { exec } = require('child_process');
     exec('uglifyjs ' + file + ' -c -o ' + newFile, (error, stdout, stderr) => {
         if (error) {
-            console.error(`exec error: ${error}`);
+            console.log(colorize(RED, `🗙 files uglified (error ${error})`));
             return;
         }
-        console.log(`file uglified ${stdout}`);
+        console.log(colorize(GREEN, `✓ files uglified`));
+        // TODO dist path
+        // exec('pwd', (error, stdout, stderr) => {
+            exec('git status -s -uno ../demo/ | wc -l', (error, stdout, stderr) => {
+                if (error) {
+                    console.log(colorize(RED, `🗙 getting git status (error ${error})`));
+                return;
+            }
+            let statusFileChanged = stdout == 0;
+            if(statusFileChanged === true){
+                console.log(colorize(GREEN, `✓ no changes in dist`));
+            } else {
+                console.log(colorize(RED, `🗙 no changes in dist`));
+            }
+
+        });
     });
 
 }
@@ -286,15 +301,15 @@ let sRemoveLinesOrder = [];
 if (fs.existsSync(NEW_FILE)) {
     fs.unlinkSync(NEW_FILE);
 }
-console.log('file deleted')
+// console.log('file deleted')
 fs.writeFileSync(NEW_FILE, '', { encoding: 'utf8', flag: 'w+' });
-console.log('new file created');
+console.log(colorize(GREEN, `✓ new test file ${NEW_FILE} created`));
 var cntr = 0;
 let MAX_LOG = 100;
 let log = (status) => {
-    if (cntr < MAX_LOG) {
-        console.log(status);
-    }
+    // if (cntr < MAX_LOG) {
+    //     console.log(status);
+    // }
 }
 
 var rl = readline.createInterface({
@@ -752,7 +767,7 @@ rl.on('close', () => {
     fs.copyFile(NEW_FILE, DIST_FILE, (err) => {
         if (err) throw err;
         const time2 = new Date().getTime();
-        console.log(colorize(BLUE, NEW_FILE2 + ' was copied to' + DIST_FILE));
+        // console.log(colorize(BLUE, NEW_FILE2 + ' was copied to' + DIST_FILE));
         const sizeStart = getFileSize('./assets/foo.js').match(/(\d*)/)[0];
         const sizeEnd = getFileSize(pathToDist).match(/(\d*)/)[0];
         const sizeDiff = (100 * sizeEnd) / sizeStart;
@@ -769,13 +784,11 @@ rl.on('close', () => {
             icon: path.join(__dirname, 'logo_small.png'),
             message: finalStatus
         });
-        console.log('\nstatistics\n: ' + finalStatus)
+        console.log(colorize(GREEN, `✓ statistics: ${finalStatus.replace(/\n/g, '')}`));
         let startFile = '../badge_raw.svg';
         let endFile = '../badge.svg';
-        fs3.readFile(startFile, 'utf8', function (err, data) {
-            if (err) {
-                return console.log(err);
-            }
+        fs3.readFile(startFile, 'utf8', function (error, data) {
+            if (err) return console.log(colorize(RED, `🗙 Badge is written (error ${error})`));
             data = data.replace(/\{\{file_raw\}\}/g, sizeStart);
             data = data.replace(/\{\{file_red\}\}/g, sizeEnd);
             data = data.replace(/\{\{file_min\}\}/g, sizeMin);
@@ -783,8 +796,10 @@ rl.on('close', () => {
             data = data.replace(/\{\{reduced_by\}\}/g, Math.round(sizeDiff * 100) / 100);
             var result = data;
 
-            fs3.writeFile(endFile, result, 'utf8', function (err) {
-                if (err) return console.log(err);
+            fs3.writeFile(endFile, result, 'utf8', function (error) {
+                if (err) return console.log(colorize(RED, `🗙 Badge is written (error ${error})`));
+                console.log(colorize(GREEN, `✓ Badge is written`));
+
             });
         });
     });
