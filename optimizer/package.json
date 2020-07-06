@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
+    "serve": "live-server ../demo/",
     "dev2": "tsc --watch && node dist/index.js",
     "compileX": "tsc && node dist/optimizer/optimizer.js",
     "compile": "tsc --diagnostics -p ./ && node dist/optimizer.js",
@@ -35,6 +36,7 @@
     "eslint-config-airbnb-base": "^11.2.0",
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-promise": "^3.5.0",
+    "live-server": "^1.2.1",
     "mocha": "^3.5.3",
     "supertest": "^3.0.0",
     "ts-node": "^6.0.3",
