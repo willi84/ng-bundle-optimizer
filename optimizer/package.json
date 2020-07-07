@@ -8,6 +8,7 @@
     "serve": "live-server ../demo/",
     "dev2": "tsc --watch && node dist/index.js",
     "compileX": "tsc && node dist/optimizer/optimizer.js",
+    "compile3": "tsc --diagnostics -p ./",
     "compile": "tsc --diagnostics -p ./ && node dist/optimizer.js",
     "compileDetail": "tsc --diagnostics --listFiles -p ./ && node dist/optimizer.js",
     "compile2": "tsc && node dist/index.js",
@@ -24,7 +25,6 @@
   "dependencies": {
     "express": "^4.16.4",
     "google-closure-compiler": "^20180506.0.0",
-    "node-minify": "^2.4.2",
     "node-notifier": "^5.3.0",
     "nodemon": "^1.18.6"
   },

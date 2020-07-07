@@ -7,15 +7,33 @@ import {
     from './config';
 
     let deleteLOC = [];
-    const DIST_FOLDER ='./../demo';
-    const ASSETS_FOLDER = `./assets`;
-    const FOO = `foo`;
-    const RAW_FILE = `${ASSETS_FOLDER}/${FOO}.js`;
+const DIST_FOLDER ='./../demo';
+const ASSETS_FOLDER = `./assets`;
+const FOO = `foo`;
+const BADGE_RAW = '../badge_raw.svg';
+const BADGE_FINAL = '../badge.svg';
+const RAW_FILE = `${ASSETS_FOLDER}/${FOO}.js`;
 const MIN_FILE = `${DIST_FOLDER}/prod/new-${FOO}.min.js`;
 const MIN_FILE_BASE = `${DIST_FOLDER}/base-${FOO}.min.js`;
 const DIST_FILE_DEV = `${DIST_FOLDER}/dev/new-${FOO}.js`; // `${ASSETS_FOLDER}/dist/new-foo.min.js`;
 const RAW_FILE_NAME = `${FOO}.js`;
 let replacement = '\n';
+const fs = require('fs');
+
+const writeBadge = (rob) => {
+    fs.readFile(BADGE_RAW, 'utf8', (error, data) => {
+        if (error) return console.log(colorize(RED, `🗙 Badge is written (error ${error})`));
+        data = data.replace(/\{\{file_raw\}\}/g, rob.start);
+        data = data.replace(/\{\{file_red\}\}/g, rob.end);
+        data = data.replace(/\{\{file_min\}\}/g, rob.minEnd);
+        data = data.replace(/\{\{file_gzip\}\}/g, rob.gzip);
+        data = data.replace(/\{\{reduced_by\}\}/g,rob.reducedBy);
+        fs.writeFile(BADGE_FINAL, data, 'utf8', (error) => {
+            if (error) return console.log(colorize(RED, `🗙 Badge is written (error ${error})`));
+            console.log(colorize(GREEN, `✓ Badge is written`));
+        });
+    });
+}
 
 const NEW_FILE = `${ASSETS_FOLDER}/new-${FOO}.js`;
 
@@ -25,10 +43,6 @@ const NEW_FILE = `${ASSETS_FOLDER}/new-${FOO}.js`;
 const readline = require('readline');
 const notifier = require('node-notifier');
 const path = require('path');
-const fs = require('fs');
-const fs2 = require('fs');
-const fs3 = require('fs');
-var compressor = require('node-minify');
 
 let noRun = false;
 let show = {
@@ -104,12 +118,19 @@ const prepareArray = (oldArray) => {
 undeletable = prepareArray(undeletable1);
 deleteLOC = prepareArray(deleteLOC1);
 
-const getFileSize = (file) => {
-    const
-        { spawnSync } = require('child_process'),
-        ls = spawnSync('du', ['-hs', file]);
+const getFileSize = (file, isNumber = true) => {
+    const{ spawnSync } = require('child_process'),
+    ls = spawnSync('du', ['-hs', file]);
     const size = ls.stdout.toString().match(/^([^\s])*/);
-    return size[0];
+    return isNumber ? size[0].match(/(\d*)/)[0] : size[0];
+}
+const getFileSize2 = (file, isNumber = true) => {
+    const{ spawnSync } = require('child_process'),
+    ls = spawnSync('ls', ['-l', file]);
+    const size = parseInt(ls.stdout.toString().split(' ')[4]);
+    //  console.log(parseFloat(parseInt(size/1024))*100/100);
+    return Math.round(size/1024*100)/100;
+    // return Math.round(parseFloat(ls.stdout.toString().split(' ')[4]/1024)*100)/100;
 }
 const uglifyFile = (file, newFile) => {
     const { exec } = require('child_process');
@@ -128,8 +149,35 @@ const uglifyFile = (file, newFile) => {
             }
             if(stdout == 0){
                 console.log(colorize(GREEN, `✓ no changes in dist`));
+                // console.log(colorize(GREEN, `✓ no new badge written`));
+                const rob = new ResultObject(RAW_FILE, DIST_FILE_DEV, MIN_FILE, MIN_FILE_BASE);
+                writeBadge(rob);
+                exec(`git diff --unified=0 ./../badge.svg `, (error, stdout, stderr) => {
+                    if (error) {
+                        console.log(colorize(RED, `🗙 git diff error`));
+                        return;
+                    }
+                    if(stdout.length === 0){
+                        console.log(colorize(GREEN, `✓ Badge has no changes`));
+                    } else {
+                        console.log(colorize(RED, `🗙 Badge has changes`));
+                        console.log(stdout);
+                    }
+
+                });
             } else {
                 console.log(colorize(RED, `🗙 no changes in dist`));
+                // console.log(colorize(RED, `🗙 new badge written`));
+                // TODO: create badge
+                const rob = new ResultObject(RAW_FILE, DIST_FILE_DEV, MIN_FILE, MIN_FILE_BASE);
+                writeBadge(rob);
+                exec(`git diff ${DIST_FOLDER}/dev/new-foo.js `, (error, stdout, stderr) => {
+                    if (error) {
+                        console.log(colorize(RED, `🗙 git diff error`));
+                        return;
+                    }
+                    console.log(stdout);
+                });
             }
         });
     });
@@ -142,7 +190,7 @@ const uglifyFile = (file, newFile) => {
 const coverageData = JSON.parse(fs.readFileSync(`${ASSETS_FOLDER}/coverage/coverage-final.json`, 'utf8'));
 
 const updateIndexFile = () => {
-    const indexData = JSON.parse(fs2.readFileSync(`${ASSETS_FOLDER}/dist/index.html`, 'utf8'));
+    const indexData = JSON.parse(fs.readFileSync(`${ASSETS_FOLDER}/dist/index.html`, 'utf8'));
 }
 
 
@@ -648,7 +696,6 @@ const analyze = (line) => {
                                     AO.keepLine("#QA3", STATUS.OK, { 'keepFnBlock': true });
                                 } else {
                                     AO.keepLine("#QA1");
-
                                 }
                             }
                         }
@@ -706,69 +753,63 @@ if (!noRun) {
 }
 
 prevLine = '';
+const optimizeCode = (code) => {
+    let terms = [   'nodeIndex', 'renderElement', 'componentView', 'renderParent', 'childCount', 'attrs', 
+                    'nodes', 'parent', 'element', 'On', 'Pr'];
+    let replaceable = ['N', 'E', 'V', 'R', 'C', 'A', 'N', 'P', 'B', 'O', 'C'];
+    terms.forEach(function(term, i)  {
+        code = code.replace(new RegExp(term, 'g'), replaceable[i])
+    })
+    return code;
+}
+class ResultObject {
+    start: any;
+    startByte: any;
+    end: any;
+    diff: any;
+    minEnd: any;
+    minBase: any;
+    diffBase: Number;
+    reducedBy: Number;
+    diffDirection: String;
+    gzip = '~920B';
+    constructor(
+        public raw: string,
+        public dist_dev: String,
+        public min: String,
+        public min_base: String,
+    ) {
+        this.start = getFileSize(this.raw);
+        this.startByte = getFileSize(this.raw, false);
+        this.end = getFileSize(this.dist_dev);
+        this.diff = (100 * this.end) / this.start;
+        this.minEnd = getFileSize2(this.min);
+        this.minBase = getFileSize(this.min_base);
+        this.diffBase = (this.minEnd - this.minBase);
+        this.diffDirection = this.diffBase < 0 ? ' ⬇️ ' : ' ⬆️ ';
+        this.reducedBy = Math.round(this.diff * 100) / 100
+    }
+}
 rl.on('close', () => {
-    finalCode = 'Ö = [];'+finalCode
-    // finalCode = 'function Ö(){};'+finalCode
-    // var m = finalCode.match(/e\(\)\(\)\,/g)
-    // console.log(m.length);
-    finalCode = finalCode.replace(/\s(We|tn|Vr|he)\(/g, ' Ö(')
-    finalCode = finalCode.replace(/\s(We|tn|Vr|he)\;/g, ' Ö;')
-    finalCode = finalCode.replace(/e\(\)\(\)\,/g,'');
-    // finalCode = finalCode.replace(/componentView/g,'cV');
-    // finalCode = finalCode.replace(/childCount/g,'cC');
-    finalCode = finalCode.replace(/r\.\_1\(-1\,\snull\,/g,'r._1(');
-    finalCode = finalCode.replace(/r\._1\s*\(\s*\[(\'[^\']*\')\]/g, 'Pr($1');
-    // finalCode = finalCode.replace(/r\._1\s*\(\s*\[(\'[^\']*\')\[/g, 'Pr($1');
-    finalCode = finalCode.replace(/r\._2\s*\(/g, 'jr(');
-    finalCode = finalCode.replace(/r\.P\s*\(/g, 'On(');
-    finalCode = finalCode.replace(/nodeIndex/ig, "N");
-    finalCode = finalCode.replace(/renderElement/ig, "E");
-    finalCode = finalCode.replace(/componentView/ig, "V");
-    finalCode = finalCode.replace(/renderParent/ig, "R");
-    finalCode = finalCode.replace(/childCount/ig, "C");
-    finalCode = finalCode.replace(/attrs/ig, "A");
-    finalCode = finalCode.replace(/nodes/ig, "N");
-    finalCode = finalCode.replace(/parent/ig, "P");
-    finalCode = finalCode.replace(/element/g, "B");
-    finalCode = finalCode.replace(/On/g, "O");
-    finalCode = finalCode.replace(/Pr/g, "C");
+    console.log(colorize(GREEN, `✓ file analyzed`));
+    finalCode = 'Ö = [];' + finalCode
+    finalCode = optimizeCode(finalCode);
     writeNewLine(fs, NEW_FILE, finalCode, false);
-    fs.copyFile(NEW_FILE, DIST_FILE_DEV, (err) => {
+    fs.copyFile(NEW_FILE, DIST_FILE_DEV, (err) => { // copy NEW_FILE to DIST_FILE_DEV
         if (err) throw err;
         const time2 = new Date().getTime();
-        // console.log(colorize(BLUE, NEW_FILE + ' was copied to' + DIST_FILE_DEV));
-        const sizeStart = getFileSize(`${RAW_FILE}`).match(/(\d*)/)[0];
-        const sizeEnd = getFileSize(DIST_FILE_DEV).match(/(\d*)/)[0];
-        const sizeDiff = (100 * sizeEnd) / sizeStart;
+        const rob = new ResultObject(RAW_FILE, DIST_FILE_DEV, MIN_FILE, MIN_FILE_BASE);
 
         uglifyFile(DIST_FILE_DEV, MIN_FILE);
-
-        const sizeGzip = '34.8';
-        const sizeMin = getFileSize(MIN_FILE).match(/(\d*)/)[0];
-        const sizeMinBase = getFileSize(MIN_FILE_BASE).match(/(\d*)/)[0];
-        const sizeDiffBase = (sizeMin - sizeMinBase);
-        const finalStatus = ' ❤️✔️ DONE ⌛' + ((time2 - time) / 1000) + ' 💾 ' + getFileSize(`${RAW_FILE}`) + (sizeDiffBase < 0 ? ' ⬇️ ' : ' ⬆️ ') + ' ' + sizeDiffBase + '%)' + '\n metrics: ✔️' + metrics.ok + '❌ ' + metrics.deleted + '⚠️ ' + metrics.potential;
+        const finalStatus = ` 
+            DONE: ⌛ ${(time2 - time) / 1000}  💾 ${rob.startByte} ${rob.diffDirection}  ${rob.diffBase} %)
+            metrics: ✔️ ${metrics.ok} ❌ ${metrics.deleted} ⚠️ ${metrics.potential}`;
         notifier.notify({
             title: 'ngBundle optimizer',
             icon: path.join(__dirname, 'logo_small.png'),
             message: finalStatus
         });
-        console.log(colorize(GREEN, `✓ statistics: ${finalStatus.replace(/\n/g, '')}`));
-        let startFile = '../badge_raw.svg';
-        let endFile = '../badge.svg';
-        fs3.readFile(startFile, 'utf8', (error, data) => {
-            if (err) return console.log(colorize(RED, `🗙 Badge is written (error ${error})`));
-            data = data.replace(/\{\{file_raw\}\}/g, sizeStart);
-            data = data.replace(/\{\{file_red\}\}/g, sizeEnd);
-            data = data.replace(/\{\{file_min\}\}/g, sizeMin);
-            data = data.replace(/\{\{file_gzip\}\}/g, sizeGzip);
-            data = data.replace(/\{\{reduced_by\}\}/g, Math.round(sizeDiff * 100) / 100);
-            var result = data;
-
-            fs3.writeFile(endFile, result, 'utf8', (error) => {
-                if (err) return console.log(colorize(RED, `🗙 Badge is written (error ${error})`));
-                console.log(colorize(GREEN, `✓ Badge is written`));
-            });
-        });
+        console.log(colorize(GREEN, `✓ statistics:`));
+        console.log(colorize(WHITE, `  ${finalStatus}`));
     });
 });
