@@ -170,7 +170,6 @@ const uglifyFile = (file, newFile) => {
                 // console.log(colorize(RED, `🗙 new badge written`));
                 // TODO: create badge
                 const rob = new ResultObject(RAW_FILE, DIST_FILE_DEV, MIN_FILE, MIN_FILE_BASE);
-                writeBadge(rob);
                 exec(`git diff ${DIST_FOLDER}/dev/new-foo.js `, (error, stdout, stderr) => {
                     if (error) {
                         console.log(colorize(RED, `🗙 git diff error`));
@@ -178,6 +177,7 @@ const uglifyFile = (file, newFile) => {
                     }
                     console.log(stdout);
                 });
+                writeBadge(rob);
             }
         });
     });
@@ -786,7 +786,7 @@ class ResultObject {
         this.minEnd = getFileSize2(this.min);
         this.minBase = getFileSize(this.min_base);
         this.diffBase = (this.minEnd - this.minBase);
-        this.diffDirection = this.diffBase < 0 ? ' ⬇️ ' : ' ⬆️ ';
+        this.diffDirection = parseFloat(this.start) > this.minEnd ? ' ⬇️ ' : ' ⬆️ ';
         this.reducedBy = Math.round(this.diff * 100) / 100
     }
 }
