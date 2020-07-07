@@ -85,30 +85,24 @@ specialReplacements.forEach((entry) => {
 
 
 let undeletable = [];
-undeletable1.forEach((v, i) => {
-    if (typeof v !== 'number') {
-        undeletable.push(v[0]);
-        let i = v[0]
-        while (i < v[1]) {
-            undeletable.push(i++);
+const prepareArray = (oldArray) => {
+    let array = []; 
+    oldArray.forEach((v, i) => {
+        if (typeof v !== 'number') {
+            array.push(v[0]);
+            let i = v[0]
+            while (i < v[1]) {
+                array.push(i++);
+            }
+            array.push(i);
+        } else {
+            array.push(v)
         }
-        undeletable.push(i);
-    } else {
-        undeletable.push(v)
-    }
-});
-deleteLOC1.forEach((v, i) => {
-    if (typeof v !== 'number') {
-        deleteLOC.push(v[0]);
-        let i = v[0]
-        while (i < v[1]) {
-            deleteLOC.push(i++);
-        }
-        deleteLOC.push(i);
-    } else {
-        deleteLOC.push(v)
-    }
-});
+    });
+    return array;
+}
+undeletable = prepareArray(undeletable1);
+deleteLOC = prepareArray(deleteLOC1);
 
 const getFileSize = (file) => {
     const
@@ -125,20 +119,18 @@ const uglifyFile = (file, newFile) => {
             return;
         }
         console.log(colorize(GREEN, `✓ files uglified`));
-        // TODO dist path
+
+
         exec(`git status -s -uno ${DIST_FOLDER} | wc -l`, (error, stdout, stderr) => {
             if (error) {
-                console.log(colorize(RED, `🗙 getting git status (error ${error})`));
-            return;
-        }
-        let statusFileChanged = stdout == 0;
-        console.log(`${stdout}`)
-        if(statusFileChanged === true){
-            console.log(colorize(GREEN, `✓ no changes in dist`));
-        } else {
-            console.log(colorize(RED, `🗙 no changes in dist`));
-        }
-
+                console.log(colorize(RED, `🗙 git status error`));
+                return;
+            }
+            if(stdout == 0){
+                console.log(colorize(GREEN, `✓ no changes in dist`));
+            } else {
+                console.log(colorize(RED, `🗙 no changes in dist`));
+            }
         });
     });
 
@@ -304,19 +296,12 @@ if (fs.existsSync(NEW_FILE)) {
 fs.writeFileSync(NEW_FILE, '', { encoding: 'utf8', flag: 'w+' });
 console.log(colorize(GREEN, `✓ new test file ${NEW_FILE} created`));
 var cntr = 0;
-let MAX_LOG = 100;
-let log = (status) => {
-    // if (cntr < MAX_LOG) {
-    //     console.log(status);
-    // }
-}
 
 var rl = readline.createInterface({
     input: fs.createReadStream(RAW_FILE),
 });
 
 let isDeleting = false;
-// let i = 2; //@todo: why not 0
 let i = 0;
 let removeLinesLen = sRemoveLines.length;
 
@@ -412,9 +397,6 @@ class DeleteObject {
     }
     contains(value: number) {
         let index = this.indention.indexOf(value);
-        // if(index >= 0){
-        //     return true;
-        // }
         return index;
     }
     getAll() {
@@ -483,12 +465,6 @@ class ActionObject {
     keepLine(statusText, statusCode?: STATUS, trigger?) {
 
         let status = statusCode || STATUS.OK;
-        // if(deletableFunctions.indexOf(cntr) !== -1){
-        //     console.log(cntr);
-        //     // this.deleteBlock("#KFB03");
-        //     // this.deleteLine(`${statusText} START`, { 'deleteBlock': true });
-        // } 
-        // else 
         if(deleteLOC.indexOf(cntr) !== -1){
             let status = STATUS.REMOVED;
             handleTrigger(this, trigger);
@@ -513,10 +489,7 @@ class ActionObject {
         }
     }
     deleteBlock(statusText){
-        if (
-            keepFnName.indexOf(this.lob.cntr) === -1 &&
-            undeletable.indexOf(this.lob.cntr + 1) === -1
-        ){
+        if (isDeletable(this.lob.cntr)){
             if (this.lob.has(FUNCTION_ONE_LINE)) {
                 this.deleteLine("#DL1 SINGLE FUNC");
             } else{
@@ -556,7 +529,6 @@ class ActionObject {
             }
             // this.dob[trigger]
         }
-        
     }
 }
 const handleTrigger = (ao, trigger) => {
@@ -599,6 +571,10 @@ const deleteUnusedFunctions = (line, lob, ao) => {
             return false;
         }
     }
+}
+const isDeletable = (cntr) => {
+    return keepFnName.indexOf(cntr) === -1 &&
+            undeletable.indexOf(cntr + 1) === -1;
 }
 
 
@@ -647,7 +623,7 @@ const analyze = (line) => {
         }
         else {
             if (deleteUnusedFunctions(line, LOB, AO)) {
-            } else 
+            } else
             if (DOB.hasIife(line, deleteIifeBlocks)) {
                 // Delete IIFE
                 let newLine = line.replace(" (function() {", "Ö;");
@@ -658,10 +634,7 @@ const analyze = (line) => {
                     // NOP
                 }
             } else {
-                if (
-                    keepFnName.indexOf(cntr) === -1 &&
-                    undeletable.indexOf(cntr + 1) === -1
-                ) {
+                if (isDeletable(cntr)) {
                     if (todoAutomize.indexOf(cntr) !== -1) {
                             AO.keepLine("#KBQ2", STATUS.OK, { 'keepFnBlock': true });
                     } else {
@@ -723,14 +696,12 @@ const analyze = (line) => {
             }
         }
         updateLineStatus(LOB);
-        
         finalCode += LOB.newLine + '\n';
     } else {
     }
     prevLine = line;
 };
 if (!noRun) {
-
     rl.on('line', analyze);
 }
 
@@ -753,14 +724,14 @@ rl.on('close', () => {
     finalCode = finalCode.replace(/nodeIndex/ig, "N");
     finalCode = finalCode.replace(/renderElement/ig, "E");
     finalCode = finalCode.replace(/componentView/ig, "V");
-        finalCode = finalCode.replace(/renderParent/ig, "R");
-            finalCode = finalCode.replace(/childCount/ig, "C");
-                finalCode = finalCode.replace(/attrs/ig, "A");
-                finalCode = finalCode.replace(/nodes/ig, "N");
-                finalCode = finalCode.replace(/parent/ig, "P");
-                finalCode = finalCode.replace(/element/g, "B");
-                finalCode = finalCode.replace(/On/g, "O");
-                finalCode = finalCode.replace(/Pr/g, "C");
+    finalCode = finalCode.replace(/renderParent/ig, "R");
+    finalCode = finalCode.replace(/childCount/ig, "C");
+    finalCode = finalCode.replace(/attrs/ig, "A");
+    finalCode = finalCode.replace(/nodes/ig, "N");
+    finalCode = finalCode.replace(/parent/ig, "P");
+    finalCode = finalCode.replace(/element/g, "B");
+    finalCode = finalCode.replace(/On/g, "O");
+    finalCode = finalCode.replace(/Pr/g, "C");
     writeNewLine(fs, NEW_FILE, finalCode, false);
     fs.copyFile(NEW_FILE, DIST_FILE_DEV, (err) => {
         if (err) throw err;
@@ -785,7 +756,7 @@ rl.on('close', () => {
         console.log(colorize(GREEN, `✓ statistics: ${finalStatus.replace(/\n/g, '')}`));
         let startFile = '../badge_raw.svg';
         let endFile = '../badge.svg';
-        fs3.readFile(startFile, 'utf8', function (error, data) {
+        fs3.readFile(startFile, 'utf8', (error, data) => {
             if (err) return console.log(colorize(RED, `🗙 Badge is written (error ${error})`));
             data = data.replace(/\{\{file_raw\}\}/g, sizeStart);
             data = data.replace(/\{\{file_red\}\}/g, sizeEnd);
@@ -794,10 +765,9 @@ rl.on('close', () => {
             data = data.replace(/\{\{reduced_by\}\}/g, Math.round(sizeDiff * 100) / 100);
             var result = data;
 
-            fs3.writeFile(endFile, result, 'utf8', function (error) {
+            fs3.writeFile(endFile, result, 'utf8', (error) => {
                 if (err) return console.log(colorize(RED, `🗙 Badge is written (error ${error})`));
                 console.log(colorize(GREEN, `✓ Badge is written`));
-
             });
         });
     });
