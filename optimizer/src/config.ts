@@ -2,74 +2,19 @@
 
     
 export let MAX_DELETE= 11080;// 4690 //#hier
-export let undeletablefn = [950,  1772,
-
-     [ 5070], 5089,
-    // 2746, // create nodes
-    4668,
-     4678, 4682, 4714, 4709, 4719, 4724, 4730,  4735, 4741, 
-     4746, 4751, 4756, 4762, 4767, // TODO wegen ternary
-    7865, // end of function wrong detected
-    // 7881,  // TODO: important: contains content
-    // 8041,
-     5317, 
-    //  4605, 4662, 5317, 6412, 7392, 7419, 8134,
-    //  7881,
-    
+export let undeletablefn = [
+    1772, // keep: fn will be modified
 ];
-export const checkFn = [
-    
-    // hard to delete or single line fn or fn dependency
-     8129,
-    // 2278,
-    // manuell vs. automatic ???
-    // 801, 
-     8256,
-]
-export const undeletable2 = []
+
 // TODO: 1062: what it is?
 // detect where empty fn is used
-export const keepFnName = [
-    // 109, 
-    9271,
-    2758,
-    // 962,
-     1179,
-    4266,
-    // 3624,
-     4976,
-    //  4099,  // TODO: next is undeletable
-    // next
-    // 4277,
-    8135, 
-    // 8159,
-    //   8350, 
-    //  502,
-    //  7003,
-    
-    // 601,
-    // 10397, // TODO: dot of  fn needs to be keeped
-
-    // optimized
-
-    // 104,
-    
-];
+export const keepFnName = [2758];
 // undeletable keep lines
 export const undeletable1 = [
-    3029,  [2978,2980], 2983, 
- [2959,2969],  
-   
-
-    2013, // otherwise not shown: append to dom
+ [2959,2969],  // TODO Details?
 1781, // render Element
- 2024,
-    2961, 
-    
-     2010, 2011,  2974, 2975, 2989, 3029,
-    // 6474,
-    2971,  
-    2962, 2976,[2978-2983],[2988,2990],
+    // 2971,  
+    // 2962, 2976,[2978-2983],[2988,2990],
     // 2557, 2559,// fn call && Ft(e, 512, r)
     // 1614, 
     // [2418, 2422],
@@ -78,8 +23,12 @@ export const undeletable1 = [
     // TODO: 2709
     2709, 
     
-    2720, 2727,   2741, 2744,
-     2764,   [2769,2772], 2775,  
+    2720, 
+    2727,  
+     2741,
+      2744,
+     2764,
+        [2769,2772], 2775,  
     // TODO: 2844 wird nicht erkannt
    2830, 2831,  [2835, 2836], [2842, 2846],   2852, 2861, 2862,
    // TODO: 3596 
@@ -166,29 +115,7 @@ export let todoDeletable = [
 ]
 export let todoAutomize = [
 
-    
-    // 9327, 
-    // 4807, 4815 /// not automized deletable?
-    4823,  1772, 601,
-    4663,
-    // optimized
-    //  2958, // TODO
-    // 1423, 
-     692,
-    //  1789,
-      4528, 4644, 
-     2746, 
-    // 4685, 
-    //  7519,
-      502, 191, 
-    // 5126, 
-    // 5145,
-    //  104,
-    // 7003,
-    4266,
-    // 4677,
-    // 10087,
-    // 8256,
+    1772, // gn near render parent
 ]
 
 export let deleteLOC1 = [
@@ -334,32 +261,18 @@ export const specialReplacements = [
     
 ]
 
-//deletableFn 6375
-
-// var xe = function() {}();
-export let emptyIIFe = [
-]
 export let deletableFunctions = [
-    114,159, 251, 281, 311,  344,  691, 830, 912, 
-    // 1034, 
-    // 1886,
-    
-    587,
-    // TODO QA1: 
+     691,
     7483,
-    // TODO : KFB01
-    // 5385,
     5386,
+    8257,
 
-    
-      8129,
-       8256, 8257,
-     
-     // TODO später: CB2
-     // TODO QB 
-     
-     // Done
-     6375, 6776, 6825, 7042, 7026,
+    // Done
+     6375, 
+    6776,
+     6825,
+      7042,
+       7026,
      6806, 
   6523, 5970, 7818, 9235, 7235, 9467, 9489, 9860, 9989, 10244, 10257, 10268, 10279, 10290, 10301,  
   4609, 5318, 5434, 5518, 5537, 5561, 6012, 6062, 7209, 8245,

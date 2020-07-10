@@ -1,7 +1,7 @@
 import {
     MAX_DELETE, undeletablefn, undeletable1,
     todoDeletable, deleteIifeBlocks, keepFnName,
-    todoAutomize, checkFn, emptyIIFe, deletableFunctions,
+    todoAutomize, deletableFunctions,
     deleteLOC1, specialReplacements
 }
     from './config';
@@ -38,7 +38,6 @@ const writeBadge = (rob) => {
 const NEW_FILE = `${ASSETS_FOLDER}/new-${FOO}.js`;
 
 // let MAX_DELETE = config.MAX_DELETE;
-// let undeletablefn = config.undeletablefn;
 // export const hello = () => 'Hello world!';
 const readline = require('readline');
 const notifier = require('node-notifier');
@@ -128,9 +127,7 @@ const getFileSize2 = (file, isNumber = true) => {
     const{ spawnSync } = require('child_process'),
     ls = spawnSync('ls', ['-l', file]);
     const size = parseInt(ls.stdout.toString().split(' ')[4]);
-    //  console.log(parseFloat(parseInt(size/1024))*100/100);
     return Math.round(size/1024*100)/100;
-    // return Math.round(parseFloat(ls.stdout.toString().split(' ')[4]/1024)*100)/100;
 }
 const uglifyFile = (file, newFile) => {
     const { exec } = require('child_process');
@@ -272,49 +269,33 @@ if (!noRun) {
     getRemovableStatements(coverageObj['statementMap'], coverageObj['s'])
 }
 
+const isInAnotherBlock = (removeLinesArray, loc ) => {
+    // not necessary gleiche reihenfolge oder one-line
+    // start und end vergleichen
+    // z.b. zeile 3 nicht gecover
+    if (removeLinesArray.length > 0) {
+        let entry = removeLinesArray[removeLinesArray.length - 1];
+        if(loc.start.line < (entry.start.line || entry.end.line)){
+            return true;
+        }
+    } else {
+        return false;
+    }
+}
 const getRemovableLines = (obj, objCov, type) => {
     let removeLinesArray = [];
     let countRecords = 0;
-    if (type == 's') {
+    if (type == 's' || type == 'f') {
         Object.keys(obj).forEach(recordID => {
-            // not necessary gleiche reihenfolge oder one-line
-            // start und end vergleichen
-            // z.b. zeile 3 nicht gecover
-            let loc = obj[recordID];
+            if (type == 'f' && isInAnotherBlock(removeLinesArray, obj[recordID].loc )){
+                    return 
+            }
+            let loc = type == 's' ? obj[recordID] : obj[recordID].loc;
             if (objCov[recordID] === 0) {
                 removeLinesArray.push(loc)
                 countRecords++;
 
             }
-        })
-    }
-    if (type == 'f') {
-        Object.keys(obj).forEach(recordID => {
-            // not necessary gleiche reihenfolge oder one-line
-            // start und end vergleichen
-            // z.b. zeile 3 nicht gecover
-            let loc = obj[recordID].loc;
-            // TODO 53-64
-            if (removeLinesArray.length > 0) {
-                if (removeLinesArray[removeLinesArray.length - 1].start.line > loc.start.line) {
-                } else if (removeLinesArray[removeLinesArray.length - 1].end.line > loc.start.line) {
-                } else {
-                    if (objCov[recordID] === 0) {
-                        removeLinesArray.push(loc)
-                        countRecords++;
-
-                    }
-
-                }
-            } else {
-
-                if (objCov[recordID] === 0) {
-                    removeLinesArray.push(loc)
-                    countRecords++;
-
-                }
-            }
-
         })
     }
     return removeLinesArray;
@@ -417,11 +398,8 @@ class DeleteObject {
         return this.indention[0];
     }
     last(): Number {
-        if (this.indention.length > 0) {
-            return this.indention[this.indention.length - 1];
-        } else {
-            return -1;
-        }
+        let len = this.indention.length
+        return len > 0 ? this.indention[len - 1] : -1;
     }
     updateNext(next): void {
         this.next = next;
@@ -434,6 +412,16 @@ class DeleteObject {
         }
         return deleteIifeBlocks.indexOf(cntr) >= 0
     }
+    isDeletable(cntr){
+        return undeletable.indexOf(cntr) === -1
+    }
+    isDeletableFn(cntr){
+        return undeletablefn.indexOf(cntr) === -1;
+    }
+    isDeletableFunction(cntr){
+        return deletableFunctions.indexOf(cntr) !== -1; 
+    }
+
     getNext() {
         return this.next;
     }
@@ -528,7 +516,7 @@ class ActionObject {
         handleTrigger(this, trigger);
     }
     deleteLine(statusText, trigger?) {
-        if (undeletable.indexOf(this.lob.cntr) === -1) {
+        if (DOB.isDeletable(this.lob.cntr)) {
             let status = STATUS.REMOVED;
             handleTrigger(this, trigger);
             this.lob.update('', statusText, status);
@@ -557,7 +545,7 @@ class ActionObject {
         const key: string = trigger;
         let options = this.isStartActiveBlock() ? { key: false } : {};
         let deleteLines =(options) => {
-            if (undeletable.indexOf(this.lob.cntr) === -1) {
+            if (DOB.isDeletable(this.lob.cntr)) {
                 this.deleteLine(`#${text}`, options);
             } else {
                 this.keepLine('#NOT DELETABLE');
@@ -608,12 +596,12 @@ const deleteUnusedFunctions = (line, lob, ao) => {
         ao.deleteLine("#SD");
         return true
     } else if(deletableFn.indexOf(cntr)  >= 0) {
-        ao.deleteBlock("#DB1"); 
+        ao.deleteBlock("#DB1X"); 
             //NOP
     } else {
         let mf = line.match(/.*function\s(Sn|Wr|Qr|dn|Pt|Dt|Rt|Lt)\([^\)]*\).*/);
         if (mf) {
-            ao.deleteBlock("#DB2");
+            ao.deleteBlock("#DB2X");
             return true
         } else {
             return false;
@@ -622,7 +610,7 @@ const deleteUnusedFunctions = (line, lob, ao) => {
 }
 const isDeletable = (cntr) => {
     return keepFnName.indexOf(cntr) === -1 &&
-            undeletable.indexOf(cntr + 1) === -1;
+            DOB.isDeletable(cntr + 1);
 }
 
 
@@ -650,7 +638,7 @@ const analyze = (line) => {
         // #hier        
          if (fnRemoveLines[fnIndex] &&
             !DOB.keepFnBlock && !DOB.active() &&
-            undeletablefn.indexOf(cntr) === -1 &&
+            DOB.isDeletableFn(cntr) &&
             fnRemoveLines[fnIndex].start.line === cntr
         ) {
             AO.deleteBlock("#DB4");
@@ -670,44 +658,37 @@ const analyze = (line) => {
 
         }
         else {
-            if (deleteUnusedFunctions(line, LOB, AO)) {
-            } else
-            if (DOB.hasIife(line, deleteIifeBlocks)) {
-                // Delete IIFE
-                let newLine = line.replace(" (function() {", "Ö;");
+            if (!deleteUnusedFunctions(line, LOB, AO)) {
+            
+                if (DOB.hasIife(line, deleteIifeBlocks)) {
 
-                if(deletableFunctions.indexOf(cntr) !== -1){
-                    AO.deleteBlock("#DBxx START YYY");
-                } else {
-                    // NOP
-                }
-            } else {
-                if (isDeletable(cntr)) {
-                    if (todoAutomize.indexOf(cntr) !== -1) {
-                            AO.keepLine("#KBQ2", STATUS.OK, { 'keepFnBlock': true });
+                    if(DOB.isDeletableFunction(cntr)){
+                        AO.deleteBlock("#DBxx START YYY");
                     } else {
-                        if (undeletablefn.indexOf(cntr) !== -1) {
-                            AO.keepLine("#QA2");
+                        // NOP
+                    }
+                } else {
+                    if (isDeletable(cntr)) {
+                        // TODO: 1772 as undeletableFn
+                        if (todoAutomize.indexOf(cntr) !== -1) {
+                                AO.keepLine("#KBQ2", STATUS.OK, { 'keepFnBlock': true });
                         } else {
-                            if(deletableFunctions.indexOf(cntr) !== -1){
-                                AO.deleteBlock("#KFB02");
-                            } else {
-                                if (LOB.has(FUNCTION)) {
-                                    AO.keepLine("#QA3", STATUS.OK, { 'keepFnBlock': true });
+                            if (DOB.isDeletableFn(cntr)) {
+                                if(DOB.isDeletableFunction(cntr)){
+                                    AO.deleteBlock("#KFB02");
                                 } else {
-                                    AO.keepLine("#QA1");
+                                    if (LOB.has(FUNCTION)) {
+                                        AO.keepLine("#QA3", STATUS.OK, { 'keepFnBlock': true });
+                                    } else {
+                                        AO.keepLine("#QA1");
+                                    }
                                 }
                             }
+
                         }
 
-                    }
-
-                } else {
-                    // 3
-                    if (todoAutomize.indexOf(cntr) !== -1) {
-                        AO.keepLine("#KBQ1", STATUS.OK, { 'keepFnBlock': true });
                     } else {
-                        if(deletableFunctions.indexOf(cntr) !== -1){
+                        if(DOB.isDeletableFunction(cntr)){
                             AO.deleteBlock("#KFB03");
                         } else {
                             AO.keepLine("#QB");
@@ -801,9 +782,9 @@ rl.on('close', () => {
         const rob = new ResultObject(RAW_FILE, DIST_FILE_DEV, MIN_FILE, MIN_FILE_BASE);
 
         uglifyFile(DIST_FILE_DEV, MIN_FILE);
-        const finalStatus = ` 
-            DONE: ⌛ ${(time2 - time) / 1000}  💾 ${rob.startByte} ${rob.diffDirection}  ${rob.diffBase} %)
-            metrics: ✔️ ${metrics.ok} ❌ ${metrics.deleted} ⚠️ ${metrics.potential}`;
+        const finalStatus = 
+    `DONE: ⌛ ${(time2 - time) / 1000}  💾 ${rob.startByte} ${rob.diffDirection}  ${rob.diffBase} %)
+    metrics: ✔️ ${metrics.ok} ❌ ${metrics.deleted} ⚠️ ${metrics.potential}`;
         notifier.notify({
             title: 'ngBundle optimizer',
             icon: path.join(__dirname, 'logo_small.png'),
