@@ -37,8 +37,7 @@ const writeBadge = (rob) => {
 
 const NEW_FILE = `${ASSETS_FOLDER}/new-${FOO}.js`;
 
-// let MAX_DELETE = config.MAX_DELETE;
-// export const hello = () => 'Hello world!';
+
 const readline = require('readline');
 const notifier = require('node-notifier');
 const path = require('path');
@@ -101,7 +100,7 @@ let undeletable = [];
 const prepareArray = (oldArray) => {
     let array = []; 
     oldArray.forEach((v, i) => {
-        if (typeof v !== 'number') {
+        if (typeof v !== 'number') { //[LOC, LOC] - multiple LOCs
             array.push(v[0]);
             let i = v[0]
             while (i < v[1]) {
@@ -109,7 +108,7 @@ const prepareArray = (oldArray) => {
             }
             array.push(i);
         } else {
-            array.push(v)
+            array.push(v); // LOC
         }
     });
     return array;
@@ -282,7 +281,7 @@ const isInAnotherBlock = (removeLinesArray, loc ) => {
         return false;
     }
 }
-const getRemovableLines = (obj, objCov, type) => {
+const getRemovableData = (obj, objCov, type) => {
     let removeLinesArray = [];
     let countRecords = 0;
     if (type == 's' || type == 'f') {
@@ -309,13 +308,13 @@ const writeNewLine = (fs, file, newLine, mode?) => {
     // fs.writeFileSync(file, '', )
     fs.writeFileSync(file, newLine, ADD_MODE);
 }
+// % Stmts | % Branch | % Funcs | % Lines 
+// let bRemoveLines = getRemovableData(bObj, bObjCov, 'b');
+let removeStatements = getRemovableData(sObj, sObjCov, 's');
+let removeFunctions = getRemovableData(fnObj, fnObjCov, 'f');
+let removeStatementsOrder = [];
 
-// let bRemoveLines = getRemovableLines(bObj, bObjCov, 'b');
-let sRemoveLines = getRemovableLines(sObj, sObjCov, 's');
-let fnRemoveLines = getRemovableLines(fnObj, fnObjCov, 'f');
-let sRemoveLinesOrder = [];
-
-// order lines: sRemoveLines.forEach(item => {
+// order lines: removeStatements.forEach(item => {
 
 // reset file
 if (fs.existsSync(NEW_FILE)) {
@@ -332,7 +331,7 @@ var rl = readline.createInterface({
 
 let isDeleting = false;
 let i = 0;
-let removeLinesLen = sRemoveLines.length;
+let removeLinesLen = removeStatements.length;
 
 enum STATUS {
     OK = 0,
@@ -415,10 +414,10 @@ class DeleteObject {
     isDeletable(cntr){
         return undeletable.indexOf(cntr) === -1
     }
-    isDeletableFn(cntr){
+    isDeletableFunc(cntr){
         return undeletablefn.indexOf(cntr) === -1;
     }
-    isDeletableFunction(cntr){
+    isDeletableFn(cntr){
         return deletableFunctions.indexOf(cntr) !== -1; 
     }
 
@@ -477,14 +476,14 @@ class LineObject {
         this.lineStatus = this.lineStatus !== lineStatus ? lineStatus : this.lineStatus;
     }
 }
-class ActionObject {
+class ActionObject
+{
     lob: LineObject;
     dob: DeleteObject;
     indentation: number;
     constructor(
         public lineObject: LineObject,
         public deleteObject: DeleteObject
-        // public newLine: String, public deleteStatus: String, public lineStatus: Number
     ) {
         this.lob = lineObject;
         this.dob = deleteObject;
@@ -525,6 +524,8 @@ class ActionObject {
         }
     }
     deleteBlock(statusText){
+    // if(DOB.isDeletableFn(this.lob.cntr) || isDeletable(this.lob.cntr) ){
+
         if (isDeletable(this.lob.cntr)){
             if (this.lob.has(FUNCTION_ONE_LINE)) {
                 this.deleteLine("#DL1 SINGLE FUNC");
@@ -533,6 +534,21 @@ class ActionObject {
             }
         } else {
             this.keepLine(`${statusText} START`, STATUS.OK, { 'keepFnBlock': true });
+        }
+    // }
+    }
+    deleteBlockX(statusText){
+        if(this.dob.isDeletableFn(this.lob.cntr) ){
+
+            if (isDeletable(this.lob.cntr)){
+                if (this.lob.has(FUNCTION_ONE_LINE)) {
+                    this.deleteLine("#DL1 SINGLE FUNC");
+                } else{
+                    this.deleteLine(`${statusText} START`, { 'deleteBlock': true });
+                }
+            } else {
+                this.keepLine(`${statusText} START`, STATUS.OK, { 'keepFnBlock': true });
+            }
         }
     }
     changeLine(statusText, statusCode?: STATUS, line?, trigger?) {
@@ -596,16 +612,16 @@ const deleteUnusedFunctions = (line, lob, ao) => {
         ao.deleteLine("#SD");
         return true
     } else if(deletableFn.indexOf(cntr)  >= 0) {
-        ao.deleteBlock("#DB1X"); 
+        // ao.deleteBlock("#DB1X"); 
             //NOP
     } else {
-        let mf = line.match(/.*function\s(Sn|Wr|Qr|dn|Pt|Dt|Rt|Lt)\([^\)]*\).*/);
-        if (mf) {
-            ao.deleteBlock("#DB2X");
-            return true
-        } else {
-            return false;
-        }
+        // let mf = line.match(/.*function\s(Sn|Wr|Qr|dn|Pt|Dt|Rt|Lt)\([^\)]*\).*/);
+        // if (mf) {
+        //     // ao.deleteBlock("#DB2X");
+        //     return true
+        // } else {
+        //     return false;
+        // }
     }
 }
 const isDeletable = (cntr) => {
@@ -630,16 +646,19 @@ const analyze = (line) => {
 
     // todo: einzeiler löschen, wenn start/ende oder fnDelete not running
     if (cntr === 0) {
-        DOB.updateNext(sRemoveLines[DOB.next]);
+        console.log(removeStatements[DOB.next])
+        DOB.updateNext(removeStatements[DOB.next]);
     }
     if (cntr++ >= 0) { // TODO in 540 bei LOB machen
-        // TODO ! DOB.deletingFn && cntr === fnRemoveLines[fnIndex]['start']['line']
+        // TODO ! DOB.deletingFn && cntr === removeFunctions[fnIndex]['start']['line']
         //DELETEABLE line detected 
         // #hier        
-         if (fnRemoveLines[fnIndex] &&
+        let removeableLine = removeFunctions[fnIndex];
+         if (removeableLine &&
             !DOB.keepFnBlock && !DOB.active() &&
-            DOB.isDeletableFn(cntr) &&
-            fnRemoveLines[fnIndex].start.line === cntr
+            // TODO: ohen 
+            DOB.isDeletableFunc(cntr) &&
+            removeableLine.start.line === cntr
         ) {
             AO.deleteBlock("#DB4");
         } else if (DOB.active()) {
@@ -654,16 +673,12 @@ const analyze = (line) => {
             } else {
                 AO.deleteLine('#DB');
             }
-            doNext = sRemoveLines[DOB.indexDeletableLine] !== undefined;
-
-        }
-        else {
+            doNext = removeStatements[DOB.indexDeletableLine] !== undefined;
+        } else {
             if (!deleteUnusedFunctions(line, LOB, AO)) {
-            
                 if (DOB.hasIife(line, deleteIifeBlocks)) {
-
-                    if(DOB.isDeletableFunction(cntr)){
-                        AO.deleteBlock("#DBxx START YYY");
+                    if(DOB.isDeletableFn(cntr)){
+                        AO.deleteBlockX("#DBxx START YYY");
                     } else {
                         // NOP
                     }
@@ -673,8 +688,7 @@ const analyze = (line) => {
                         if (todoAutomize.indexOf(cntr) !== -1) {
                                 AO.keepLine("#KBQ2", STATUS.OK, { 'keepFnBlock': true });
                         } else {
-                            if (DOB.isDeletableFn(cntr)) {
-                                if(DOB.isDeletableFunction(cntr)){
+                                if(DOB.isDeletableFn(cntr)) {
                                     AO.deleteBlock("#KFB02");
                                 } else {
                                     if (LOB.has(FUNCTION)) {
@@ -683,15 +697,18 @@ const analyze = (line) => {
                                         AO.keepLine("#QA1");
                                     }
                                 }
-                            }
 
                         }
 
                     } else {
-                        if(DOB.isDeletableFunction(cntr)){
+                        if(DOB.isDeletableFn(cntr)){
                             AO.deleteBlock("#KFB03");
                         } else {
+                            if (LOB.has(FUNCTION)) {
+                                // AO.keepLine("#QA3", STATUS.OK, { 'keepFnBlock': true });
+                            } else {
                             AO.keepLine("#QB");
+                            }
                         }
                     }
                 }
@@ -705,22 +722,23 @@ const analyze = (line) => {
             let indentions = (LOB.deleteStatus !== '') ? DOB.getAll() : DOB.first();
             let currentIndention = (LOB.newLine === '') ? DOB.getAll() : DOB.getNextLine();
             let oldLine = (LOB.newLine === '') ? line : indentions;
+            // TODO: wirte in extra new line 
             LOB.newLine = `${LOB.newLine}// ${LOB.deleteStatus} i:${currentIndention} orig: ${oldLine}`;
         } else if (show.delete) {
             LOB.newLine = (LOB.newLine === '') ? `//${line}` : LOB.newLine;
         }
-        if (fnRemoveLines[fnIndex] && fnRemoveLines[fnIndex].start.line === cntr) {
-            let loc = fnRemoveLines[fnIndex];
+        if (removeableLine && removeableLine.start.line === cntr) {
+            let loc = removeableLine;
             if (loc && loc.start) {
                 LOB.newLine; // += `//#RF ${loc.start}`
                 fnIndex++;
             }
         }
-
-        if (doNext || (sRemoveLines[DOB.indexDeletableLine] && sRemoveLines[DOB.indexDeletableLine].start.line <= cntr)) {
+        
+        if (doNext || (removeStatements[DOB.indexDeletableLine] && removeStatements[DOB.indexDeletableLine].start.line <= cntr)) {
             DOB.indexDeletableLine++;
-            if (sRemoveLines[DOB.indexDeletableLine]) {
-                DOB.updateNext(sRemoveLines[DOB.indexDeletableLine]);
+            if (removeStatements[DOB.indexDeletableLine]) {
+                DOB.updateNext(removeStatements[DOB.indexDeletableLine]);
             }
         }
         updateLineStatus(LOB);
@@ -763,9 +781,9 @@ class ResultObject {
         this.start = getFileSize(this.raw);
         this.startByte = getFileSize(this.raw, false);
         this.end = getFileSize(this.dist_dev);
-        this.diff = (100 * this.end) / this.start;
         this.minEnd = getFileSize2(this.min);
         this.minBase = getFileSize(this.min_base);
+        this.diff = (100 * this.end) / this.start;
         this.diffBase = (this.minEnd - this.minBase);
         this.diffDirection = parseFloat(this.start) > this.minEnd ? ' ⬇️ ' : ' ⬆️ ';
         this.reducedBy = Math.round(this.diff * 100) / 100
