@@ -5,7 +5,11 @@ import {
     deleteLOC1, specialReplacements
 }
     from './config';
-
+import * as readline from "readline";
+import * as notifier from "node-notifier";
+import * as path from "path";
+import * as fs from "fs";
+import {  exec, spawnSync } from "child_process";
     let deleteLOC = [];
 const DIST_FOLDER ='./../demo';
 const ASSETS_FOLDER = `./assets`;
@@ -18,8 +22,6 @@ const MIN_FILE_BASE = `${DIST_FOLDER}/base-${FOO}.min.js`;
 const DIST_FILE_DEV = `${DIST_FOLDER}/dev/new-${FOO}.js`; // `${ASSETS_FOLDER}/dist/new-foo.min.js`;
 const RAW_FILE_NAME = `${FOO}.js`;
 let replacement = '\n';
-const fs = require('fs');
-
 const writeBadge = (rob) => {
     fs.readFile(BADGE_RAW, 'utf8', (error, data) => {
         if (error) return console.log(colorize(RED, `🗙 Badge is written (error ${error})`));
@@ -33,14 +35,10 @@ const writeBadge = (rob) => {
             console.log(colorize(GREEN, `✓ Badge is written`));
         });
     });
+
 }
 
 const NEW_FILE = `${ASSETS_FOLDER}/new-${FOO}.js`;
-
-
-const readline = require('readline');
-const notifier = require('node-notifier');
-const path = require('path');
 
 let noRun = false;
 let show = {
@@ -98,7 +96,7 @@ specialReplacements.forEach((entry) => {
 
 let undeletable = [];
 const prepareArray = (oldArray) => {
-    let array = []; 
+    let array: Array<number> = []; 
     oldArray.forEach((v, i) => {
         if (typeof v !== 'number') { //[LOC, LOC] - multiple LOCs
             array.push(v[0]);
@@ -117,19 +115,16 @@ undeletable = prepareArray(undeletable1);
 deleteLOC = prepareArray(deleteLOC1);
 
 const getFileSize = (file, isNumber = true) => {
-    const{ spawnSync } = require('child_process'),
-    ls = spawnSync('du', ['-hs', file]);
+    const ls = spawnSync('du', ['-hs', file]);
     const size = ls.stdout.toString().match(/^([^\s])*/);
     return isNumber ? size[0].match(/(\d*)/)[0] : size[0];
 }
 const getFileSize2 = (file, isNumber = true) => {
-    const{ spawnSync } = require('child_process'),
-    ls = spawnSync('ls', ['-l', file]);
+    const ls = spawnSync('ls', ['-l', file]);
     const size = parseInt(ls.stdout.toString().split(' ')[4]);
     return Math.round(size/1024*100)/100;
 }
 const uglifyFile = (file, newFile) => {
-    const { exec } = require('child_process');
     exec('uglifyjs ' + file + ' -c -o ' + newFile, (error, stdout, stderr) => {
         if (error) {
             console.log(colorize(RED, `🗙 files uglified (error ${error})`));
@@ -143,7 +138,8 @@ const uglifyFile = (file, newFile) => {
                 console.log(colorize(RED, `🗙 git status error`));
                 return;
             }
-            if(stdout == 0){
+            console.log(stdout[1] )
+            if(stdout[0] === '0'){
                 console.log(colorize(GREEN, `✓ no changes in dist`));
                 // console.log(colorize(GREEN, `✓ no new badge written`));
                 const rob = new ResultObject(RAW_FILE, DIST_FILE_DEV, MIN_FILE, MIN_FILE_BASE);
@@ -227,28 +223,31 @@ if (!coverageObj) {
 }; //stop program
 
 
-const fnObj = coverageObj['fnMap'];
-const fnObjCov = coverageObj['f'];
+// const fnObj = coverageObj['fnMap'];
+// const fnObjCov = coverageObj['f'];
 
-// const stObj = coverageObj['statementMap'];
-// const stObjCov = coverageObj['s'];
+// // const stObj = coverageObj['statementMap'];
+// // const stObjCov = coverageObj['s'];
 
-const bObj = coverageObj['branchMap'];
-const bObjCov = coverageObj['b'];
-const sObj = coverageObj['statementMap'];
-const sObjCov = coverageObj['s'];
+// const bObj = coverageObj['branchMap'];
+// const bObjCov = coverageObj['b'];
+// const sObj = coverageObj['statementMap'];
+// const sObjCov = coverageObj['s'];
 
 
 coverageObj['s'] //statements, ohne funktionen, line number not the same
 const deletableStatements = [];
-const getRemovableStatements = (obj, objCov) => {
+const getRemovableStatements = (type1, type2) => {
+    let obj = coverageObj[type1];
+    let objCov = coverageObj[type2];
     if (noRun) {
         return;
     }
-    Object.keys(obj).forEach((recordID) => {
+    console.log(obj)
+    Object.keys(obj).forEach((recordID, bar) => {
         const statement = obj[recordID];
+        console.log(statement  + ' ' + bar)
         const isCovered = objCov[recordID] > 0;
-        // const id = Number.parseInt(recordID);
         let multiLine = true;
         if (!isCovered) {
             if (statement['start']['line'] === statement.end.line) {
@@ -264,57 +263,37 @@ const getRemovableStatements = (obj, objCov) => {
 
     });
 }
+// TODO: ??
 if (!noRun) {
-    getRemovableStatements(coverageObj['statementMap'], coverageObj['s'])
+    getRemovableStatements('statementMap','s')
 }
 
-const isInAnotherBlock = (removeLinesArray, loc ) => {
-    // not necessary gleiche reihenfolge oder one-line
-    // start und end vergleichen
-    // z.b. zeile 3 nicht gecover
-    if (removeLinesArray.length > 0) {
-        let entry = removeLinesArray[removeLinesArray.length - 1];
-        if(loc.start.line < (entry.start.line || entry.end.line)){
-            return true;
-        }
-    } else {
-        return false;
-    }
-}
-const getRemovableData = (obj, objCov, type) => {
+const getRemovableData = (coverageObj, typeMap,  type) => {
+    let obj = coverageObj[typeMap];
+    let objCov = coverageObj[type];
     let removeLinesArray = [];
     let countRecords = 0;
     if (type == 's' || type == 'f') {
         Object.keys(obj).forEach(recordID => {
-            if (type == 'f' && isInAnotherBlock(removeLinesArray, obj[recordID].loc )){
-                    return 
-            }
             let loc = type == 's' ? obj[recordID] : obj[recordID].loc;
             if (objCov[recordID] === 0) {
                 removeLinesArray.push(loc)
                 countRecords++;
-
             }
         })
     }
     return removeLinesArray;
 }
 
-
-
 const writeNewLine = (fs, file, newLine, mode?) => {
-    // var mod = cntr == 0 ? 'w' : 'a';
     const ADD_MODE = { encoding: 'utf8', flag: 'a' };
-    // fs.writeFileSync(file, '', )
     fs.writeFileSync(file, newLine, ADD_MODE);
 }
 // % Stmts | % Branch | % Funcs | % Lines 
-// let bRemoveLines = getRemovableData(bObj, bObjCov, 'b');
-let removeStatements = getRemovableData(sObj, sObjCov, 's');
-let removeFunctions = getRemovableData(fnObj, fnObjCov, 'f');
-let removeStatementsOrder = [];
+// let removeBranches = getRemovableData(coverageObj, 'branchMap', 'b');
+let removeStatements = getRemovableData(coverageObj, 'statementMap', 's');
+let removeFunctions = getRemovableData(coverageObj,'fnMap', 'f');
 
-// order lines: removeStatements.forEach(item => {
 
 // reset file
 if (fs.existsSync(NEW_FILE)) {
@@ -403,7 +382,7 @@ class DeleteObject {
     updateNext(next): void {
         this.next = next;
     }
-    hasIife(line, deleteIifeBlocks) {
+    hasIife(line, deleteIifeBlocks): boolean {
         let fnExp = line.match(START_IIFE);
         // TODO delete unused functions 
         if (fnExp !== null) {
@@ -497,22 +476,27 @@ class ActionObject
     isActiveBlock() {
         return this.lob.indentation === this.dob.last();
     }
-    keepLine(statusText, statusCode?: STATUS, trigger?) {
-
-        let status = statusCode || STATUS.OK;
-        if(deleteLOC.indexOf(cntr) !== -1){
-            let status = STATUS.REMOVED;
-            handleTrigger(this, trigger);
-            this.lob.update('', statusText, status);
-        } else 
-        if(specialReplacementLines.indexOf(cntr) !== -1){
-            var spaces = this.lob.line.match(/^(\s*)/)
-            var index = specialReplacementLines.indexOf(cntr)
-            this.changeLine('#CL1 START', STATUS.POTENTIAL, spaces[1] + specialReplacementValues[index]);
+    getReplacementLine(){
+        let index = specialReplacementLines.indexOf(cntr);
+        var spaces = this.lob.line.match(/^(\s*)/);
+        return spaces[1] + specialReplacementValues[index];
+    }
+    getNewLine(statusCode?){
+        let status = deleteLOC.indexOf(cntr) !== -1 ? STATUS.REMOVED : specialReplacementLines.indexOf(cntr) !== -1 ? STATUS.POTENTIAL : STATUS.OK;
+        let newLine: String;
+        if(status === STATUS.OK){
+            newLine =  this.lob.line;
+        } else if(status === STATUS.REMOVED){
+            newLine = '';
         } else {
-            this.lob.update(this.lob.line, statusText, status);
+            newLine =  this.getReplacementLine();
         }
+        return { line: newLine, status: status }
+    }
+    changeLine(statusText, trigger?) {
+        let newLine = this.getNewLine();
         handleTrigger(this, trigger);
+        this.lob.update(newLine.line, statusText, newLine.status);
     }
     deleteLine(statusText, trigger?) {
         if (DOB.isDeletable(this.lob.cntr)) {
@@ -520,7 +504,7 @@ class ActionObject
             handleTrigger(this, trigger);
             this.lob.update('', statusText, status);
         } else {
-            this.keepLine('#NOT DELETABLE');
+            this.changeLine('#NOT DELETABLE');
         }
     }
     deleteBlock(statusText){
@@ -533,7 +517,7 @@ class ActionObject
                 this.deleteLine(`${statusText} START`, { 'deleteBlock': true });
             }
         } else {
-            this.keepLine(`${statusText} START`, STATUS.OK, { 'keepFnBlock': true });
+            this.changeLine(`${statusText} START`, { 'keepFnBlock': true });
         }
     // }
     }
@@ -547,15 +531,9 @@ class ActionObject
                     this.deleteLine(`${statusText} START`, { 'deleteBlock': true });
                 }
             } else {
-                this.keepLine(`${statusText} START`, STATUS.OK, { 'keepFnBlock': true });
+                this.changeLine(`${statusText} START`, { 'keepFnBlock': true });
             }
         }
-    }
-    changeLine(statusText, statusCode?: STATUS, line?, trigger?) {
-        let status = statusCode || STATUS.REMOVED;
-        handleTrigger(this, trigger);
-        let newLine = line !== undefined ? line : this.lob.line;
-        this.lob.update(newLine, statusText, status);
     }
     changeBlock(trigger: string, text: String, keep: Boolean) {
         const key: string = trigger;
@@ -564,14 +542,14 @@ class ActionObject
             if (DOB.isDeletable(this.lob.cntr)) {
                 this.deleteLine(`#${text}`, options);
             } else {
-                this.keepLine('#NOT DELETABLE');
+                this.changeLine('#NOT DELETABLE');
             }
         }
         if (this.dob[key] === true) {
             if (this.isStartActiveBlock()) {
                 // deleteLines({});
                 if (keep === true) {
-                    this.keepLine(`#${text} END`, STATUS.OK, { key: false });
+                    this.changeLine(`#${text} END`, { key: false });
                 } else {
                     deleteLines(options);
                 }
@@ -646,7 +624,6 @@ const analyze = (line) => {
 
     // todo: einzeiler löschen, wenn start/ende oder fnDelete not running
     if (cntr === 0) {
-        console.log(removeStatements[DOB.next])
         DOB.updateNext(removeStatements[DOB.next]);
     }
     if (cntr++ >= 0) { // TODO in 540 bei LOB machen
@@ -686,15 +663,15 @@ const analyze = (line) => {
                     if (isDeletable(cntr)) {
                         // TODO: 1772 as undeletableFn
                         if (todoAutomize.indexOf(cntr) !== -1) {
-                                AO.keepLine("#KBQ2", STATUS.OK, { 'keepFnBlock': true });
+                                AO.changeLine("#KBQ2", { 'keepFnBlock': true });
                         } else {
                                 if(DOB.isDeletableFn(cntr)) {
                                     AO.deleteBlock("#KFB02");
                                 } else {
                                     if (LOB.has(FUNCTION)) {
-                                        AO.keepLine("#QA3", STATUS.OK, { 'keepFnBlock': true });
+                                        AO.changeLine("#QA3", { 'keepFnBlock': true });
                                     } else {
-                                        AO.keepLine("#QA1");
+                                        AO.changeLine("#QA1");
                                     }
                                 }
 
@@ -705,9 +682,9 @@ const analyze = (line) => {
                             AO.deleteBlock("#KFB03");
                         } else {
                             if (LOB.has(FUNCTION)) {
-                                // AO.keepLine("#QA3", STATUS.OK, { 'keepFnBlock': true });
+                                // AO.changeLine("#QA3", { 'keepFnBlock': true });
                             } else {
-                            AO.keepLine("#QB");
+                            AO.changeLine("#QB");
                             }
                         }
                     }

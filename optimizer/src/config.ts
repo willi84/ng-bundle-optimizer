@@ -46,7 +46,7 @@ export const undeletable1 = [
     2938, 2939, 2940,  2945, 2947, 2948, 2952, // händisch ausprobiert
     
     // done
-       2162,
+    //    2162,
        1967,
      1974, 1982, 1986, 1988, 1989,  1997, 2002, //todo
     2024, [2019, 2022], [2015, 2017], 2013, 2006, [2009, 2011], // TODO some stuff from other side deleted

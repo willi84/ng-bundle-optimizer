@@ -6,14 +6,13 @@
     "sourceMap": true,
     "types": []
   },
+  "skipLibCheck": true,
   "include": [
-    // "src/**/*"
-    "node_modules/@types/node/index.d.ts",
-    "node_modules/typescript/lib/lib.es6.d.ts",
+    "src/**/*",
+    "node_modules/@types/node/index.d.ts"
+    // "node_modules/typescript/lib/lib.es6.d.ts",
     // "node_modules/@types/mocha/index.d.ts",
     // "node_modules/@types/chai/index.d.ts",
-    "src/optimizer.ts",
-    "src/config.ts"
 ],
 "exclude": [
     // "node_modules",
