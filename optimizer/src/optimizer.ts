@@ -236,37 +236,6 @@ if (!coverageObj) {
 
 
 coverageObj['s'] //statements, ohne funktionen, line number not the same
-const deletableStatements = [];
-const getRemovableStatements = (type1, type2) => {
-    let obj = coverageObj[type1];
-    let objCov = coverageObj[type2];
-    if (noRun) {
-        return;
-    }
-    console.log(obj)
-    Object.keys(obj).forEach((recordID, bar) => {
-        const statement = obj[recordID];
-        console.log(statement  + ' ' + bar)
-        const isCovered = objCov[recordID] > 0;
-        let multiLine = true;
-        if (!isCovered) {
-            if (statement['start']['line'] === statement.end.line) {
-                multiLine = false;
-            }
-            const newEntry = {
-                'start': statement['start']['line'],
-                'multiline': multiLine,
-                'location': statement
-            }
-            deletableStatements.push(newEntry);
-        }
-
-    });
-}
-// TODO: ??
-if (!noRun) {
-    getRemovableStatements('statementMap','s')
-}
 
 const getRemovableData = (coverageObj, typeMap,  type) => {
     let obj = coverageObj[typeMap];
