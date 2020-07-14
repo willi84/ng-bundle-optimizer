@@ -622,39 +622,21 @@ const analyze = (line) => {
             doNext = removeStatements[DOB.indexDeletableLine] !== undefined;
         } else {
             if (!deleteUnusedFunctions(line, LOB, AO)) {
-                if (DOB.hasIife(line, deleteIifeBlocks)) {
-                    if(DOB.isDeletableFn(cntr)){
-                        AO.deleteBlockX("#DBxx START YYY");
-                    } else {
-                        // NOP
-                    }
+                // TODO: 1772 as undeletableFn
+                if (todoAutomize.indexOf(cntr) !== -1) {
+                    AO.changeLine("#KBQ2", { 'keepFnBlock': true });
                 } else {
-                    if (isDeletable(cntr)) {
-                        // TODO: 1772 as undeletableFn
-                        if (todoAutomize.indexOf(cntr) !== -1) {
-                                AO.changeLine("#KBQ2", { 'keepFnBlock': true });
+                    if(DOB.isDeletableFn(cntr)) {
+                        if (DOB.hasIife(line, deleteIifeBlocks)) {
+                            AO.deleteBlockX("#DBxx START YYY");
                         } else {
-                                if(DOB.isDeletableFn(cntr)) {
-                                    AO.deleteBlock("#KFB02");
-                                } else {
-                                    if (LOB.has(FUNCTION)) {
-                                        AO.changeLine("#QA3", { 'keepFnBlock': true });
-                                    } else {
-                                        AO.changeLine("#QA1");
-                                    }
-                                }
-
+                            AO.deleteBlock("#KFB02");
                         }
-
                     } else {
-                        if(DOB.isDeletableFn(cntr)){
-                            AO.deleteBlock("#KFB03");
+                        if (LOB.has(FUNCTION) && isDeletable(cntr)) {
+                            AO.changeLine("#QA3", { 'keepFnBlock': true });
                         } else {
-                            if (LOB.has(FUNCTION)) {
-                                // AO.changeLine("#QA3", { 'keepFnBlock': true });
-                            } else {
-                            AO.changeLine("#QB");
-                            }
+                            AO.changeLine("#QA1");
                         }
                     }
                 }
@@ -689,7 +671,6 @@ const analyze = (line) => {
         }
         updateLineStatus(LOB);
         finalCode += LOB.newLine + '\n';
-    } else {
     }
     prevLine = line;
 };
