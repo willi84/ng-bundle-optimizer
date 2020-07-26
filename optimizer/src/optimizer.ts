@@ -565,13 +565,6 @@ const analyze = (line) => {
         if (removeFnStart) {
             fnIndex++;
         }
-        let removableStatement = removeStatements[DOB.indexDeletableLine]; // !== undefined;
-        if (removableStatement || (removableStatement && removableStatement.start.line <= cntr)) {
-            DOB.indexDeletableLine++;
-            if (removeStatements[DOB.indexDeletableLine]) {
-                DOB.updateNext(removeStatements[DOB.indexDeletableLine]);
-            }
-        }
         updateLineStatus(LOB,  show);
         rob.finalCode += LOB.newLine + '\n';
         rob.finalCodeRAW += LOB.newLineRAW + '\n';
