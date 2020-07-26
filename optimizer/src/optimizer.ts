@@ -21,7 +21,6 @@ const OK = 0;
 const ERROR = 1;
 const WARNING = 2;
 
-console.clear()
 enum STATUS {
     OK = 0,
     REMOVED = 1,
@@ -71,9 +70,6 @@ let show = {
     deleteStatus: true
 }
 
-
-const time = new Date().getTime();
-
 let specialReplacementLines = [];
 let specialReplacementValues = [];
 specialReplacements.forEach((entry) => {
@@ -102,17 +98,7 @@ const prepareArray = (oldArray) => {
 undeletable = prepareArray(undeletable1);
 deleteLOC = prepareArray(deleteLOC1);
 
-// TODO: duplicate
-const getFileSize = (file, isNumber = true) => {
-    const ls = spawnSync('du', ['-hs', file]);
-    const size = ls.stdout.toString().match(/^([^\s])*/);
-    return isNumber ? size[0].match(/(\d*)/)[0] : size[0];
-}
-const getFileSize2 = (file, isNumber = true) => {
-    const ls = spawnSync('ls', ['-l', file]);
-    const size = parseInt(ls.stdout.toString().split(' ')[4]);
-    return Math.round(size/1024*100)/100;
-}
+
 const uglifyFile = (file, newFile) => {
     exec('uglifyjs ' + file + ' -c -o ' + newFile, (error, stdout, stderr) => {
         if (error) {
@@ -238,7 +224,6 @@ var rl = readline.createInterface({
 });
 
 
-let prevLine = '';
 const IF = /^(\s*)if\s*\(.*\)\s*\{\s*$/;
 const MULTILINE_IF_OPEN = /^(\s*)(if|for)\s\([^\)]*$/;
 const MULTILINE_IF_CLOSE = /^(\s*)\)\s*\{\s*$/;
@@ -270,22 +255,11 @@ class DeleteObject {
         this.indention = [];
         this.next = 0;
     }
-    getActiveTrigger() : {[k: string]: any}{
-        let trigger: {[k: string]: any} = {};
-         if (this.deleteBlock === true) {
-            trigger = { 'deleteBlock': false};
-        } else if (this.keepFnBlock === true) {
-            trigger = { 'keepFnBlock': false};
-        }
-        return trigger;
-    }
     handleTrigger(trigger, lob) {
         let startOrStop = NOP;
-    
         if (trigger) {
             let keys = Object.keys(trigger);
             keys.forEach((key, keyIndex) => {
-                
                 this[key] = trigger[key];
                 startOrStop = trigger[key] ? START : STOP;
             });
@@ -295,7 +269,6 @@ class DeleteObject {
                 this.reset();
             }
         }
-    
     }
     update(indention: Number): void {
         if (this.indention.indexOf(indention) === -1) {
@@ -361,7 +334,6 @@ class LineObject {
     constructor(
         public line: String,
         public cntr: number
-        // public newLine: String, public deleteStatus: String, public lineStatus: Number
     ) {
         this.line = line;
         this.newLine = line;
@@ -393,15 +365,18 @@ class ActionObject
 {
     lob: LineObject;
     dob: DeleteObject;
+    rob: ResultObject;
     indentation: number;
     keepFnBlock: Boolean = false;
     deleteBlock: Boolean = false;
     constructor(
         public lineObject: LineObject,
-        public deleteObject: DeleteObject
+        public deleteObject: DeleteObject,
+        public resultObject: ResultObject
     ) {
         this.lob = lineObject;
         this.dob = deleteObject;
+        this.rob = resultObject;
     }
     isStartActiveBlock() {
         return this.lob.indentation === this.dob.first();
@@ -416,22 +391,6 @@ class ActionObject
         var spaces = this.lob.line.match(/^(\s*)/);
         return spaces[1] + specialReplacementValues[index];
     }
-    
-    is(trigger, key){
-        return Object.keys(trigger)[0] === key
-    }
-    doStopAction(){
-        if (this.isStartActiveBlock()) {
-            let trigger = this.dob.getActiveTrigger();
-            if(this.is(trigger, 'keepFnBlock')){
-                this.changeLine(`#$KP2 END`, trigger);
-            } else {
-                this.deleteLine('#DB END', trigger);
-            }
-        } else {
-            this.deleteLine('#DB');
-        }
-    }
     // Pt/Dt/Rt/Lt
     isUnusedFunction = () => {
         let lm = this.lob.line.match(/.*(Sn|Wr|Qr|dn\([^\)]*\)|Pt;|Dt;|Rt;|Lt\([^\)]*\)).*/);
@@ -439,26 +398,45 @@ class ActionObject
     }
     isDeletableBlock = () => {
         return  this.dob.isDeletableLine(this.lob.cntr) &&
-                this.dob.isDeletableLine(this.lob.cntr + 1);
+        this.dob.isDeletableLine(this.lob.cntr + 1);
     }
-    doStuff(deleteBlock, keepFnBlock){
-        let trigger: any = null;
-        let isDelete = false;
-        if (deleteBlock){
-            trigger =  !this.lob.has(FUNCTION_ONE_LINE) ? { 'deleteBlock': true } : trigger;
-            isDelete = this.isDeletableBlock() ? true: isDelete;
-        } else {
+    getActiveTrigger(isStop, deleteBlock, keepFnBlock) : {[k: string]: any}{
+        let trigger: {[k: string]: any} = {};
+        if (deleteBlock === true) {
+            if(isStop === true){
+                if (this.dob.deleteBlock === true ) {
+                trigger = { 'deleteBlock': false};
+                } else if (this.dob.keepFnBlock === true) {
+                    trigger = { 'keepFnBlock': false};
+                }
+            } else {
+                trigger =  !this.lob.has(FUNCTION_ONE_LINE) ? { 'deleteBlock': true } : trigger;
+            }
+        }else {
             if(keepFnBlock){
                 trigger = { 'keepFnBlock': true };
             }
         }
-        if(isDelete === true){
-            this.deleteLine("#SD", trigger);
-        } else {
-            this.changeLine("#QA1", trigger);
-        }
+        return trigger;
     }
-    
+    doStopAction(){
+        let trigger: any = null;
+        let deleteBlock = this.isStartActiveBlock();
+        let isDelete = !deleteBlock || !this.dob.keepFnBlock;
+        let keepFnBlock = false;
+        if (deleteBlock === true) {
+            trigger = this.getActiveTrigger(true, deleteBlock, keepFnBlock); // TODO ?
+        }
+        this.doLine("#CL",isDelete,  trigger);
+    }
+
+
+    doStuff(deleteBlock, keepFnBlock){
+        let trigger: any = null;
+        let isDelete = deleteBlock && this.isDeletableBlock();
+        trigger = this.getActiveTrigger(false, deleteBlock, keepFnBlock);
+        this.doLine("#CL",isDelete,  trigger);
+    }
     doAction(doFunction = false){
         let deleteBlock = doFunction? this.dob.isDeletableFn(this.lob.cntr) : this.isDeletableBlock();
         let keepFnBlock = doFunction? (this.lob.has(FUNCTION) && this.isDeletableBlock()) :  this.lob.has(FUNCTION);
@@ -474,32 +452,36 @@ class ActionObject
         }
         return lineObj;
     }
-    changeLine(statusText, trigger?): void {
-        // if(trigger && this.lob.has(FUNCTION_ONE_LINE)){
-        //     trigger = null;
-        // }
-        let newLine: ReplaceLine = this.getNewLine();
-        this.dob.handleTrigger(trigger, this.lob);
-        this.lob.update(newLine.line, statusText, newLine.status);
+    writeNewLine(show){
+        if (show.deleteStatus == true) {
+            let indentions = (this.lob.deleteStatus !== '') ? this.dob.getAll() : this.dob.first();
+            let currentIndention = (this.lob.newLine === '') ? this.dob.getAll() : this.dob.getNextLine();
+            let oldLine = (this.lob.newLine === '') ? this.lob.line : indentions;
+            // TODO: wirte in extra new line 
+            this.lob.newLineRAW = `${this.lob.newLine}// ${this.lob.deleteStatus} i:${currentIndention} orig: ${oldLine}`;
+        } else if (show.delete) {
+            this.lob.newLineRAW = (this.lob.newLine === '') ? `//${this.lob.line}` : this.lob.newLine;
+        }
+        this.rob.finalCode += this.lob.newLine + '\n';
+        this.rob.finalCodeRAW += this.lob.newLineRAW + '\n';
     }
-    deleteLine(statusText, trigger?): void {
-        let newLine:  ReplaceLine = {  line: '', status: STATUS.REMOVED}
+    doLine(statusText, isDelete, trigger?): void {
+        let newLine: ReplaceLine = isDelete ? {  line: '', status: STATUS.REMOVED} : this.getNewLine();
         if (!this.dob.isDeletableLine(this.lob.cntr)) {
             statusText = '#NOT DELETABLE';
             newLine = this.getNewLine();
         }
-        // TODO if deleteBlock and fn onelinel
-        
-       this.dob.handleTrigger(trigger, this.lob);
+        this.dob.handleTrigger(trigger, this.lob);
         this.lob.update(newLine.line, statusText, newLine.status);
     }
-    
-  
 }
 
 class ResultObject {
     start: any;
     startByte: any;
+    time: any;
+    time2: any;
+    metricsData: any;
     end: any;
     diff: any;
     minEnd: any;
@@ -518,17 +500,42 @@ class ResultObject {
         public finalcode1: String,
         public finalcodeRAW1: String,
     ) {
-        this.start = getFileSize(this.raw);
-        this.startByte = getFileSize(this.raw, false);
-        this.end = getFileSize(this.dist_dev);
-        this.minEnd = getFileSize2(this.min);
-        this.minBase = getFileSize(this.min_base);
+        console.clear();
+        this.time = new Date().getTime();
+        this.start = this.getFileSize(this.raw);
+        this.startByte = this.getFileSize(this.raw, false);
+        this.end = this.getFileSize(this.dist_dev);
+        this.minEnd = this.getFileSize2(this.min);
+        this.minBase = this.getFileSize(this.min_base);
         this.diff = (100 * this.end) / this.start;
         this.diffBase = (this.minEnd - this.minBase);
         this.diffDirection = parseFloat(this.start) > this.minEnd ? ' ⬇️ ' : ' ⬆️ ';
         this.reducedBy = Math.round(this.diff * 100) / 100
         this.finalCode = finalcode1;
         this.finalCodeRAW = finalcodeRAW1;
+    }
+    getResult(){
+        this.time2 = new Date().getTime();
+        this.metricsData = getMetricsData()
+        const finalStatus = `DONE: ⌛ ${(this.time2 - this.time) / 1000}  💾 ${this.startByte} ${this.diffDirection}  ${this.diffBase} %) //` + this.metricsData;
+        notifier.notify({
+            title: 'ngBundle optimizer',
+            icon: path.join(__dirname, 'logo_small.png'),
+            message: finalStatus
+        });
+        LOG(OK, `statistics: `, finalStatus);
+    }
+
+    // TODO: duplicate
+    getFileSize(file, isNumber = true) {
+        const ls = spawnSync('du', ['-hs', file]);
+        const size = ls.stdout.toString().match(/^([^\s])*/);
+        return isNumber ? size[0].match(/(\d*)/)[0] : size[0];
+    }
+    getFileSize2(file, isNumber = true){
+        const ls = spawnSync('ls', ['-l', file]);
+        const size = parseInt(ls.stdout.toString().split(' ')[4]);
+        return Math.round(size/1024*100)/100;
     }
 }
 let DOB = new DeleteObject();
@@ -537,8 +544,7 @@ const rob = new ResultObject(RAW_FILE, DIST_FILE_DEV, MIN_FILE, MIN_FILE_BASE, '
 let fnIndex = 1;
 const analyze = (line) => {
     let LOB = new LineObject(line, cntr + 1);
-    let AO = new ActionObject(LOB, DOB);
-    let doNext: Boolean = false;
+    let AO = new ActionObject(LOB, DOB, rob);
 
     // todo: einzeiler löschen, wenn start/ende oder fnDelete not running
     if (cntr === 0) {
@@ -553,60 +559,36 @@ const analyze = (line) => {
         } else{
             AO.doAction(!removeFnStart);
         }
-        if (show.deleteStatus == true) {
-            let indentions = (LOB.deleteStatus !== '') ? DOB.getAll() : DOB.first();
-            let currentIndention = (LOB.newLine === '') ? DOB.getAll() : DOB.getNextLine();
-            let oldLine = (LOB.newLine === '') ? line : indentions;
-            // TODO: wirte in extra new line 
-            LOB.newLineRAW = `${LOB.newLine}// ${LOB.deleteStatus} i:${currentIndention} orig: ${oldLine}`;
-        } else if (show.delete) {
-            LOB.newLineRAW = (LOB.newLine === '') ? `//${line}` : LOB.newLine;
-        }
+        AO.writeNewLine(show);
         if (removeFnStart) {
             fnIndex++;
         }
         updateLineStatus(LOB,  show);
-        rob.finalCode += LOB.newLine + '\n';
-        rob.finalCodeRAW += LOB.newLineRAW + '\n';
     }
-    prevLine = line;
 };
 if (!noRun) {
     rl.on('line', analyze);
 }
 
-prevLine = '';
-const optimizeCode = (code) => {
+const finalizeCode = (code, file) => {
+    code = 'Ö = [];' + code;
     let terms = [   'nodeIndex', 'renderElement', 'componentView', 'renderParent', 'childCount', 'attrs', 
                     'nodes', 'parent', 'element', 'On', 'Pr'];
     let replaceable = ['N', 'E', 'V', 'R', 'C', 'A', 'N', 'P', 'B', 'O', 'C'];
     terms.forEach(function(term, i)  {
         code = code.replace(new RegExp(term, 'g'), replaceable[i])
     })
+    writeNewLine(fs, file, code, false);
     return code;
 }
 
 rl.on('close', () => {
     LOG(OK, `file analyzed`);
-    const deleteMe = 'Ö = [];';
-    rob.finalCode = deleteMe + rob.finalCode;
-    rob.finalCodeRAW = deleteMe  + rob.finalCodeRAW;
-    rob.finalCode = optimizeCode(rob.finalCode);
-    rob.finalCodeRAW = optimizeCode(rob.finalCodeRAW);
-    writeNewLine(fs, NEW_FILE, rob.finalCode, false);
-    writeNewLine(fs, NEW_FILE_RAW, rob.finalCodeRAW, false);
+    finalizeCode(rob.finalCode, NEW_FILE);
+    finalizeCode(rob.finalCodeRAW, NEW_FILE_RAW);
     fs.copyFile(NEW_FILE, DIST_FILE_DEV, (err) => { // copy NEW_FILE to DIST_FILE_DEV
         if (err) throw err;
-        const time2 = new Date().getTime();
-
         uglifyFile(DIST_FILE_DEV, MIN_FILE);
-        let metricsData = getMetricsData()
-        const finalStatus = `DONE: ⌛ ${(time2 - time) / 1000}  💾 ${rob.startByte} ${rob.diffDirection}  ${rob.diffBase} %) //` + metricsData;
-        notifier.notify({
-            title: 'ngBundle optimizer',
-            icon: path.join(__dirname, 'logo_small.png'),
-            message: finalStatus
-        });
-        LOG(OK, `statistics: `, finalStatus);
+        rob.getResult();
     });
 });
