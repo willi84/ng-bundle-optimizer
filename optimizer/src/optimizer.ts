@@ -16,7 +16,7 @@ import * as notifier from "node-notifier";
 import * as path from "path";
 import * as fs from "fs";
 import {  exec, spawnSync } from "child_process";
-
+console.clear();
 const OK = 0;
 const ERROR = 1;
 const WARNING = 2;
@@ -169,19 +169,14 @@ const getTargetData = (obj, RAW_FILE_NAME) => {
     return targetData;
 }
 
-function colorize(color, output) {
-    return `\u001b[${color}m${output}\u001b[0m`
-}
-//const GREEN = '\x1b[32m%s\x1b[0m';
-
-
 const REGEX_NAMED_FUNCTION = /^\s*function\s[^\(]+\(\)\s*\{\}\s*$/;
 const REGEX_ANONYM_FUNCTION = /^\s*var\s[^\s]+\s*\=\s*function\(\)\s*\{\};*$/;
 
 const coverageObj = getTargetData(coverageData, RAW_FILE_NAME);
 if (!coverageObj) {
-    //('no coverage data')
+    LOG(ERROR, 'no coverage data')
 }; //stop program
+LOG(OK, 'read coverage data')
 
 const getRemovableData = (coverageObj, typeMap,  type) => {
     let obj = coverageObj[typeMap];
@@ -405,16 +400,20 @@ class ActionObject
         if (deleteBlock === true) {
             if(isStop === true){
                 if (this.dob.deleteBlock === true ) {
-                trigger = { 'deleteBlock': false};
+                    this.dob.deleteBlock = false;
                 } else if (this.dob.keepFnBlock === true) {
-                    trigger = { 'keepFnBlock': false};
+                    this.dob.keepFnBlock  = false;
                 }
             } else {
-                trigger =  !this.lob.has(FUNCTION_ONE_LINE) ? { 'deleteBlock': true } : trigger;
+                if(!this.lob.has(FUNCTION_ONE_LINE)){
+                    trigger = { 'deleteBlock': true }; // TODO: why not deletable?
+                    this.dob.deleteBlock = false;
+                }
             }
-        }else {
+        } else {
             if(keepFnBlock){
                 trigger = { 'keepFnBlock': true };
+                this.dob.keepFnBlock  = true; // TODO: why not deletable?
             }
         }
         return trigger;
@@ -500,7 +499,7 @@ class ResultObject {
         public finalcode1: String,
         public finalcodeRAW1: String,
     ) {
-        console.clear();
+        
         this.time = new Date().getTime();
         this.start = this.getFileSize(this.raw);
         this.startByte = this.getFileSize(this.raw, false);
