@@ -13,7 +13,7 @@
     "compile4": "tsc --listFiles --incremental --diagnostics -p tsconfig.json && node dist/optimizer.js",
     "compileDetail": "tsc --diagnostics --listFiles -p ./ && node dist/optimizer.js",
     "compile2": "tsc && node dist/index.js",
-    "dev": "nodemon -e ts  --exec \"npm run compile\"",
+    "dev": "nodemon -e ts  --exec \"npm run compile || exit 1\"",
     "test": "tsc && mocha dist/**/*.spec.js",
     "lint": "eslint src --ext ts",
     "base": "cp ../demo/prod/new-foo.min.js ../demo/new-foo-base.min.js",
